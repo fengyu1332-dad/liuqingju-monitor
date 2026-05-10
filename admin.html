@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-body">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <i class="fas fa-landmark"></i>
+                <span>留情局</span>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li class="active"><a href="#"><i class="fas fa-chart-pie"></i> 数据总览</a></li>
+                    <li><a href="#"><i class="fas fa-comments"></i> 论坛管理</a></li>
+                    <li><a href="#"><i class="fas fa-book-open"></i> 资源库管理</a></li>
+                    <li><a href="#"><i class="fas fa-coins"></i> 悬赏任务</a></li>
+                    <li><a href="#"><i class="fas fa-users"></i> 用户分析</a></li>
+                </ul>
+            </nav>
+            <div class="admin-footer">
+                <div class="admin-user">
+                    <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=professional%20asian%20male%20admin%20portrait%20headshot&image_size=square" alt="IB Admin" class="admin-avatar">
+                    <div class="user-info">
+                        <span class="user-name">IB Admin</span>
+                        <span class="user-role">超级管理员</span>
+                    </div>
+                </div>
+                <button class="new-report-btn">+ 新建报表</button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>数据总览</h1>
+                <p>欢迎回来，今日社区活跃度增长了 12%</p>
+                <div class="header-right">
+                    <input type="text" placeholder="搜索管理项..." class="admin-search">
+                    <button class="notification-btn"><i class="fas fa-bell"></i></button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="stats-row">
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3>用户增长趋势</h3>
+                            <span class="time-filter">最近30天</span>
+                        </div>
+                        <p class="card-subtitle">用户增长趋势</p>
+                        <div class="chart-placeholder">
+                            <div class="bar-chart">
+                                <div class="bar" style="height: 40%;"></div>
+                                <div class="bar" style="height: 55%;"></div>
+                                <div class="bar" style="height: 70%;"></div>
+                                <div class="bar" style="height: 50%;"></div>
+                                <div class="bar" style="height: 65%;"></div>
+                                <div class="bar highlight" style="height: 85%;"></div>
+                                <div class="bar" style="height: 60%;"></div>
+                                <div class="bar" style="height: 75%;"></div>
+                                <div class="bar" style="height: 90%;"></div>
+                                <div class="bar" style="height: 80%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-cards">
+                        <div class="stat-card gold">
+                            <div class="stat-icon">
+                                <i class="fas fa-yen-sign"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">当前悬赏池总额 (RMB)</span>
+                                <span class="stat-value">¥ 1,284,900.00</span>
+                                <span class="stat-change">+18.4% 比上周</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">社群活跃度</span>
+                                <span class="stat-value">8,542</span>
+                                <span class="stat-sub">在线用户</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-row">
+                    <div class="ai-assistant-card">
+                        <div class="card-header">
+                            <div class="ai-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h3>AI 管理助手</h3>
+                            <span class="ai-badge">基于社区情绪的自动化摘要</span>
+                        </div>
+                        <div class="ai-content">
+                            <p>"检测到今日关于'申请季焦虑'的讨论热度异常。建议在Intelligence频道发布一篇针对高三学生的心态建设指南。今日AI暖场数据已生成5篇草稿。"</p>
+                        </div>
+                        <div class="ai-actions">
+                            <button class="ai-btn primary">生成摘要</button>
+                            <button class="ai-btn">预热数据</button>
+                        </div>
+                    </div>
+
+                    <div class="disputes-card">
+                        <div class="card-header">
+                            <h3>待仲裁争议 (Bounty)</h3>
+                            <a href="#" class="view-all">查看全部 →</a>
+                        </div>
+                        <div class="dispute-list">
+                            <div class="dispute-item high-priority">
+                                <span class="dispute-id">#BT-9021</span>
+                                <span class="dispute-title">论文润色服务争议</span>
+                                <span class="dispute-info">申请人: 林同学 | 悬赏额: ¥2,000</span>
+                                <span class="priority-tag">高优先级</span>
+                                <button class="dispute-action"><i class="fas fa-eye"></i></button>
+                            </div>
+                            <div class="dispute-item">
+                                <span class="dispute-id">#BT-8843</span>
+                                <span class="dispute-title">面试模拟退款请求</span>
+                                <span class="dispute-info">申请人: 张同学 | 悬赏额: ¥500</span>
+                                <span class="priority-tag">普通</span>
+                                <button class="dispute-action"><i class="fas fa-eye"></i></button>
+                            </div>
+                            <div class="dispute-item">
+                                <span class="dispute-id">#BT-8721</span>
+                                <span class="dispute-title">夏校申请资料整理</span>
+                                <span class="dispute-info">申请人: 李同学 | 悬赏额: ¥1,200</span>
+                                <span class="priority-tag">普通</span>
+                                <button class="dispute-action"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="monitor-section">
+                    <h3>今日社区精选内容监测</h3>
+                    <div class="monitor-grid">
+                        <div class="monitor-card">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=academic%20books%20stack%20warm%20lighting%20study%20atmosphere&image_size=landscape_4_3" alt="Content 1">
+                        </div>
+                        <div class="monitor-card">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=diverse%20students%20studying%20together%20library%20collaborative&image_size=landscape_4_3" alt="Content 2">
+                        </div>
+                        <div class="monitor-card">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=data%20analytics%20dashboard%20charts%20graphs%20professional&image_size=landscape_4_3" alt="Content 3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="admin-footer-bar">
+                <p>© 2024 留情局 Intelligence Bureau for Overseas Study. All Rights Reserved.</p>
+                <div class="footer-links">
+                    <a href="#">About Us</a>
+                    <a href="#">Study Guide</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Contact Support</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

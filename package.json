@@ -1,0 +1,13 @@
+{
+  "name": "liuqingju-website",
+  "version": "1.0.0",
+  "description": "留情局 - 留学生学术资源互助与情报共享社区",
+  "scripts": {
+    "dev": "live-server",
+    "build": "echo 'Build completed'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
