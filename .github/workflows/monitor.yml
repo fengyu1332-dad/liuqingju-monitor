@@ -69,6 +69,8 @@ jobs:
         run: |
           echo "=== 开始监控任务 ==="
           echo "时间: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "模式: ${{ github.event.inputs.dry_run || 'false' }}"
+          echo "同步目标: ${{ github.event.inputs.sync_target || 'local' }}"
 
           if [ -z "$DEEPSEEK_API_KEY" ]; then
             echo "⚠️ DEEPSEEK_API_KEY 未配置，跳过监控任务"
@@ -89,6 +91,7 @@ jobs:
           echo "=== 同步结果 ==="
           if [ -f "data/liuqingju_export.json" ]; then
             echo "留情局数据文件已生成"
+            echo "条数: $(cat data/liuqingju_export.json | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))' 2>/dev/null || echo '0')"
           else
             echo "无新增数据需要同步"
           fi
@@ -101,12 +104,18 @@ jobs:
           if [ ! -f "data/liuqingju_export.json" ]; then
             echo '[]' > data/liuqingju_export.json
           fi
+          if [ ! -f "data/liuqingju_sync.js" ]; then
+            echo '// 留情局同步数据' > data/liuqingju_sync.js
+          fi
 
       - name: Upload data package
         uses: actions/upload-artifact@v4
         with:
           name: liuqingju-data-${{ github.run_number }}
-          path: data/
+          path: |
+            data/liuqingju_export.json
+            data/liuqingju_sync.js
+            data/liuqingju_sync_meta.json
           retention-days: 3
 
       - name: Create Summary
@@ -115,3 +124,33 @@ jobs:
           echo "## 监控任务完成" >> $GITHUB_STEP_SUMMARY
           echo "**执行时间**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
           echo "**运行编号**: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "data/liuqingju_sync_meta.json" ]; then
+            echo "### 同步统计" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat data/liuqingju_sync_meta.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+  notify:
+    needs: monitor
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download data artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: liuqingju-data-${{ github.run_number }}
+          path: data
+        continue-on-error: true
+
+      - name: Display notification
+        run: |
+          echo "## 任务状态: ${{ needs.monitor.result }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.monitor.result }}" = "success" ]; then
+            echo "✅ 监控任务成功完成" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ 监控任务执行失败，请检查日志" >> $GITHUB_STEP_SUMMARY
+          fi
