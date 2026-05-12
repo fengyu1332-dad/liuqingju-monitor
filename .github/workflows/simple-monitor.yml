@@ -31,9 +31,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend
-        run: |
-          echo "=== 安装依赖 ==="
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Create data directory
         run: mkdir -p data
@@ -42,40 +40,33 @@ jobs:
         working-directory: backend
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          BOT_USER_ID: ${{ secrets.BOT_USER_ID }}
         run: |
           echo "=== 运行主程序 ==="
           echo "模式: ${{ github.event.inputs.mode }}"
           
-          if [ -z "$DEEPSEEK_API_KEY" ]; then
-            echo "⚠️ DEEPSEEK_API_KEY 未配置"
-          else
-            echo "✓ DEEPSEEK_API_KEY 已配置"
-          fi
+          echo "检查环境变量..."
+          [ -n "$DEEPSEEK_API_KEY" ] && echo "✓ DEEPSEEK_API_KEY" || echo "✗ DEEPSEEK_API_KEY"
+          [ -n "$SUPABASE_URL" ] && echo "✓ SUPABASE_URL" || echo "✗ SUPABASE_URL"
+          [ -n "$SUPABASE_KEY" ] && echo "✓ SUPABASE_KEY" || echo "✗ SUPABASE_KEY"
+          [ -n "$BOT_USER_ID" ] && echo "✓ BOT_USER_ID" || echo "✗ BOT_USER_ID"
           
           echo "=== 开始执行 ==="
           
           if [ "${{ github.event.inputs.mode }}" = "full" ]; then
-            echo ">>> 完整模式"
             python src/main.py --export-liuqingju --sync-target local
           elif [ "${{ github.event.inputs.mode }}" = "dry-run" ]; then
-            echo ">>> 干运行模式"
             python src/main.py --dry-run --export-liuqingju
           else
-            echo ">>> 测试模式"
             python src/main.py --help
           fi
-          
-          echo "=== 执行完成 ==="
 
       - name: Ensure data files
         run: |
-          echo "=== 确保数据文件存在 ==="
-          if [ ! -f "data/liuqingju_export.json" ]; then
-            echo '[]' > data/liuqingju_export.json
-          fi
-          if [ ! -f "data/liuqingju_sync_meta.json" ]; then
-            echo '{"posts_published": 0}' > data/liuqingju_sync_meta.json
-          fi
+          [ ! -f "data/liuqingju_export.json" ] && echo '[]' > data/liuqingju_export.json
+          [ ! -f "data/liuqingju_sync_meta.json" ] && echo '{"posts_published": 0}' > data/liuqingju_sync_meta.json
           ls -la data/
 
       - name: Upload data
