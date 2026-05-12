@@ -1,0 +1,76 @@
+name: Simple Monitor
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '运行模式'
+        required: false
+        default: 'test'
+        type: choice
+        options:
+          - 'test'
+          - 'dry-run'
+          - 'full'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check backend structure
+        run: |
+          echo "=== 检查 backend 目录 ==="
+          if [ -d "backend" ]; then
+            echo "✓ backend 目录存在"
+            ls -la backend/
+          else
+            echo "✗ backend 目录不存在"
+          fi
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          echo "=== 安装依赖 ==="
+          pip install -r requirements.txt
+
+      - name: Create data directory
+        run: mkdir -p data
+
+      - name: Run main script
+        working-directory: backend
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          echo "=== 运行主程序 ==="
+          
+          if [ -z "$DEEPSEEK_API_KEY" ]; then
+            echo "⚠️ DEEPSEEK_API_KEY 未配置"
+            echo '[]' > ../data/liuqingju_export.json
+            echo '{"posts_published": 0}' > ../data/liuqingju_sync_meta.json
+            exit 0
+          fi
+          
+          python src/main.py --help
+
+      - name: Upload data
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitor-data-${{ github.run_number }}
+          path: data/
+
+      - name: Summary
+        run: |
+          echo "## ✅ 监控任务完成" >> $GITHUB_STEP_SUMMARY
+          echo "**运行编号**: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
