@@ -1,0 +1,45 @@
+name: Minimal Test
+
+on:
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show files
+        run: |
+          echo "=== 目录结构 ==="
+          find . -type f -name "*.py" | head -20
+          echo
+          echo "=== backend 目录内容 ==="
+          ls -la backend/ 2>/dev/null || echo "backend 不存在"
+          
+      - name: Check Python
+        run: |
+          python --version
+          echo "=== Python OK ==="
+          
+      - name: Create test data
+        run: |
+          mkdir -p data
+          echo '[{"test": "data"}]' > data/liuqingju_export.json
+          echo '{"liuqingju_exports": 1}' > data/liuqingju_sync_meta.json
+          echo '// sync' > data/liuqingju_sync.js
+          
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-data
+          path: data/
+
+      - name: Success
+        run: |
+          echo "✅ 测试完成！"
