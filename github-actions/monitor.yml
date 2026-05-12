@@ -1,0 +1,153 @@
+name: University Admission Monitor
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+    - cron: '0 12 * * *'
+
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '测试模式（不实际发布）'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      sync_target:
+        description: '同步目标'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'supabase'
+          - 'local'
+      force_sync:
+        description: '强制同步（忽略去重）'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create data directory
+        run: mkdir -p data
+
+      - name: Run monitor with Supabase export
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          BOT_USER_ID: ${{ secrets.BOT_USER_ID }}
+        run: |
+          echo "=== 开始监控任务 ==="
+          echo "时间: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "模式: ${{ github.event.inputs.dry_run || 'false' }}"
+          echo "同步目标: ${{ github.event.inputs.sync_target || 'all' }}"
+
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            echo ">>> 测试模式运行"
+            python src/main.py --dry-run --export-liuqingju
+          else
+            echo ">>> 正式运行"
+            python src/main.py --export-liuqingju --sync-target ${{ github.event.inputs.sync_target || 'all' }}
+          fi
+
+      - name: Display sync results
+        run: |
+          echo "=== 同步结果 ==="
+          if [ -f "data/liuqingju_export.json" ]; then
+            echo "留情局数据文件已生成"
+            echo "条数: $(cat data/liuqingju_export.json | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))')"
+          else
+            echo "无新增数据需要同步"
+          fi
+
+      - name: Upload Liuqingju data package
+        uses: actions/upload-artifact@v4
+        with:
+          name: liuqingju-data-${{ github.run_number }}
+          path: |
+            data/liuqingju_export.json
+            data/liuqingju_sync.js
+            data/liuqingju_sync_meta.json
+          retention-days: 3
+
+      - name: Commit database changes
+        if: github.event_name == 'schedule'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          if [ -f "data/liuqingju_export.json" ]; then
+            git add data/
+            if git diff --staged --quiet; then
+              echo "没有变更需要提交"
+            else
+              git commit -m "Update intelligence data [skip ci]"
+              git push
+            fi
+          fi
+        continue-on-error: true
+
+      - name: Create Summary
+        if: always()
+        run: |
+          echo "## 监控任务完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**执行时间**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**运行编号**: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "**触发方式**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f "data/liuqingju_sync_meta.json" ]; then
+            echo "### 同步统计" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat data/liuqingju_sync_meta.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+  notify:
+    needs: monitor
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download data artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: liuqingju-data-${{ needs.monitor.outputs.run_number || github.run_number }}
+          path: data
+        continue-on-error: true
+
+      - name: Display notification
+        run: |
+          echo "## 任务状态: ${{ needs.monitor.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.monitor.result }}" = "success" ]; then
+            echo "✅ 监控任务成功完成" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ 监控任务执行失败，请检查日志" >> $GITHUB_STEP_SUMMARY
+          fi

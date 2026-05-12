@@ -1,0 +1,97 @@
+# 大学招生信息监控配置
+# MVP 版本：10 所代表性大学
+
+universities:
+  # 美国顶尖大学
+  - name: "MIT"
+    country: "USA"
+    pages:
+      - url: "https://meche.mit.edu/education/graduate/admissions"
+        type: "admission"
+        degree: "master"
+      - url: "https://www.eecs.mit.edu/academics/graduate/admissions/"
+        type: "admission"
+        degree: "master"
+
+  - name: "Stanford"
+    country: "USA"
+    pages:
+      - url: "https://gradadmissions.stanford.edu/programs"
+        type: "admission"
+        degree: "all"
+
+  - name: "Harvard"
+    country: "USA"
+    pages:
+      - url: "https://www.gsas.harvard.edu/admissions"
+        type: "admission"
+        degree: "all"
+
+  # 英国顶尖大学
+  - name: "Cambridge"
+    country: "UK"
+    pages:
+      - url: "https://www.graduate.study.cam.ac.uk/"
+        type: "admission"
+        degree: "all"
+
+  - name: "Oxford"
+    country: "UK"
+    pages:
+      - url: "https://www.ox.ac.uk/admissions/graduate"
+        type: "admission"
+        degree: "all"
+
+  # 欧洲顶尖大学
+  - name: "ETH Zurich"
+    country: "Switzerland"
+    pages:
+      - url: "https://ethz.ch/en/studies/master/application.html"
+        type: "admission"
+        degree: "master"
+
+  # 亚洲顶尖大学
+  - name: "NUS"
+    country: "Singapore"
+    pages:
+      - url: "https://www.nus.edu.sg/admissions/graduate"
+        type: "admission"
+        degree: "all"
+
+  - name: "Tsinghua"
+    country: "China"
+    pages:
+      - url: "https://yz.tsinghua.edu.cn/"
+        type: "admission"
+        degree: "all"
+
+  - name: "Peking"
+    country: "China"
+    pages:
+      - url: "https://admission.pku.edu.cn/"
+        type: "admission"
+        degree: "all"
+
+  - name: "Tokyo"
+    country: "Japan"
+    pages:
+      - url: "https://www.u-tokyo.ac.jp/en/admissions/graduate.html"
+        type: "admission"
+        degree: "all"
+
+# 监控配置
+monitor:
+  # 请求间隔（秒）
+  request_delay: 5
+  
+  # 超时时间（秒）
+  timeout: 30
+  
+  # 最大重试次数
+  max_retries: 3
+  
+  # 内容长度限制（字符）
+  max_content_length: 8000
+  
+  # 置信度阈值（低于此值的信息将被过滤）
+  confidence_threshold: 0.7
