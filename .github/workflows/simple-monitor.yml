@@ -29,16 +29,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Check backend structure
-        run: |
-          echo "=== 检查 backend 目录 ==="
-          if [ -d "backend" ]; then
-            echo "✓ backend 目录存在"
-            ls -la backend/
-          else
-            echo "✗ backend 目录不存在"
-          fi
-
       - name: Install dependencies
         working-directory: backend
         run: |
@@ -54,23 +44,42 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: |
           echo "=== 运行主程序 ==="
+          echo "模式: ${{ github.event.inputs.mode }}"
           
           if [ -z "$DEEPSEEK_API_KEY" ]; then
             echo "⚠️ DEEPSEEK_API_KEY 未配置"
-            echo '[]' > ../data/liuqingju_export.json
-            echo '{"posts_published": 0}' > ../data/liuqingju_sync_meta.json
-            exit 0
+          else
+            echo "✓ DEEPSEEK_API_KEY 已配置"
           fi
           
-          python src/main.py --help
+          echo "=== 开始执行 ==="
+          
+          if [ "${{ github.event.inputs.mode }}" = "full" ]; then
+            echo ">>> 完整模式"
+            python src/main.py --export-liuqingju --sync-target local
+          elif [ "${{ github.event.inputs.mode }}" = "dry-run" ]; then
+            echo ">>> 干运行模式"
+            python src/main.py --dry-run --export-liuqingju
+          else
+            echo ">>> 测试模式"
+            python src/main.py --help
+          fi
+          
+          echo "=== 执行完成 ==="
+
+      - name: Ensure data files
+        run: |
+          echo "=== 确保数据文件存在 ==="
+          if [ ! -f "data/liuqingju_export.json" ]; then
+            echo '[]' > data/liuqingju_export.json
+          fi
+          if [ ! -f "data/liuqingju_sync_meta.json" ]; then
+            echo '{"posts_published": 0}' > data/liuqingju_sync_meta.json
+          fi
+          ls -la data/
 
       - name: Upload data
         uses: actions/upload-artifact@v4
         with:
           name: monitor-data-${{ github.run_number }}
           path: data/
-
-      - name: Summary
-        run: |
-          echo "## ✅ 监控任务完成" >> $GITHUB_STEP_SUMMARY
-          echo "**运行编号**: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
