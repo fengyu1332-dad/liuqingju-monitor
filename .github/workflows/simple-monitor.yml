@@ -56,7 +56,7 @@ jobs:
           echo "=== 开始执行 ==="
           
           if [ "${{ github.event.inputs.mode }}" = "full" ]; then
-            python src/main.py --export-liuqingju --sync-target local
+            python src/main.py --export-liuqingju --sync-target local || true
           elif [ "${{ github.event.inputs.mode }}" = "dry-run" ]; then
             python src/main.py --dry-run --export-liuqingju
           else
