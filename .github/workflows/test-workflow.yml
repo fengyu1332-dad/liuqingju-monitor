@@ -1,0 +1,34 @@
+name: Test Workflow
+
+on:
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show directory structure
+        run: |
+          echo "=== 根目录 ==="
+          ls -la
+          echo
+          echo "=== backend 目录 ==="
+          ls -la backend || echo "backend 目录不存在"
+
+      - name: Test basic Python
+        working-directory: backend
+        run: |
+          python --version
+          
+          cat > simple_test.py << 'EOF'
+          print("Python 工作正常！")
+          EOF
+          
+          python simple_test.py
