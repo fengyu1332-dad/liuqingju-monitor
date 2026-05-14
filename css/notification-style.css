@@ -1,0 +1,382 @@
+
+/* Warm Academia Design System - 通知系统样式 */
+@import url('https://fonts.googleapis.com/css2?family=Literata:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+/* 通知容器 */
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 通知项 */
+.notification-item {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(74, 55, 40, 0.06);
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.notification-item:hover {
+    box-shadow: 0 4px 16px rgba(74, 55, 40, 0.08);
+    transform: translateX(4px);
+}
+
+.notification-item.unread {
+    background: #fff1ea;
+    border-left: 4px solid #944a00;
+}
+
+/* 通知图标 */
+.notification-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+}
+
+.notification-icon.system {
+    background: #f8dac5;
+    color: #755e4d;
+}
+
+.notification-icon.interaction {
+    background: #f8e4da;
+    color: #944a00;
+}
+
+.notification-icon.reward {
+    background: #e7e2d8;
+    color: #494740;
+}
+
+.notification-icon.activity {
+    background: #f3e5f5;
+    color: #7B1FA2;
+}
+
+/* 通知内容 */
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #231a13;
+    margin-bottom: 4px;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: #564337;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.notification-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: #897365;
+}
+
+.notification-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.notification-tag {
+    background: #f8dac5;
+    color: #755e4d;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+/* 通知为空状态 */
+.notification-empty {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.notification-empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: #fff1ea;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #dcc1b1;
+}
+
+.notification-empty h3 {
+    font-family: 'Literata', Georgia, serif;
+    font-size: 20px;
+    color: #564337;
+    margin-bottom: 8px;
+}
+
+.notification-empty p {
+    font-size: 14px;
+    color: #897365;
+}
+
+/* 通知过滤器 */
+.notification-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 4px;
+    background: #fff1ea;
+    border-radius: 12px;
+}
+
+.notification-filter {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #564337;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.notification-filter:hover {
+    color: #944a00;
+}
+
+.notification-filter.active {
+    background: #ffffff;
+    color: #944a00;
+    box-shadow: 0 2px 8px rgba(74, 55, 40, 0.08);
+}
+
+/* 通知设置面板 */
+.settings-panel {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 2px 12px rgba(74, 55, 40, 0.06);
+}
+
+.settings-section {
+    margin-bottom: 32px;
+}
+
+.settings-section:last-child {
+    margin-bottom: 0;
+}
+
+.settings-section-title {
+    font-family: 'Literata', Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #231a13;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settings-section-title i {
+    color: #944a00;
+}
+
+/* 设置项 */
+.settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid #f2dfd4;
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-item-info {
+    flex: 1;
+}
+
+.settings-item-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #231a13;
+    margin-bottom: 4px;
+}
+
+.settings-item-desc {
+    font-size: 13px;
+    color: #897365;
+}
+
+/* 开关按钮 */
+.toggle-switch {
+    position: relative;
+    width: 52px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #dcc1b1;
+    border-radius: 28px;
+    transition: 0.25s;
+}
+
+.toggle-slider::before {
+    position: absolute;
+    content: '';
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: 0.25s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: #944a00;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(24px);
+}
+
+/* 快速预设 */
+.preset-buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.preset-btn {
+    flex: 1;
+    padding: 14px;
+    border: 2px solid #dcc1b1;
+    background: #ffffff;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #564337;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.preset-btn:hover {
+    border-color: #944a00;
+    background: #fff8f5;
+}
+
+.preset-btn.active {
+    border-color: #944a00;
+    background: #944a00;
+    color: #ffffff;
+}
+
+/* 统计卡片 */
+.stats-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(74, 55, 40, 0.06);
+}
+
+.stats-card .stats-number {
+    font-family: 'Literata', Georgia, serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #231a13;
+}
+
+.stats-card .stats-label {
+    font-size: 13px;
+    color: #897365;
+    margin-top: 4px;
+}
+
+.stats-card.highlight {
+    background: linear-gradient(135deg, #944a00, #e67e22);
+    color: #ffffff;
+}
+
+.stats-card.highlight .stats-number,
+.stats-card.highlight .stats-label {
+    color: #ffffff;
+}
+
+/* 通知类型分组 */
+.notification-group {
+    margin-bottom: 24px;
+}
+
+.notification-group-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #897365;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    padding-left: 4px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .notification-item {
+        padding: 16px;
+    }
+
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .settings-panel {
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .preset-buttons {
+        flex-direction: column;
+    }
+}

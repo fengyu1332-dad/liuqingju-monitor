@@ -1,0 +1,3881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资源中心 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .resources-page {
+            min-height: 100vh;
+            background: var(--bg-light);
+        }
+
+        .resources-header {
+            background: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .resources-header .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .header-right,
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .lang-switch {
+            font-size: 12px;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .upload-resource-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-resource-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .resources-hero {
+            padding: 40px 0;
+            background: var(--bg-white);
+        }
+
+        .resources-hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .resources-hero p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            max-width: 600px;
+        }
+
+        .search-section {
+            background: #FFF8F5;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 16px;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .filter-btn {
+            padding: 15px 25px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: white;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 30px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .resource-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .resource-list-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+        }
+
+        .view-toggle button {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+
+        .view-toggle button.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--secondary-color);
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .resource-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        .resource-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .resource-card-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: var(--bg-light);
+        }
+
+        .resource-card-content {
+            padding: 20px;
+        }
+
+        .resource-card-type {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .resource-card-type.online {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .resource-card-type.physical {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .resource-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .resource-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .resource-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .resource-card-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .resource-bookmark-btn {
+            background: var(--bg-light);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .resource-bookmark-btn:hover {
+            background: #FFF8E1;
+            color: #FFA000;
+        }
+
+        .resource-bookmark-btn.bookmarked {
+            background: #FFF8E1;
+            color: #FFA000;
+        }
+
+        .resource-bookmark-btn i {
+            font-size: 16px;
+        }
+
+        .resource-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .resource-author img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+        }
+
+        .resource-author span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .resource-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .resource-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .resource-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .resource-tag {
+            padding: 3px 8px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .bounty-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+        }
+
+        .bounty-section h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .bounty-section p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .bounty-section button {
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .bounty-section button:hover {
+            transform: translateY(-3px);
+        }
+
+        .sidebar-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-card.sponsored {
+            position: relative;
+        }
+
+        .sponsored-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .sidebar-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-card h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .sidebar-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .sidebar-card button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .footer {
+            background: #E8DCC8;
+            padding: 50px 0 20px;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 60px;
+        }
+
+        .footer-links h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 30px;
+        }
+
+        .footer-bottom p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .upload-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-modal.active {
+            display: flex;
+        }
+
+        .upload-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .upload-modal-container {
+            position: relative;
+            width: 600px;
+            max-width: 90vw;
+            max-height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .upload-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .upload-modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .upload-modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .upload-modal-close:hover {
+            background: var(--secondary-color);
+        }
+
+        .upload-modal-body {
+            padding: 25px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .upload-modal-body .form-group {
+            margin-bottom: 20px;
+        }
+
+        .upload-modal-body .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .upload-modal-body .form-group label i {
+            margin-right: 6px;
+            color: var(--primary-color);
+        }
+
+        .upload-modal-body .form-group .required {
+            color: #E53935;
+        }
+
+        .upload-modal-body input[type="text"],
+        .upload-modal-body input[type="url"],
+        .upload-modal-body input[type="number"],
+        .upload-modal-body textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .upload-modal-body input:focus,
+        .upload-modal-body textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .upload-modal-body textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .char-count {
+            display: block;
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .category-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .category-option {
+            cursor: pointer;
+        }
+
+        .category-option input {
+            display: none;
+        }
+
+        .category-card {
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .category-card i {
+            font-size: 28px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .category-card span {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .category-option input:checked + .category-card {
+            border-color: var(--primary-color);
+            background: var(--secondary-color);
+        }
+
+        .category-option input:checked + .category-card i {
+            color: var(--primary-color);
+        }
+
+        .tag-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            min-height: 48px;
+        }
+
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .selected-tags .tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 15px;
+            font-size: 13px;
+        }
+
+        .selected-tags .tag i {
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        #tag-input {
+            flex: 1;
+            min-width: 150px;
+            border: none;
+            padding: 4px;
+            font-size: 14px;
+        }
+
+        #tag-input:focus {
+            outline: none;
+        }
+
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag-suggestion {
+            padding: 5px 12px;
+            background: var(--bg-light);
+            border-radius: 15px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tag-suggestion:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background: var(--secondary-color);
+        }
+
+        .upload-placeholder i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .upload-placeholder p {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .upload-placeholder span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .tag-category-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tag-category {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+
+        .tag-category-title {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .tag-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-option {
+            cursor: pointer;
+        }
+
+        .tag-option input {
+            display: none;
+        }
+
+        .tag-option span {
+            display: inline-block;
+            padding: 6px 14px;
+            background: var(--bg-light);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+
+        .tag-option input:checked + span {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tag-option:hover span {
+            background: var(--secondary-color);
+        }
+
+        .tag-category .tag-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: auto;
+            padding: 0;
+            border: none;
+        }
+
+        .tag-category .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-category .selected-tags .tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .tag-category .selected-tags .tag i {
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .tag-category #tag-input {
+            flex: 1;
+            min-width: 150px;
+            padding: 8px 0;
+            border: none;
+            font-size: 13px;
+        }
+
+        .tag-category #tag-input:focus {
+            outline: none;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-preview {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary-color);
+            background: var(--secondary-color);
+        }
+
+        .file-upload-placeholder i {
+            font-size: 36px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .file-upload-placeholder p {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .file-upload-placeholder span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .selected-file {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+
+        .selected-file i {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .selected-file span {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-primary);
+            text-align: left;
+        }
+
+        .remove-file {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .remove-file:hover {
+            background: #E53935;
+            color: white;
+        }
+
+        .form-error {
+            color: #E53935;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .form-actions button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .form-actions .cancel-btn {
+            background: var(--bg-light);
+            border: none;
+            color: var(--text-secondary);
+        }
+
+        .form-actions .submit-btn {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .form-actions .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        .form-actions .submit-btn .btn-loading {
+            display: none;
+        }
+
+        .form-actions .submit-btn.loading .btn-loading {
+            display: inline-block;
+        }
+
+        .no-resources {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-white);
+            border-radius: 16px;
+        }
+
+        .no-resources i {
+            font-size: 60px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .no-resources h3 {
+            font-size: 18px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .no-resources p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .no-resources button {
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tab-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .content-tabs {
+            display: flex;
+            gap: 8px;
+            background: var(--bg-white);
+            padding: 6px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .content-tab {
+            padding: 14px 24px;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+        }
+
+        .content-tab:hover {
+            color: var(--primary-color);
+            background: var(--secondary-color);
+        }
+
+        .content-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .content-tab.active::after {
+            display: none;
+        }
+
+        .publish-bounty-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+        .publish-bounty-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .bounty-list {
+            display: none;
+        }
+
+        .bounty-list.active {
+            display: block;
+        }
+
+        .resource-list-wrapper {
+            display: block;
+        }
+
+        .resource-list-wrapper.hidden {
+            display: none;
+        }
+
+        .bounty-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .bounty-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .bounty-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .bounty-card-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .bounty-card-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .bounty-status {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .bounty-status.status-open {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .bounty-status.status-closed {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .bounty-status.status-completed {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .bounty-card-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .bounty-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .bounty-reward {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bounty-reward-amount {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .bounty-reward-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .bounty-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .bounty-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .bounty-meta i {
+            color: var(--text-light);
+        }
+
+        .bounty-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .bounty-tag {
+            padding: 3px 10px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .no-bounties {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-white);
+            border-radius: 16px;
+        }
+
+        .no-bounties i {
+            font-size: 60px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .no-bounties h3 {
+            font-size: 18px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .no-bounties p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .no-bounties button {
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .bounty-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bounty-modal.active {
+            display: flex;
+        }
+
+        .bounty-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .bounty-modal-container {
+            position: relative;
+            width: 680px;
+            max-width: 90vw;
+            max-height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bounty-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .bounty-modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .bounty-modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-light);
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .bounty-modal-close:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .bounty-modal-body {
+            padding: 25px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .bounty-modal-body .form-group {
+            margin-bottom: 20px;
+        }
+
+        .bounty-modal-body .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .bounty-modal-body .form-group label i {
+            color: var(--primary-color);
+        }
+
+        .bounty-modal-body .form-group input,
+        .bounty-modal-body .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .bounty-modal-body .form-group input:focus,
+        .bounty-modal-body .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .bounty-modal-body .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .bounty-modal .char-count {
+            display: block;
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .bounty-modal .reward-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bounty-modal .reward-selector input {
+            flex: 1;
+        }
+
+        .bounty-modal .reward-unit {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .bounty-modal .reward-presets {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .bounty-modal .reward-preset {
+            padding: 8px 16px;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .bounty-modal .reward-preset:hover {
+            background: var(--secondary-color);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .bounty-modal .form-hint {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .bounty-modal .category-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .bounty-modal .category-option input {
+            display: none;
+        }
+
+        .bounty-modal .category-card {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bounty-modal .category-card:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-light);
+        }
+
+        .bounty-modal .category-option input:checked + .category-card {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.1), rgba(205, 133, 63, 0.1));
+        }
+
+        .bounty-modal .category-card i {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .bounty-modal .category-card span {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .bounty-modal .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .bounty-modal .cancel-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bounty-modal .cancel-btn:hover {
+            background: var(--border-color);
+        }
+
+        .bounty-modal .submit-btn {
+            flex: 2;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bounty-modal .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .bounty-modal .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        .bounty-modal .submit-btn.loading .btn-loading {
+            display: inline-flex;
+        }
+
+        .bounty-modal .btn-loading {
+            display: none;
+        }
+
+        .bounty-modal .required {
+            color: #E53935;
+        }
+
+        .bounty-modal .form-error {
+            color: #E53935;
+            font-size: 14px;
+            margin-bottom: 15px;
+            min-height: 20px;
+        }
+
+        .sidebar-bookmarks {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            margin-top: 20px;
+        }
+
+        .sidebar-bookmarks-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-bookmarks-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-bookmarks-title i {
+            color: #FFA000;
+        }
+
+        .sidebar-bookmarks-link {
+            font-size: 13px;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-bookmarks-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .sidebar-bookmarks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-bookmark-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .sidebar-bookmark-item:hover {
+            background: var(--secondary-color);
+            transform: translateX(3px);
+        }
+
+        .sidebar-bookmark-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-bookmark-icon.post {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .sidebar-bookmark-icon.resource {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .sidebar-bookmark-icon.bounty {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .sidebar-bookmark-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-bookmark-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-bookmark-type {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .sidebar-bookmarks-empty {
+            text-align: center;
+            padding: 20px 10px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .sidebar-bookmarks-empty i {
+            font-size: 24px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .search-wrapper {
+                flex-direction: column;
+            }
+
+            .search-input,
+            .filter-btn {
+                width: 100%;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .footer-links {
+                gap: 30px;
+            }
+
+            .upload-modal-container {
+                width: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .bounty-modal .category-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .bounty-modal-container {
+                width: 100%;
+                max-width: 100%;
+                max-height: 100%;
+                border-radius: 0;
+            }
+        }
+
+        .resource-report-btn {
+            background: var(--bg-light);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 14px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .resource-report-btn:hover {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .resource-report-btn i {
+            font-size: 16px;
+        }
+
+        .report-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .report-modal.active {
+            display: flex;
+        }
+
+        .report-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .report-modal-container {
+            position: relative;
+            width: 520px;
+            max-width: 90vw;
+            max-height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .report-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .report-modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #E53935;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-modal-header h2 i {
+            font-size: 22px;
+        }
+
+        .report-modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+
+        .report-modal-close:hover {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .report-modal-body {
+            padding: 25px;
+            max-height: calc(85vh - 80px);
+            overflow-y: auto;
+        }
+
+        .report-modal-body .report-resource-info {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .report-modal-body .report-resource-info img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .report-modal-body .report-resource-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .report-modal-body .report-resource-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .report-modal-body .form-group {
+            margin-bottom: 20px;
+        }
+
+        .report-modal-body .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .report-modal-body .form-group label i {
+            margin-right: 6px;
+            color: #E53935;
+        }
+
+        .report-type-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .report-type-option {
+            cursor: pointer;
+        }
+
+        .report-type-option input {
+            display: none;
+        }
+
+        .report-type-card {
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .report-type-card i {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .report-type-card span {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .report-type-option input:checked + .report-type-card {
+            border-color: #E53935;
+            background: #FFEBEE;
+        }
+
+        .report-type-option input:checked + .report-type-card i,
+        .report-type-option input:checked + .report-type-card span {
+            color: #E53935;
+        }
+
+        .report-modal-body textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .report-modal-body textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .report-modal .char-count {
+            display: block;
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .report-modal .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .report-modal .cancel-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .report-modal .cancel-btn:hover {
+            background: var(--border-color);
+        }
+
+        .report-modal .submit-btn {
+            flex: 2;
+            padding: 14px;
+            background: #E53935;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .report-modal .submit-btn:hover {
+            background: #C62828;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .report-modal .submit-btn:disabled {
+            background: #BDBDBD;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .report-modal .form-error {
+            color: #E53935;
+            font-size: 14px;
+            margin-bottom: 15px;
+            min-height: 20px;
+        }
+
+        .report-success {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .report-success i {
+            font-size: 60px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .report-success h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .report-success p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .resource-rating-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star-rating .star {
+            font-size: 16px;
+            color: #E0E0E0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .star-rating .star:hover {
+            transform: scale(1.1);
+        }
+
+        .star-rating .star.filled {
+            color: #FFC107;
+        }
+
+        .star-rating .star.half {
+            color: #FFC107;
+        }
+
+        .star-rating .star:hover ~ .star:not(.filled):not(.half) {
+            color: #E0E0E0;
+        }
+
+        .rating-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-left: 5px;
+        }
+
+        .rating-count {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .resource-rating-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .resource-rating-inline .star {
+            font-size: 14px;
+            color: #E0E0E0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .resource-rating-inline .star.filled {
+            color: #FFC107;
+        }
+
+        .resource-rating-inline .star:hover {
+            color: #FFC107;
+            transform: scale(1.15);
+        }
+
+        .rating-tooltip {
+            position: absolute;
+            background: var(--text-primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 100;
+        }
+
+        .star-rating-wrapper {
+            position: relative;
+        }
+
+        .star-rating-wrapper:hover .rating-tooltip {
+            opacity: 1;
+        }
+
+        .copyright-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .copyright-badge.original {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            color: #2E7D32;
+        }
+
+        .copyright-badge.reprint {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            color: #1565C0;
+        }
+
+        .copyright-badge.authorized {
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            color: #E65100;
+        }
+
+        .copyright-badge.public_domain {
+            background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+            color: #7B1FA2;
+        }
+
+        .copyright-badge.cc {
+            background: linear-gradient(135deg, #FBE9E7, #FFCCBC);
+            color: #D84315;
+        }
+
+        .copyright-badge i {
+            font-size: 10px;
+        }
+
+        .resource-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .resource-detail-modal.active {
+            display: flex;
+        }
+
+        .resource-detail-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .resource-detail-container {
+            position: relative;
+            width: 800px;
+            max-width: 90vw;
+            max-height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .resource-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-light);
+        }
+
+        .resource-detail-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-detail-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+
+        .resource-detail-close:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .resource-detail-body {
+            padding: 25px;
+            max-height: calc(85vh - 80px);
+            overflow-y: auto;
+        }
+
+        .resource-detail-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .resource-detail-images img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .resource-detail-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .resource-detail-info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .copyright-info-section {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .copyright-info-section h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copyright-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .copyright-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .copyright-info-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .copyright-info-value {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .report-infringement-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #E53935, #C62828);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .report-infringement-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);
+        }
+
+        .infringement-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .infringement-modal.active {
+            display: flex;
+        }
+
+        .infringement-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .infringement-modal-container {
+            position: relative;
+            width: 560px;
+            max-width: 90vw;
+            max-height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .infringement-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, #E53935, #C62828);
+            color: white;
+        }
+
+        .infringement-modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .infringement-modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .infringement-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .infringement-modal-body {
+            padding: 25px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .infringement-resource-info {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .infringement-resource-info img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .infringement-resource-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .infringement-resource-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .infringement-form-group {
+            margin-bottom: 20px;
+        }
+
+        .infringement-form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .infringement-form-group label i {
+            margin-right: 6px;
+            color: #E53935;
+        }
+
+        .infringement-type-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .infringement-type-option {
+            cursor: pointer;
+        }
+
+        .infringement-type-option input {
+            display: none;
+        }
+
+        .infringement-type-card {
+            padding: 16px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .infringement-type-card i {
+            font-size: 22px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .infringement-type-card span {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .infringement-type-option input:checked + .infringement-type-card {
+            border-color: #E53935;
+            background: #FFEBEE;
+        }
+
+        .infringement-type-option input:checked + .infringement-type-card i,
+        .infringement-type-option input:checked + .infringement-type-card span {
+            color: #E53935;
+        }
+
+        .infringement-form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .infringement-form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .infringement-char-count {
+            display: block;
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .infringement-evidence-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .infringement-evidence-area:hover {
+            border-color: var(--primary-color);
+            background: var(--secondary-color);
+        }
+
+        .infringement-evidence-area i {
+            font-size: 32px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .infringement-evidence-area p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .infringement-evidence-area span {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .infringement-form-error {
+            color: #E53935;
+            font-size: 14px;
+            margin-bottom: 15px;
+            min-height: 20px;
+        }
+
+        .infringement-form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .infringement-form-actions .cancel-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .infringement-form-actions .cancel-btn:hover {
+            background: var(--border-color);
+        }
+
+        .infringement-form-actions .submit-btn {
+            flex: 2;
+            padding: 14px;
+            background: linear-gradient(135deg, #E53935, #C62828);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .infringement-form-actions .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);
+        }
+
+        .infringement-form-actions .submit-btn:disabled {
+            background: #BDBDBD;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .infringement-form-actions .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        .infringement-form-actions .submit-btn .btn-loading {
+            display: none;
+        }
+
+        .infringement-form-actions .submit-btn.loading .btn-loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .infringement-success {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .infringement-success i {
+            font-size: 60px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .infringement-success h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .infringement-success p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .infringement-success .report-id {
+            background: var(--bg-light);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .infringement-success .report-id strong {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .resource-detail-main {
+                grid-template-columns: 1fr;
+            }
+
+            .infringement-type-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .infringement-modal-container {
+                width: 100%;
+                max-height: 100%;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body class="resources-page">
+    <header class="resources-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link active">资源共享</a>
+                <a href="intelligence.html" class="nav-link">留学情报</a>
+                <a href="forum.html" class="nav-link">留子论坛</a>
+                <a href="points-center.html" class="nav-link">积分中心</a>
+            </nav>
+            <div class="header-actions">
+                <span class="lang-switch">CN / EN</span>
+                <button class="upload-resource-btn" id="upload-resource-btn">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    上传资源
+                </button>
+                <div id="notification-container"></div>
+                <div id="auth-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="resources-hero">
+            <h1>资源中心</h1>
+            <p>为全球留学生精心策展的学术资源与工具库。从高分论文范本到前沿语言工具，我们协助你攻克海外学业的每一道难关。</p>
+        </section>
+
+        <section class="search-section">
+            <div class="search-wrapper">
+                <input type="text" id="search-input" placeholder="搜索关键词，如：雅思、EE范文、申请攻略..." class="search-input">
+                <button class="filter-btn" id="filter-btn">
+                    <span class="dot"></span>
+                    全部资源
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </section>
+
+        <div class="tab-section">
+            <div class="content-tabs">
+                <button class="content-tab active" data-tab="resources">
+                    <i class="fas fa-share-alt"></i> 资源共享
+                </button>
+                <button class="content-tab" data-tab="bounties">
+                    <i class="fas fa-gift"></i> 资源悬赏
+                </button>
+            </div>
+            <button class="publish-bounty-btn" id="publish-bounty-btn">
+                <i class="fas fa-plus"></i> 发布悬赏
+            </button>
+        </div>
+
+        <p style="font-size: 13px; color: var(--text-secondary); margin-top: -15px; margin-bottom: 25px;">
+            <i class="fas fa-info-circle" style="margin-right: 5px;"></i>切换标签查看资源共享或资源悬赏，发布悬赏可获得社区酬金奖励
+        </p>
+
+        <div class="resources-grid">
+            <div class="main-content">
+                <div class="resource-list-wrapper" id="resource-list-wrapper">
+                    <div class="resource-list-header">
+                        <h2>最新资源</h2>
+                        <div class="view-toggle">
+                            <button class="active" data-view="grid" title="网格视图">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button data-view="list" title="列表视图">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="resource-grid" id="resource-grid">
+                    </div>
+                </div>
+
+                <div class="bounty-list" id="bounty-list">
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-card sponsored">
+                    <span class="sponsored-badge">SPONSORED</span>
+                    <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=students%20studying%20in%20library%20professional%20academic&image_size=landscape_4_3" alt="Sponsored">
+                    <h4>AI助学资源</h4>
+                    <p>包含Notebook LM专题知识库、IMA专属知识库等特定资源。</p>
+                    <button>免费咨询 FREE CONSULTING</button>
+                </div>
+
+                <div class="sidebar-card" style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 15px;">热门标签</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <span class="tag-suggestion" style="cursor: pointer;" onclick="filterByTag('IB')">IB</span>
+                        <span class="tag-suggestion" style="cursor: pointer;" onclick="filterByTag('AP')">AP</span>
+                        <span class="tag-suggestion" style="cursor: pointer;" onclick="filterByTag('A-Level')">A-Level</span>
+                        <span class="tag-suggestion" style="cursor: pointer;" onclick="filterByTag('数学')">数学</span>
+                        <span class="tag-suggestion" style="cursor: pointer;" onclick="filterByTag('物理')">物理</span>
+                        <span class="tag-suggestion" style="cursor: pointer;" onclick="filterByTag('化学')">化学</span>
+                        <span class="tag-suggestion" style="cursor: pointer;" onclick="filterByTag('经济')">经济</span>
+                        <span class="tag-suggestion" style="cursor: pointer;" onclick="filterByTag('真题')">真题</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-bookmarks" id="sidebar-bookmarks">
+                    <div class="sidebar-bookmarks-header">
+                        <h3 class="sidebar-bookmarks-title">
+                            <i class="fas fa-star"></i>
+                            我的收藏
+                        </h3>
+                        <a href="profile.html?tab=bookmarks" class="sidebar-bookmarks-link">查看全部</a>
+                    </div>
+                    <div class="sidebar-bookmarks-list" id="sidebar-bookmarks-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fas fa-landmark"></i>
+                        <span>留情局</span>
+                    </div>
+                    <p>Intelligence Bureau for Overseas Study. 致力于打破留学信息差。</p>
+                </div>
+                <div class="footer-links">
+                    <div>
+                        <h4>关于我们</h4>
+                        <ul>
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>帮助中心</h4>
+                        <ul>
+                            <li><a href="#">Study Guide</a></li>
+                            <li><a href="#">Contact Support</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 留情局 Intelligence Bureau for Overseas Study. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="report-modal" id="report-modal">
+        <div class="report-modal-overlay" onclick="closeReportModal()"></div>
+        <div class="report-modal-container">
+            <div class="report-modal-header">
+                <h2><i class="fas fa-flag"></i> 举报资源</h2>
+                <button class="report-modal-close" onclick="closeReportModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="report-modal-body" id="report-modal-body">
+            </div>
+        </div>
+    </div>
+
+    <div class="infringement-modal" id="infringement-modal">
+        <div class="infringement-overlay" onclick="closeInfringementModal()"></div>
+        <div class="infringement-modal-container">
+            <div class="infringement-modal-header">
+                <h2><i class="fas fa-balance-scale"></i> 侵权投诉</h2>
+                <button class="infringement-modal-close" onclick="closeInfringementModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="infringement-modal-body" id="infringement-modal-body">
+            </div>
+        </div>
+    </div>
+
+    <div class="resource-detail-modal" id="resource-detail-modal">
+        <div class="resource-detail-overlay" onclick="closeResourceDetailModal()"></div>
+        <div class="resource-detail-container">
+            <div class="resource-detail-header">
+                <h2 id="detail-modal-title"></h2>
+                <button class="resource-detail-close" onclick="closeResourceDetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="resource-detail-body" id="resource-detail-body">
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/security-utils.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/resource-service.js"></script>
+    <script src="js/points-service.js"></script>
+    <script src="js/bounty-service.js"></script>
+    <script src="js/bookmark-service.js"></script>
+    <script src="js/forum-service.js"></script>
+    <script src="js/copyright-service.js"></script>
+    <script src="js/protection-service.js"></script>
+    <script src="js/upload-modal.js"></script>
+    <script src="js/bounty-modal.js"></script>
+    <script src="js/header-search.js"></script>
+    <script src="js/post-quality-service.js"></script>
+    <script src="js/quality-badge.js"></script>
+    <script src="js/moderation-service.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let authModal, userMenu, uploadModal, bountyModal, headerSearch;
+        let currentFilter = 'all';
+        let currentView = 'grid';
+        let currentTab = 'resources';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            authModal = new AuthModal();
+            userMenu = new UserMenu('auth-container');
+            uploadModal = new UploadModal();
+            bountyModal = new BountyModal();
+            headerSearch = initSearch('auth-container');
+            initNotificationCenter('notification-container');
+
+            renderResources();
+            renderBounties();
+            renderSidebarBookmarks();
+
+            document.addEventListener('click', function(e) {
+                const card = e.target.closest('.resource-card');
+                const bookmarkBtn = e.target.closest('.resource-bookmark-btn');
+                const reportBtn = e.target.closest('.resource-report-btn');
+                if (card && !bookmarkBtn && !reportBtn) {
+                    const resourceId = card.dataset.resourceId;
+                    if (resourceId) {
+                        showResourceDetailModal(resourceId);
+                    }
+                }
+            });
+
+            document.querySelectorAll('.content-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.content-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentTab = tab.dataset.tab;
+                    
+                    if (currentTab === 'resources') {
+                        document.getElementById('resource-list-wrapper').classList.remove('hidden');
+                        document.getElementById('bounty-list').classList.remove('active');
+                    } else {
+                        document.getElementById('resource-list-wrapper').classList.add('hidden');
+                        document.getElementById('bounty-list').classList.add('active');
+                    }
+                });
+            });
+
+            document.getElementById('publish-bounty-btn').addEventListener('click', () => {
+                bountyModal.open();
+            });
+
+            const uploadBtn = document.getElementById('upload-resource-btn');
+            uploadBtn.addEventListener('click', () => {
+                uploadModal.open();
+            });
+
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                renderResources(e.target.value);
+            });
+
+            document.querySelectorAll('.view-toggle button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentView = btn.dataset.view;
+                    renderResources();
+                });
+            });
+
+            window.addEventListener('resourceUploaded', () => {
+                renderResources();
+            });
+        });
+
+        function renderResources(searchTerm = '') {
+            const grid = document.getElementById('resource-grid');
+            let resources = ResourceService.getResources();
+
+            if (currentFilter !== 'all') {
+                resources = resources.filter(r => r.category === currentFilter);
+            }
+
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                resources = resources.filter(r => 
+                    r.title.toLowerCase().includes(term) ||
+                    r.description.toLowerCase().includes(term) ||
+                    (r.tags && r.tags.some(t => t.toLowerCase().includes(term)))
+                );
+            }
+
+            if (resources.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-resources" style="grid-column: 1 / -1;">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>暂无资源</h3>
+                        <p>成为第一个分享资源的人吧！</p>
+                        <button onclick="uploadModal.open()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            上传资源
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.className = `resource-grid ${currentView === 'list' ? 'list-view' : ''}`;
+
+            grid.innerHTML = resources.map(resource => {
+                const currentUser = AuthService.getCurrentUser();
+                const isBookmarked = currentUser && BookmarkService.isBookmarked(currentUser.id, `resource_${resource.id}`);
+                const starIcon = isBookmarked ? 'fas fa-star' : 'far fa-star';
+                const starClass = isBookmarked ? 'resource-bookmark-btn bookmarked' : 'resource-bookmark-btn';
+                const copyrightType = resource.copyrightType || 'original';
+                const copyrightBadge = getCopyrightBadgeHTML(copyrightType);
+                
+                // 获取下载积分（兼容新旧数据）
+                const downloadPoints = resource.downloadPoints !== undefined 
+                    ? resource.downloadPoints 
+                    : (resource.accessLevel && resource.accessLevel.minPoints !== undefined 
+                        ? resource.accessLevel.minPoints 
+                        : 0);
+                
+                // 积分标签样式
+                const pointsBadge = downloadPoints > 0 
+                    ? `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: #FFF3E0; color: #FFA000; border-radius: 8px; font-size: 11px; font-weight: 600;"><i class="fas fa-coins"></i>${downloadPoints} 积分</span>` 
+                    : `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: #E8F5E9; color: #4CAF50; border-radius: 8px; font-size: 11px; font-weight: 600;"><i class="fas fa-gift"></i>免费</span>`;
+
+                // 质量评分
+                let qualityBadgeHtml = '';
+                if (typeof PostQualityService !== 'undefined') {
+                    const qualityScore = PostQualityService.calculateQualityScore(resource, {
+                        views: resource.views || 0,
+                        likes: resource.likes || 0,
+                        downloads: resource.downloads || 0
+                    });
+                    const qualityLevel = PostQualityService.getQualityLevel(qualityScore);
+                    if (qualityScore >= 40) {
+                        qualityBadgeHtml = `
+                            <span class="quality-badge" onclick="QualityBadgeUI.showQualityDetail('${resource.id}')" 
+                                  style="background: ${qualityLevel.bgColor}; color: ${qualityLevel.color}; 
+                                         padding: 2px 8px; border-radius: 8px; font-size: 11px; 
+                                         font-weight: 600; cursor: pointer;">
+                                ${qualityLevel.icon} ${qualityLevel.label}
+                            </span>
+                        `;
+                    }
+                }
+
+                return `
+                <div class="resource-card" data-resource-id="${resource.id}">
+                    <img src="${resource.screenshots && resource.screenshots[0] ? resource.screenshots[0] : 'https://via.placeholder.com/400x300?text=No+Image'}" 
+                         alt="${resource.title}" 
+                         class="resource-card-image">
+                    <div class="resource-card-content">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <span class="resource-card-type ${resource.category}">${resource.type}</span>
+                            <div style="display: flex; gap: 6px;">
+                                ${copyrightBadge}
+                                ${pointsBadge}
+                                ${qualityBadgeHtml}
+                            </div>
+                        </div>
+                        <h3>${SecurityUtils.escapeHtml(resource.title)}</h3>
+                        <p>${SecurityUtils.escapeHtml(resource.description || '')}</p>
+                        <div class="resource-tags">
+                            ${(resource.tags || []).slice(0, 3).map(tag => `<span class="resource-tag">${SecurityUtils.escapeHtml(tag)}</span>`).join('')}
+                        </div>
+                        <div class="resource-rating-container">
+                            ${renderRatingComponent(resource.id).replace('<div class="star-rating-wrapper ', '<div class="star-rating-wrapper resource-rating-inline ')}
+                        </div>
+                        <div class="resource-card-footer">
+                            <div class="resource-author">
+                                <img src="${resource.author?.avatar || 'https://via.placeholder.com/50x50'}" alt="${SecurityUtils.escapeHtml(resource.author?.nickname || '')}">
+                                <span>${SecurityUtils.escapeHtml(resource.author?.nickname || '匿名用户')}</span>
+                                ${resource.author?.verified ? '<span style="margin-left: 4px; padding: 1px 6px; background: #E3F2FD; color: #1976D2; border-radius: 4px; font-size: 10px;"><i class="fas fa-check-circle"></i></span>' : ''}
+                            </div>
+                            <div class="resource-card-actions">
+                                <div class="resource-stats">
+                                    <span><i class="fas fa-eye"></i> ${resource.views || 0}</span>
+                                    <span><i class="fas fa-download"></i> ${resource.downloads || 0}</span>
+                                    <span><i class="fas fa-heart"></i> ${resource.likes || 0}</span>
+                                </div>
+                                <button class="${starClass}" data-resource-id="${resource.id}" onclick="event.stopPropagation(); toggleResourceBookmark('${resource.id}')">
+                                    <i class="${starIcon}"></i>
+                                </button>
+                                <button class="resource-report-btn" onclick="event.stopPropagation(); showReportModal('${resource.id}')" title="举报">
+                                    <i class="fas fa-flag"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function renderBounties() {
+            const list = document.getElementById('bounty-list');
+            const bounties = BountyService.getBounties();
+
+            if (bounties.length === 0) {
+                list.innerHTML = `
+                    <div class="no-bounties">
+                        <i class="fas fa-gift"></i>
+                        <h3>暂无悬赏</h3>
+                        <p>成为第一个发布悬赏的人吧！</p>
+                        <button onclick="alert('悬赏发布功能开发中，敬请期待！')">
+                            <i class="fas fa-plus"></i>
+                            发布悬赏
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = bounties.map(bounty => `
+                <div class="bounty-card" onclick="viewBounty('${bounty.id}')">
+                    <div class="bounty-card-header">
+                        <div>
+                            <h3 class="bounty-card-title">${bounty.title}</h3>
+                            <span class="bounty-card-category">${bounty.category}</span>
+                        </div>
+                        <span class="bounty-status ${BountyService.getStatusClass(bounty.status)}">
+                            ${BountyService.getStatusText(bounty.status)}
+                        </span>
+                    </div>
+                    <p class="bounty-card-description">${bounty.description}</p>
+                    <div class="bounty-tags">
+                        ${(bounty.tags || []).map(tag => `<span class="bounty-tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="bounty-card-footer">
+                        <div class="bounty-reward">
+                            <span class="bounty-reward-amount">${bounty.reward > 0 ? bounty.reward : '面议'} 积分</span>
+                            ${bounty.reward > 0 ? '<span class="bounty-reward-label">酬金</span>' : ''}
+                        </div>
+                        <div class="bounty-meta">
+                            <span><i class="fas fa-user"></i> ${bounty.author?.nickname || '匿名用户'}</span>
+                            <span><i class="fas fa-comment"></i> ${bounty.responses || 0}</span>
+                            <span><i class="fas fa-clock"></i> ${BountyService.formatDate(bounty.createdAt)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewResource(id) {
+            const resource = ResourceService.getResourceById(id);
+            if (!resource) {
+                alert('资源不存在');
+                return;
+            }
+            
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) {
+                alert('请先登录');
+                if (typeof authModal !== 'undefined') {
+                    authModal.open('login');
+                }
+                return;
+            }
+
+            if (typeof ProtectionService !== 'undefined') {
+                const protectionCheck = ProtectionService.canDownload(currentUser.id, id);
+                if (!protectionCheck.canDownload) {
+                    alert(protectionCheck.reason);
+                    return;
+                }
+            }
+            
+            const downloadInfo = resource.category === 'physical' 
+                ? `\n联系方式: ${resource.contact || '暂无'}\n取货地点: ${resource.location || '暂无'}`
+                : `\n下载地址: ${resource.link || '暂无'}`;
+
+            const accessLevel = resource.accessLevel || { minPoints: 0, level: 'basic' };
+            const costInfo = accessLevel.minPoints > 0 ? `\n访问门槛：${accessLevel.minPoints}积分` : '';
+            
+            if (confirm(`确认下载"${resource.title}"？\n消耗积分：10（资源发布者获得7积分）${costInfo}\n${downloadInfo}`)) {
+                const result = ResourceService.downloadResource(currentUser.id, id);
+                
+                if (!result.success) {
+                    alert(result.error);
+                    return;
+                }
+                
+                renderResources();
+                
+                if (resource.category !== 'physical' && resource.link) {
+                    window.open(resource.link, '_blank');
+                }
+                
+                alert('下载成功！-10 积分（发布者获得+7）');
+            }
+        }
+
+        function viewBounty(id) {
+            alert('悬赏详情页功能开发中，敬请期待！');
+        }
+
+        function filterByTag(tag) {
+            document.getElementById('search-input').value = tag;
+            renderResources(tag);
+        }
+
+        function toggleResourceBookmark(resourceId) {
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) {
+                authModal.open('login');
+                return;
+            }
+
+            BookmarkService.toggleBookmark(currentUser.id, 'resource', `resource_${resourceId}`);
+            renderResources();
+        }
+
+        function renderSidebarBookmarks() {
+            const container = document.getElementById('sidebar-bookmarks-list');
+            if (!container) return;
+
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) {
+                container.innerHTML = `
+                    <div class="sidebar-bookmarks-empty">
+                        <i class="fas fa-user-circle"></i>
+                        <p>登录后查看收藏</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const bookmarks = BookmarkService.getBookmarks(currentUser.id);
+            const recentBookmarks = bookmarks.slice(0, 5);
+
+            if (recentBookmarks.length === 0) {
+                container.innerHTML = `
+                    <div class="sidebar-bookmarks-empty">
+                        <i class="far fa-star"></i>
+                        <p>暂无收藏内容</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const bookmarkItems = recentBookmarks.map(itemId => {
+                let type = 'post';
+                let title = '未知内容';
+                let link = '#';
+
+                if (itemId.startsWith('post_')) {
+                    type = 'post';
+                    const post = ForumService?.getPostById(itemId.replace('post_', ''));
+                    if (post) {
+                        title = post.title;
+                        link = `forum.html?post=${itemId.replace('post_', '')}`;
+                    }
+                } else if (itemId.startsWith('resource_')) {
+                    type = 'resource';
+                    const resource = ResourceService.getResourceById(itemId.replace('resource_', ''));
+                    if (resource) {
+                        title = SecurityUtils.escapeHtml(resource.title);
+                        link = `resources.html?resource=${itemId.replace('resource_', '')}`;
+                    }
+                } else if (itemId.startsWith('bounty_')) {
+                    type = 'bounty';
+                    const bounty = BountyService?.getBountyById(itemId.replace('bounty_', ''));
+                    if (bounty) {
+                        title = bounty.title;
+                        link = `bounty.html?bounty=${itemId.replace('bounty_', '')}`;
+                    }
+                }
+
+                const typeLabels = {
+                    post: '帖子',
+                    resource: '资源',
+                    bounty: '悬赏'
+                };
+
+                const typeIcons = {
+                    post: 'fa-comments',
+                    resource: 'fa-gift',
+                    bounty: 'fa-coins'
+                };
+
+                return `
+                    <a href="${link}" class="sidebar-bookmark-item">
+                        <div class="sidebar-bookmark-icon ${type}">
+                            <i class="fas ${typeIcons[type]}"></i>
+                        </div>
+                        <div class="sidebar-bookmark-content">
+                            <div class="sidebar-bookmark-title">${title}</div>
+                            <div class="sidebar-bookmark-type">${typeLabels[type]}</div>
+                        </div>
+                    </a>
+                `;
+            });
+
+            container.innerHTML = bookmarkItems.join('');
+        }
+
+        const REPORT_TYPES = [
+            { id: 'inappropriate', label: '内容违规', icon: 'fa-exclamation-triangle' },
+            { id: 'fake', label: '虚假信息', icon: 'fa-times-circle' },
+            { id: 'spam', label: '垃圾广告', icon: 'fa-trash-alt' },
+            { id: 'copyright', label: '侵权盗版', icon: 'fa-copyright' },
+            { id: 'low_quality', label: '低质量内容', icon: 'fa-thumbs-down' },
+            { id: 'other', label: '其他问题', icon: 'fa-ellipsis-h' }
+        ];
+
+        const INFRINGEMENT_TYPES = [
+            { id: 'plagiarism', label: '抄袭', icon: 'fa-copy' },
+            { id: 'piracy', label: '盗版', icon: 'fa-ban' },
+            { id: 'improper_citation', label: '引用不当', icon: 'fa-quote-left' }
+        ];
+
+        const COPYRIGHT_TYPE_CONFIG = {
+            original: { label: '原创', icon: 'fa-heart', class: 'original' },
+            reprint: { label: '转载', icon: 'fa-share-alt', class: 'reprint' },
+            authorized: { label: '授权', icon: 'fa-check-circle', class: 'authorized' },
+            public_domain: { label: '公共领域', icon: 'fa-globe', class: 'public_domain' },
+            cc: { label: 'CC协议', icon: 'fa-creative-commons', class: 'cc' }
+        };
+
+        function getCopyrightBadgeHTML(copyrightType) {
+            const config = COPYRIGHT_TYPE_CONFIG[copyrightType] || COPYRIGHT_TYPE_CONFIG.original;
+            return `
+                <span class="copyright-badge ${config.class}" title="${config.label}">
+                    <i class="fas ${config.icon}"></i>
+                    ${config.label}
+                </span>
+            `;
+        }
+
+        function getCopyrightText(copyrightType) {
+            const config = COPYRIGHT_TYPE_CONFIG[copyrightType] || COPYRIGHT_TYPE_CONFIG.original;
+            return config.label;
+        }
+
+        let currentReportResourceId = null;
+
+        function showReportModal(resourceId) {
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) {
+                authModal.open('login');
+                return;
+            }
+
+            const resource = ResourceService.getResourceById(resourceId);
+            if (!resource) {
+                alert('资源不存在');
+                return;
+            }
+
+            currentReportResourceId = resourceId;
+
+            const modalBody = document.getElementById('report-modal-body');
+            modalBody.innerHTML = `
+                <div class="report-resource-info">
+                    <img src="${resource.screenshots && resource.screenshots[0] ? resource.screenshots[0] : 'https://via.placeholder.com/60x60?text=No+Image'}" alt="${SecurityUtils.escapeHtml(resource.title)}">
+                    <div>
+                        <h4>${SecurityUtils.escapeHtml(resource.title)}</h4>
+                        <p>${SecurityUtils.escapeHtml(resource.author?.nickname || '匿名用户')} · ${SecurityUtils.escapeHtml(resource.type || '电子资源')}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> 举报类型（必选）</label>
+                    <div class="report-type-selector">
+                        ${REPORT_TYPES.map(type => `
+                            <label class="report-type-option">
+                                <input type="radio" name="reportType" value="${type.id}">
+                                <div class="report-type-card">
+                                    <i class="fas ${type.icon}"></i>
+                                    <span>${type.label}</span>
+                                </div>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-edit"></i> 详细说明</label>
+                    <textarea id="report-description" placeholder="请详细描述您举报的问题，我们将尽快审核处理..." maxlength="500"></textarea>
+                    <span class="char-count"><span id="report-char-count">0</span>/500</span>
+                </div>
+                <div class="form-error" id="report-error"></div>
+                <div class="form-actions">
+                    <button class="cancel-btn" onclick="closeReportModal()">取消</button>
+                    <button class="submit-btn" id="report-submit-btn" onclick="submitReport()">
+                        <span class="btn-text"><i class="fas fa-paper-plane"></i> 提交举报</span>
+                        <span class="btn-loading"><i class="fas fa-spinner fa-spin"></i> 提交中...</span>
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('report-description').addEventListener('input', function() {
+                document.getElementById('report-char-count').textContent = this.value.length;
+            });
+
+            document.getElementById('report-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeReportModal() {
+            document.getElementById('report-modal').classList.remove('active');
+            document.body.style.overflow = '';
+            currentReportResourceId = null;
+        }
+
+        let currentDetailResourceId = null;
+
+        function showResourceDetailModal(resourceId) {
+            const resource = ResourceService.getResourceById(resourceId);
+            if (!resource) {
+                alert('资源不存在');
+                return;
+            }
+
+            currentDetailResourceId = resourceId;
+
+            document.getElementById('detail-modal-title').innerHTML = `
+                <span class="resource-card-type ${resource.category}">${SecurityUtils.escapeHtml(resource.type)}</span>
+                ${SecurityUtils.escapeHtml(resource.title)}
+            `;
+
+            const copyrightType = resource.copyrightType || 'original';
+            const copyrightConfig = COPYRIGHT_TYPE_CONFIG[copyrightType] || COPYRIGHT_TYPE_CONFIG.original;
+
+            // 获取资源下载积分（兼容新旧数据结构）
+            const downloadPoints = resource.downloadPoints !== undefined 
+                ? resource.downloadPoints 
+                : (resource.accessLevel && resource.accessLevel.minPoints !== undefined 
+                    ? resource.accessLevel.minPoints 
+                    : 0);
+
+            // 设置积分显示配置
+            const pointsConfig = downloadPoints === 0 
+                ? { label: '免费', color: '#4CAF50', bgColor: '#E8F5E9' } 
+                : { label: '需要积分', color: '#FFA000', bgColor: '#FFF3E0' };
+
+            const currentUser = AuthService.getCurrentUser();
+            const userPoints = currentUser ? PointsService.getBalance(currentUser.id) : 0;
+            
+            // 检查是否可以下载
+            let canDownload = true;
+            let downloadCheck = null;
+            if (currentUser && typeof ProtectionService !== 'undefined') {
+                downloadCheck = ProtectionService.canDownload(currentUser.id, resource, userPoints);
+                canDownload = downloadCheck.allowed;
+            }
+
+            const modalBody = document.getElementById('resource-detail-body');
+            modalBody.innerHTML = `
+                <div class="resource-detail-main">
+                    <div class="resource-detail-images">
+                        ${resource.screenshots && resource.screenshots.length > 0
+                            ? `<img src="${resource.screenshots[0]}" alt="${SecurityUtils.escapeHtml(resource.title)}">`
+                            : `<div style="width: 100%; height: 200px; background: var(--bg-light); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-image" style="font-size: 48px; color: var(--text-light);"></i>
+                               </div>`
+                        }
+                    </div>
+                    <div class="resource-detail-info">
+                        <p>${SecurityUtils.escapeHtml(resource.description || '暂无描述')}</p>
+                        <div class="resource-tags" style="margin-bottom: 15px;">
+                            ${(resource.tags || []).map(tag => `<span class="resource-tag">${SecurityUtils.escapeHtml(tag)}</span>`).join('')}
+                        </div>
+                        <div class="resource-stats" style="gap: 20px; margin-bottom: 15px;">
+                            <span><i class="fas fa-eye"></i> ${resource.views || 0} 浏览</span>
+                            <span><i class="fas fa-download"></i> ${resource.downloads || 0} 下载</span>
+                            <span><i class="fas fa-heart"></i> ${resource.likes || 0} 收藏</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: ${pointsConfig.bgColor}; border-radius: 10px; margin-bottom: 20px;">
+                            <i class="fas fa-coins" style="color: ${pointsConfig.color};"></i>
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600; color: ${pointsConfig.color};">${pointsConfig.label}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">
+                                    ${downloadPoints > 0 ? `下载需要 ${downloadPoints} 积分` : '免费下载'}
+                                </div>
+                            </div>
+                        </div>
+                        ${resource.category !== 'physical' ? `
+                        <button onclick="viewResource('${resourceId}')" 
+                                style="width: 100%; padding: 14px; background: ${canDownload ? 'var(--primary-color)' : '#BDBDBD'}; 
+                                       color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: ${canDownload ? 'pointer' : 'not-allowed'};
+                                       display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fas fa-download"></i>
+                            下载资源${downloadPoints > 0 ? `（消耗 ${downloadPoints} 积分）` : '（免费）'}
+                        </button>
+                        ${!currentUser ? `<p style="text-align: center; font-size: 13px; color: var(--text-light); margin-top: 10px;">请先登录</p>` : 
+                          (canDownload === false && downloadCheck && downloadCheck.reason === 'insufficient_points') ? 
+                          `<p style="text-align: center; font-size: 13px; color: #E53935; margin-top: 10px;">${downloadCheck.message}</p>` : ''}
+                        ` : `
+                        <div style="padding: 15px; background: var(--bg-light); border-radius: 10px;">
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">联系方式</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);"><i class="fas fa-map-marker-alt" style="margin-right: 8px;"></i>${resource.location || '暂无'}</div>
+                            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;"><i class="fas fa-phone" style="margin-right: 8px;"></i>${resource.contact || '暂无'}</div>
+                        </div>
+                        `}
+                    </div>
+                </div>
+                <div class="copyright-info-section" style="margin-top: 20px;">
+                    <h4><i class="fas fa-copyright"></i> 版权信息</h4>
+                    <div class="copyright-info-item">
+                        <span class="copyright-info-label">版权类型</span>
+                        <span class="copyright-info-value">
+                            <span class="copyright-badge ${copyrightConfig.class}" style="margin-left: 0;">
+                                <i class="fas ${copyrightConfig.icon}"></i>
+                                ${copyrightConfig.label}
+                            </span>
+                        </span>
+                    </div>
+                    ${resource.originalAuthor ? `
+                    <div class="copyright-info-item">
+                        <span class="copyright-info-label">原作者</span>
+                        <span class="copyright-info-value">${resource.originalAuthor}</span>
+                    </div>
+                    ` : ''}
+                    ${resource.copyrightLicense ? `
+                    <div class="copyright-info-item">
+                        <span class="copyright-info-label">授权协议</span>
+                        <span class="copyright-info-value">${resource.copyrightLicense}</span>
+                    </div>
+                    ` : ''}
+                    <div class="copyright-info-item">
+                        <span class="copyright-info-label">上传者</span>
+                        <span class="copyright-info-value">${resource.author?.nickname || resource.uploaderName || '匿名用户'}</span>
+                    </div>
+                    <div class="copyright-info-item">
+                        <span class="copyright-info-label">上传时间</span>
+                        <span class="copyright-info-value">${ResourceService.formatDate(resource.createdAt)}</span>
+                    </div>
+                </div>
+                <button class="report-infringement-btn" onclick="closeResourceDetailModal(); setTimeout(() => showInfringementModal('${resourceId}'), 100);">
+                    <i class="fas fa-balance-scale"></i>
+                    投诉侵权
+                </button>
+            `;
+
+            document.getElementById('resource-detail-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeResourceDetailModal() {
+            document.getElementById('resource-detail-modal').classList.remove('active');
+            document.body.style.overflow = '';
+            currentDetailResourceId = null;
+        }
+
+        let currentInfringementResourceId = null;
+
+        function showInfringementModal(resourceId) {
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) {
+                authModal.open('login');
+                return;
+            }
+
+            const resource = ResourceService.getResourceById(resourceId);
+            if (!resource) {
+                alert('资源不存在');
+                return;
+            }
+
+            if (resource.uploaderId === currentUser.id) {
+                alert('不能投诉自己上传的资源');
+                return;
+            }
+
+            currentInfringementResourceId = resourceId;
+
+            const modalBody = document.getElementById('infringement-modal-body');
+            modalBody.innerHTML = `
+                <div class="infringement-resource-info">
+                    <img src="${resource.screenshots && resource.screenshots[0] ? resource.screenshots[0] : 'https://via.placeholder.com/60x60?text=No+Image'}" alt="${SecurityUtils.escapeHtml(resource.title)}">
+                    <div>
+                        <h4>${SecurityUtils.escapeHtml(resource.title)}</h4>
+                        <p>上传者: ${SecurityUtils.escapeHtml(resource.author?.nickname || resource.uploaderName || '匿名用户')}</p>
+                    </div>
+                </div>
+                <div class="infringement-form-group">
+                    <label><i class="fas fa-exclamation-circle"></i> 侵权类型（必选）</label>
+                    <div class="infringement-type-grid">
+                        ${INFRINGEMENT_TYPES.map(type => `
+                            <label class="infringement-type-option">
+                                <input type="radio" name="infringementType" value="${type.id}">
+                                <div class="infringement-type-card">
+                                    <i class="fas ${type.icon}"></i>
+                                    <span>${type.label}</span>
+                                </div>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="infringement-form-group">
+                    <label><i class="fas fa-edit"></i> 投诉原因（必填）</label>
+                    <textarea id="infringement-reason" placeholder="请详细描述侵权情况，包括但不限于：
+• 原始作品名称和来源
+• 具体侵权内容和位置
+• 您的联系方式（邮箱）
+• 其他相关说明..." maxlength="500"></textarea>
+                    <span class="infringement-char-count"><span id="infringement-reason-count">0</span>/500</span>
+                </div>
+                <div class="infringement-form-group">
+                    <label><i class="fas fa-image"></i> 证据材料（可选）</label>
+                    <div class="infringement-evidence-area" id="evidence-upload-area" onclick="document.getElementById('evidence-input').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>点击上传证据截图或文件</p>
+                        <span>支持 JPG、PNG、PDF 格式，最多 5MB</span>
+                    </div>
+                    <input type="file" id="evidence-input" accept="image/*,.pdf" style="display: none;">
+                    <div id="evidence-preview" style="margin-top: 10px;"></div>
+                </div>
+                <div class="infringement-form-error" id="infringement-error"></div>
+                <div class="infringement-form-actions">
+                    <button class="cancel-btn" onclick="closeInfringementModal()">取消</button>
+                    <button class="submit-btn" id="infringement-submit-btn" onclick="submitInfringementReport()">
+                        <span class="btn-text"><i class="fas fa-paper-plane"></i> 提交投诉</span>
+                        <span class="btn-loading"><i class="fas fa-spinner fa-spin"></i> 提交中...</span>
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('infringement-reason').addEventListener('input', function() {
+                document.getElementById('infringement-reason-count').textContent = this.value.length;
+            });
+
+            document.getElementById('evidence-input').addEventListener('change', function(e) {
+                handleEvidenceUpload(e);
+            });
+
+            document.getElementById('infringement-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        let uploadedEvidence = [];
+
+        function handleEvidenceUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('文件大小不能超过 5MB');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                uploadedEvidence.push({
+                    name: file.name,
+                    data: event.target.result
+                });
+
+                const preview = document.getElementById('evidence-preview');
+                const fileIcon = file.type.startsWith('image/') ? 'fa-image' : 'fa-file-pdf';
+                preview.innerHTML += `
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg-light); border-radius: 8px; margin-bottom: 8px;">
+                        <i class="fas ${fileIcon}" style="font-size: 20px; color: var(--primary-color);"></i>
+                        <span style="flex: 1; font-size: 13px;">${file.name}</span>
+                        <button onclick="this.parentElement.remove(); uploadedEvidence = uploadedEvidence.filter(ev => ev.name !== '${file.name}')" style="background: none; border: none; cursor: pointer; color: var(--text-light);">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function closeInfringementModal() {
+            document.getElementById('infringement-modal').classList.remove('active');
+            document.body.style.overflow = '';
+            currentInfringementResourceId = null;
+            uploadedEvidence = [];
+        }
+
+        async function submitInfringementReport() {
+            const selectedType = document.querySelector('input[name="infringementType"]:checked');
+            const reason = document.getElementById('infringement-reason').value.trim();
+            const errorEl = document.getElementById('infringement-error');
+            const submitBtn = document.getElementById('infringement-submit-btn');
+
+            errorEl.textContent = '';
+
+            if (!selectedType) {
+                errorEl.textContent = '请选择侵权类型';
+                return;
+            }
+
+            if (!reason) {
+                errorEl.textContent = '请填写投诉原因';
+                return;
+            }
+
+            if (reason.length < 20) {
+                errorEl.textContent = '投诉原因请至少填写 20 个字符';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+
+            try {
+                const reportData = {
+                    resourceId: currentInfringementResourceId,
+                    infringementType: selectedType.value,
+                    reason: reason,
+                    description: reason,
+                    evidence: uploadedEvidence.map(ev => ev.name)
+                };
+
+                const result = await CopyrightService.submitReport(reportData);
+
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+
+                const modalBody = document.getElementById('infringement-modal-body');
+                modalBody.innerHTML = `
+                    <div class="infringement-success">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>投诉提交成功</h3>
+                        <p>感谢您对版权保护的支持！我们将尽快审核您的投诉。</p>
+                        <div class="report-id">
+                            投诉编号: <strong>${result.reportId}</strong>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-light);">投诉提交后，该资源将被暂时下架等待审核。</p>
+                        <button class="submit-btn" style="width: 100%; margin-top: 20px;" onclick="closeInfringementModal()">
+                            <span>确定</span>
+                        </button>
+                    </div>
+                `;
+            } catch (error) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                errorEl.textContent = error.message || '提交失败，请重试';
+            }
+        }
+
+        function submitReport() {
+            const selectedType = document.querySelector('input[name="reportType"]:checked');
+            const description = document.getElementById('report-description').value.trim();
+            const errorEl = document.getElementById('report-error');
+            const submitBtn = document.getElementById('report-submit-btn');
+
+            errorEl.textContent = '';
+
+            if (!selectedType) {
+                errorEl.textContent = '请选择举报类型';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+
+            setTimeout(() => {
+                const report = {
+                    id: 'report_' + Date.now(),
+                    resourceId: currentReportResourceId,
+                    type: selectedType.value,
+                    description: description,
+                    reporterId: AuthService.getCurrentUser().id,
+                    reporterNickname: AuthService.getCurrentUser().nickname,
+                    createdAt: new Date().toISOString(),
+                    status: 'pending'
+                };
+
+                const reports = JSON.parse(localStorage.getItem('liuqingju_reports') || '[]');
+                reports.unshift(report);
+                localStorage.setItem('liuqingju_reports', JSON.stringify(reports));
+
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+
+                const modalBody = document.getElementById('report-modal-body');
+                modalBody.innerHTML = `
+                    <div class="report-success">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>举报已提交</h3>
+                        <p>感谢您对社区环境的维护！我们将尽快审核您的举报，并在24小时内处理。</p>
+                        <button class="submit-btn" style="margin-top: 20px;" onclick="closeReportModal()">
+                            <span>确定</span>
+                        </button>
+                    </div>
+                `;
+            }, 1000);
+        }
+
+        function renderRatingComponent(resourceId, containerClass = '') {
+            const currentUser = AuthService.getCurrentUser();
+            const ratingInfo = ResourceService.getResourceRatingInfo(resourceId);
+            const userRating = currentUser ? ResourceService.getUserRating(resourceId, currentUser.id) : null;
+
+            const stars = [];
+            for (let i = 1; i <= 5; i++) {
+                const filled = i <= Math.round(ratingInfo.averageRating);
+                stars.push(`<span class="star ${filled ? 'filled' : ''}" data-rating="${i}"><i class="fas fa-star"></i></span>`);
+            }
+
+            const avgRating = parseFloat(ratingInfo.averageRating) || 0;
+
+            return `
+                <div class="star-rating-wrapper ${containerClass}">
+                    <div class="star-rating" data-resource-id="${resourceId}">
+                        ${stars.join('')}
+                    </div>
+                    <span class="rating-value">${avgRating > 0 ? avgRating.toFixed(1) : '暂无'}</span>
+                    ${ratingInfo.ratingCount > 0 ? `<span class="rating-count">(${ratingInfo.ratingCount}人评)</span>` : ''}
+                    <span class="rating-tooltip">点击评分</span>
+                </div>
+            `;
+        }
+
+        function rateResource(resourceId, rating) {
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) {
+                authModal.open('login');
+                return;
+            }
+
+            if (rating < 1 || rating > 5) {
+                return;
+            }
+
+            const result = ResourceService.setResourceRating(resourceId, rating, currentUser.id);
+
+            if (result.success) {
+                const starContainer = document.querySelector(`.star-rating[data-resource-id="${resourceId}"]`);
+                if (starContainer) {
+                    const stars = starContainer.querySelectorAll('.star');
+                    stars.forEach((star, index) => {
+                        if (index < rating) {
+                            star.classList.add('filled');
+                        } else {
+                            star.classList.remove('filled');
+                        }
+                    });
+                }
+
+                const wrapper = document.querySelector(`.star-rating-wrapper:has(.star-rating[data-resource-id="${resourceId}"])`);
+                if (wrapper) {
+                    const valueEl = wrapper.querySelector('.rating-value');
+                    const countEl = wrapper.querySelector('.rating-count');
+                    if (valueEl) {
+                        valueEl.textContent = parseFloat(result.rating.averageRating).toFixed(1);
+                    }
+                    if (countEl) {
+                        countEl.textContent = `(${result.rating.ratingCount}人评)`;
+                    } else if (result.rating.ratingCount > 0) {
+                        const countSpan = document.createElement('span');
+                        countSpan.className = 'rating-count';
+                        countSpan.textContent = `(${result.rating.ratingCount}人评)`;
+                        valueEl.after(countSpan);
+                    }
+                }
+
+                renderResources();
+            } else {
+                alert(result.error || '评分失败');
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            const star = e.target.closest('.star-rating .star');
+            if (star) {
+                const starContainer = star.closest('.star-rating');
+                const resourceId = starContainer.dataset.resourceId;
+                const rating = parseInt(star.dataset.rating);
+                if (resourceId && rating) {
+                    rateResource(resourceId, rating);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

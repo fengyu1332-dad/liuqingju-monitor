@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内容审核后台 - 留情局管理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-page {
+            min-height: 100vh;
+            background: var(--bg-light);
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px 0;
+            color: white;
+        }
+
+        .admin-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .admin-logo i {
+            color: var(--accent-color);
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-nav-item {
+            padding: 10px 18px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .admin-nav-item:hover,
+        .admin-nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .admin-nav-item.active {
+            background: var(--accent-color);
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .admin-page-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .admin-page-desc {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .stat-icon.pending {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .stat-icon.approved {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .stat-icon.rejected {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .stat-icon.total {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .stat-trend {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .stat-trend.up {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .stat-trend.down {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .admin-content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .admin-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-card-title i {
+            color: var(--primary-color);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border: none;
+            background: var(--bg-light);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-tab:hover {
+            background: var(--secondary-color);
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .moderation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .moderation-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .moderation-item:hover {
+            background: var(--secondary-color);
+        }
+
+        .moderation-item.pending {
+            border-left: 4px solid #FF9800;
+        }
+
+        .moderation-item.approved {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .moderation-item.rejected {
+            border-left: 4px solid #E53935;
+        }
+
+        .moderation-type-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .moderation-type-icon.post {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .moderation-type-icon.resource {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .moderation-type-icon.reply {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        .moderation-type-icon.report {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .moderation-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .moderation-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .moderation-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .moderation-badge.spam {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .moderation-badge.inappropriate {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .moderation-badge.copyright {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .moderation-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .moderation-meta span {
+            margin-right: 12px;
+        }
+
+        .moderation-preview {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .moderation-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 100px;
+        }
+
+        .action-btn-small {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .action-btn-small.approve {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .action-btn-small.approve:hover {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .action-btn-small.reject {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .action-btn-small.reject:hover {
+            background: #E53935;
+            color: white;
+        }
+
+        .action-btn-small.view {
+            background: var(--bg-light);
+            color: var(--text-secondary);
+        }
+
+        .action-btn-small.view:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .batch-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg-light);
+            border-radius: 12px;
+        }
+
+        .batch-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .batch-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .batch-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .batch-btn.secondary {
+            background: white;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .batch-btn.secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .select-all-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: auto;
+        }
+
+        .select-all-wrapper input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .select-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .chart-section {
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 20px 0;
+        }
+
+        .chart-bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-bar-fill {
+            width: 100%;
+            max-width: 60px;
+            background: linear-gradient(180deg, var(--primary-color), var(--accent-color));
+            border-radius: 8px 8px 0 0;
+            transition: height 0.5s ease;
+        }
+
+        .chart-bar-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .chart-bar-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .recent-activity {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .activity-icon.approve {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .activity-icon.reject {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .activity-icon.report {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: var(--secondary-color);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .page-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .admin-content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-nav {
+                display: none;
+            }
+
+            .filter-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body class="admin-page">
+    <header class="admin-header">
+        <div class="container">
+            <div class="admin-header-content">
+                <div class="admin-logo">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局管理后台</span>
+                </div>
+                <nav class="admin-nav">
+                    <a href="admin-moderation.html" class="admin-nav-item active">内容审核</a>
+                    <a href="admin-stats.html" class="admin-nav-item">数据统计</a>
+                    <a href="index.html" class="admin-nav-item">返回首页</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <h1 class="admin-page-title">内容审核管理</h1>
+        <p class="admin-page-desc">管理和审核社区内容，确保平台内容质量</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-icon pending">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <span class="stat-trend up">+12</span>
+                </div>
+                <div class="stat-value" id="stat-pending">24</div>
+                <div class="stat-label">待审核</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-icon approved">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <span class="stat-trend up">+156</span>
+                </div>
+                <div class="stat-value" id="stat-approved">1,284</div>
+                <div class="stat-label">已通过</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-icon rejected">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <span class="stat-trend down">-8</span>
+                </div>
+                <div class="stat-value" id="stat-rejected">156</div>
+                <div class="stat-label">已驳回</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-icon total">
+                        <i class="fas fa-flag"></i>
+                    </div>
+                    <span class="stat-trend up">+28</span>
+                </div>
+                <div class="stat-value" id="stat-reports">89</div>
+                <div class="stat-label">被举报</div>
+            </div>
+        </div>
+
+        <div class="admin-content-grid">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2 class="admin-card-title">
+                        <i class="fas fa-list"></i>
+                        审核队列
+                    </h2>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-filter="pending">待审核</button>
+                        <button class="filter-tab" data-filter="all">全部</button>
+                        <button class="filter-tab" data-filter="approved">已通过</button>
+                        <button class="filter-tab" data-filter="rejected">已驳回</button>
+                    </div>
+                </div>
+
+                <div class="batch-actions">
+                    <div class="select-all-wrapper">
+                        <input type="checkbox" id="select-all" onchange="toggleSelectAll()">
+                        <span class="select-count">已选择 <span id="selected-count">0</span> 项</span>
+                    </div>
+                    <button class="batch-btn primary" onclick="batchApprove()">
+                        <i class="fas fa-check"></i>
+                        批量通过
+                    </button>
+                    <button class="batch-btn secondary" onclick="batchReject()">
+                        <i class="fas fa-times"></i>
+                        批量驳回
+                    </button>
+                </div>
+
+                <div class="moderation-list" id="moderation-list">
+                </div>
+
+                <div class="pagination">
+                    <button class="page-btn">&lt;</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">&gt;</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            审核趋势
+                        </h2>
+                    </div>
+                    <div class="chart-section">
+                        <div class="chart-container" id="trend-chart">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card" style="margin-top: 24px;">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">
+                            <i class="fas fa-history"></i>
+                            最新动态
+                        </h2>
+                    </div>
+                    <div class="recent-activity" id="recent-activity">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/moderation-service.js"></script>
+    <script>
+        let currentFilter = 'pending';
+        let selectedItems = new Set();
+
+        const sampleModerationItems = [
+            {
+                id: '1',
+                type: 'post',
+                title: '关于IB课程选课的一些建议',
+                author: '李明',
+                authorId: 'user1',
+                reason: null,
+                content: '作为一名IB老学长，给新手一些选课建议...',
+                status: 'pending',
+                createdAt: '2024-01-15 10:30'
+            },
+            {
+                id: '2',
+                type: 'resource',
+                title: 'AP物理真题合集2024版',
+                author: '王芳',
+                authorId: 'user2',
+                reason: null,
+                content: '收集了最新的AP物理考试真题...',
+                status: 'pending',
+                createdAt: '2024-01-15 09:45'
+            },
+            {
+                id: '3',
+                type: 'report',
+                title: '用户举报：垃圾广告内容',
+                author: '张伟',
+                authorId: 'user3',
+                reason: 'spam',
+                content: '该用户在多个帖子下发布广告内容...',
+                status: 'pending',
+                createdAt: '2024-01-15 08:20'
+            },
+            {
+                id: '4',
+                type: 'reply',
+                title: '回复：关于SAT备考计划',
+                author: '刘洋',
+                authorId: 'user4',
+                reason: 'inappropriate',
+                content: '一些不太合适的回复内容...',
+                status: 'pending',
+                createdAt: '2024-01-14 22:15'
+            },
+            {
+                id: '5',
+                type: 'post',
+                title: '牛剑申请经验分享',
+                author: '陈静',
+                authorId: 'user5',
+                reason: null,
+                content: '详细分享我的牛剑申请全过程...',
+                status: 'approved',
+                createdAt: '2024-01-14 18:30'
+            }
+        ];
+
+        const weeklyTrend = [
+            { day: '周一', count: 45 },
+            { day: '周二', count: 62 },
+            { day: '周三', count: 38 },
+            { day: '周四', count: 56 },
+            { day: '周五', count: 72 },
+            { day: '周六', count: 48 },
+            { day: '周日', count: 35 }
+        ];
+
+        const recentActivities = [
+            { type: 'approve', text: '通过了帖子「IB课程选课建议」', time: '5分钟前' },
+            { type: 'reject', text: '驳回了资源「AP真题」的发布', time: '12分钟前' },
+            { type: 'report', text: '收到新的内容举报', time: '25分钟前' },
+            { type: 'approve', text: '通过了悬赏「留学申请求助」', time: '1小时前' }
+        ];
+
+        function initPage() {
+            renderModerationList();
+            renderTrendChart();
+            renderRecentActivity();
+            updateStats();
+        }
+
+        function updateStats() {
+            const items = sampleModerationItems;
+            const pending = items.filter(i => i.status === 'pending').length;
+            const approved = items.filter(i => i.status === 'approved').length;
+            const rejected = items.filter(i => i.status === 'rejected').length;
+            const reports = items.filter(i => i.type === 'report').length;
+
+            document.getElementById('stat-pending').textContent = pending;
+            document.getElementById('stat-approved').textContent = approved;
+            document.getElementById('stat-rejected').textContent = rejected;
+            document.getElementById('stat-reports').textContent = reports;
+        }
+
+        function renderModerationList() {
+            const container = document.getElementById('moderation-list');
+            let items = sampleModerationItems;
+
+            if (currentFilter !== 'all') {
+                items = items.filter(item => item.status === currentFilter);
+            }
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>暂无待审核内容</h3>
+                        <p>所有内容都已审核完成</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = items.map(item => {
+                const typeIcons = {
+                    post: 'fa-comment',
+                    resource: 'fa-file',
+                    reply: 'fa-reply',
+                    report: 'fa-flag'
+                };
+
+                const reasonBadges = {
+                    spam: '垃圾广告',
+                    inappropriate: '不当内容',
+                    copyright: '版权问题'
+                };
+
+                return `
+                    <div class="moderation-item ${item.status}">
+                        <div class="moderation-type-icon ${item.type}">
+                            <i class="fas ${typeIcons[item.type]}"></i>
+                        </div>
+                        <div class="moderation-content">
+                            <div class="moderation-title">
+                                ${item.title}
+                                ${item.reason ? `<span class="moderation-badge ${item.reason}">${reasonBadges[item.reason] || item.reason}</span>` : ''}
+                            </div>
+                            <div class="moderation-meta">
+                                <span><i class="fas fa-user"></i> ${item.author}</span>
+                                <span><i class="fas fa-clock"></i> ${item.createdAt}</span>
+                                <span class="moderation-badge" style="background: ${item.status === 'pending' ? '#FFF3E0' : item.status === 'approved' ? '#E8F5E9' : '#FFEBEE'}; color: ${item.status === 'pending' ? '#FF9800' : item.status === 'approved' ? '#4CAF50' : '#E53935'}">
+                                    ${item.status === 'pending' ? '待审核' : item.status === 'approved' ? '已通过' : '已驳回'}
+                                </span>
+                            </div>
+                            <div class="moderation-preview">${item.content}</div>
+                        </div>
+                        <div class="moderation-actions">
+                            <button class="action-btn-small approve" onclick="approveItem('${item.id}')">
+                                <i class="fas fa-check"></i> 通过
+                            </button>
+                            <button class="action-btn-small reject" onclick="rejectItem('${item.id}')">
+                                <i class="fas fa-times"></i> 驳回
+                            </button>
+                            <button class="action-btn-small view" onclick="viewItem('${item.id}')">
+                                <i class="fas fa-eye"></i> 查看
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTrendChart() {
+            const container = document.getElementById('trend-chart');
+            const maxCount = Math.max(...weeklyTrend.map(d => d.count));
+
+            container.innerHTML = weeklyTrend.map(item => {
+                const height = (item.count / maxCount * 180) + 20;
+                return `
+                    <div class="chart-bar">
+                        <div class="chart-bar-value">${item.count}</div>
+                        <div class="chart-bar-fill" style="height: ${height}px"></div>
+                        <div class="chart-bar-label">${item.day}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderRecentActivity() {
+            const container = document.getElementById('recent-activity');
+
+            container.innerHTML = recentActivities.map(item => {
+                const icons = {
+                    approve: 'fa-check',
+                    reject: 'fa-times',
+                    report: 'fa-flag'
+                };
+
+                return `
+                    <div class="activity-item">
+                        <div class="activity-icon ${item.type}">
+                            <i class="fas ${icons[item.type]}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text">${item.text}</div>
+                            <div class="activity-time">${item.time}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function approveItem(id) {
+            const item = sampleModerationItems.find(i => i.id === id);
+            if (item) {
+                item.status = 'approved';
+                renderModerationList();
+                updateStats();
+                addRecentActivity('approve', `通过了「${item.title}」`);
+            }
+        }
+
+        function rejectItem(id) {
+            const item = sampleModerationItems.find(i => i.id === id);
+            if (item) {
+                item.status = 'rejected';
+                renderModerationList();
+                updateStats();
+                addRecentActivity('reject', `驳回了「${item.title}」`);
+            }
+        }
+
+        function viewItem(id) {
+            alert('查看详情功能开发中');
+        }
+
+        function batchApprove() {
+            alert('批量通过功能开发中');
+        }
+
+        function batchReject() {
+            alert('批量驳回功能开发中');
+        }
+
+        function toggleSelectAll() {
+            const checkbox = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.moderation-item input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const checked = document.querySelectorAll('.moderation-item input[type="checkbox"]:checked').length;
+            document.getElementById('selected-count').textContent = checked;
+        }
+
+        function addRecentActivity(type, text) {
+            const newActivity = { type, text, time: '刚刚' };
+            recentActivities.unshift(newActivity);
+            if (recentActivities.length > 5) {
+                recentActivities.pop();
+            }
+            renderRecentActivity();
+        }
+
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderModerationList();
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>获取留情局用户ID</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 { color: #333; margin-bottom: 10px; font-size: 22px; }
+        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .label { color: #666; font-weight: bold; }
+        .value { color: #333; font-family: monospace; word-break: break-all; }
+        .user-id {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        .copy-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .copy-btn:hover { background: #45a049; }
+        .no-user {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .steps {
+            text-align: left;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+        .steps h3 { margin-top: 0; }
+        .steps ol { margin-bottom: 0; }
+        .note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>🔑留情局用户ID查询工具</h1>
+        <p class="subtitle">获取当前登录用户的ID，用于GitHub Secrets配置</p>
+
+        <div id="result"></div>
+
+        <div class="steps">
+            <h3>📋 GitHub Secrets 配置步骤：</h3>
+            <ol>
+                <li>复制下方的 <strong>用户ID</strong></li>
+                <li>打开 GitHub 仓库：<a href="https://github.com/fengyu1332-dad/liuqingju-monitor/settings/secrets/actions" target="_blank">liuqingju-monitor</a></li>
+                <li>点击 <strong>New repository secret</strong></li>
+                <li>Name 填：<code>BOT_USER_ID</code></li>
+                <li>Secret 填：粘贴你复制的用户ID</li>
+                <li>点击 <strong>Add secret</strong></li>
+            </ol>
+        </div>
+
+        <p class="note">此ID用于标识AI监控系统发布的帖子作者</p>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        function displayUserInfo(user) {
+            const html = `
+                <div class="user-info">
+                    <div class="info-row">
+                        <span class="label">用户邮箱：</span>
+                        <span class="value">${user.email || '未设置'}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">用户昵称：</span>
+                        <span class="value">${user.nickname || '未设置'}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">用户ID：</span>
+                    </div>
+                    <div class="user-id" id="userId">${user.id}</div>
+                    <button class="copy-btn" onclick="copyToClipboard()">📋 复制用户ID</button>
+                </div>
+            `;
+            document.getElementById('result').innerHTML = html;
+        }
+
+        function displayNoUser() {
+            const html = `
+                <div class="no-user">
+                    <h3>⚠️ 未检测到登录用户</h3>
+                    <p>请先登录留情局论坛</p>
+                </div>
+            `;
+            document.getElementById('result').innerHTML = html;
+        }
+
+        function copyToClipboard() {
+            const userId = document.getElementById('userId').textContent;
+            navigator.clipboard.writeText(userId).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✅ 已复制!';
+                btn.style.background = '#2e7d32';
+                setTimeout(() => {
+                    btn.textContent = '📋 复制用户ID';
+                    btn.style.background = '#4caf50';
+                }, 2000);
+            });
+        }
+
+        // 获取当前用户
+        window.onload = function() {
+            const currentUser = AuthService.getCurrentUser();
+            if (currentUser) {
+                displayUserInfo(currentUser);
+            } else {
+                displayNoUser();
+            }
+        };
+    </script>
+</body>
+</html>

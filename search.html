@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索结果 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .search-page {
+            min-height: 100vh;
+            background: var(--bg-light);
+        }
+
+        .search-header {
+            background: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            padding: 30px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-page-content {
+            padding: 40px 0;
+        }
+
+        .search-result-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        .search-sidebar {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .filter-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+        }
+
+        .filter-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-card-title i {
+            color: var(--primary-color);
+        }
+
+        .filter-group {
+            margin-bottom: 25px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-option:hover {
+            background: var(--secondary-color);
+        }
+
+        .filter-option.active {
+            background: var(--secondary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .filter-option input {
+            display: none;
+        }
+
+        .filter-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .filter-option.active .filter-checkbox {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .filter-option.active .filter-checkbox i {
+            color: white;
+            font-size: 12px;
+        }
+
+        .filter-label {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .filter-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--bg-white);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .search-results-main {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .results-header {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .results-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .results-title mark {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .results-stats {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .results-sort {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .sort-btn {
+            padding: 8px 16px;
+            background: var(--bg-light);
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sort-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .sort-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .result-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .result-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .result-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .result-icon.post {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .result-icon.resource {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .result-icon.bounty {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .result-icon.user {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-type {
+            display: inline-block;
+            padding: 3px 10px;
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .result-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .result-title mark {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .result-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .result-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .result-meta-item i {
+            color: var(--text-light);
+        }
+
+        .result-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .result-tag {
+            padding: 4px 10px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--bg-white);
+            border-radius: 16px;
+        }
+
+        .no-results i {
+            font-size: 80px;
+            color: var(--secondary-color);
+            margin-bottom: 25px;
+        }
+
+        .no-results h3 {
+            font-size: 22px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .no-results p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+        }
+
+        .no-results button {
+            padding: 12px 30px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .suggestions-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .suggestion-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .suggestion-item:hover {
+            background: var(--secondary-color);
+        }
+
+        .suggestion-item i {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .suggestion-item span {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--bg-light);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .search-result-container {
+                grid-template-columns: 1fr;
+            }
+
+            .search-sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body class="search-page">
+    <header class="resources-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link">资源共享</a>
+                <a href="intelligence.html" class="nav-link">留学情报</a>
+                <a href="forum.html" class="nav-link">留子论坛</a>
+                <a href="points-center.html" class="nav-link">积分中心</a>
+            </nav>
+            <div class="header-actions">
+                <div id="auth-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="search-header">
+        <div class="container">
+            <div class="header-search-box" style="max-width: 800px; margin: 0 auto;">
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1; position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 18px;"></i>
+                        <input type="text" id="search-input" placeholder="搜索帖子、资源、悬赏..." 
+                               style="width: 100%; padding: 16px 20px 16px 50px; border: 2px solid var(--border-color); border-radius: 12px; font-size: 16px;">
+                    </div>
+                    <button onclick="performSearch()" style="padding: 16px 30px; background: var(--primary-color); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                        搜索
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-page-content">
+            <div class="search-result-container">
+                <div class="search-sidebar">
+                    <div class="filter-card">
+                        <h3 class="filter-card-title">
+                            <i class="fas fa-filter"></i>
+                            筛选条件
+                        </h3>
+
+                        <div class="filter-group">
+                            <h4 class="filter-group-title">内容类型</h4>
+                            <div class="filter-options">
+                                <label class="filter-option active" data-filter="type" data-value="all">
+                                    <input type="radio" name="type" value="all" checked>
+                                    <div class="filter-checkbox"><i class="fas fa-check"></i></div>
+                                    <span class="filter-label">全部</span>
+                                    <span class="filter-count" id="count-all">0</span>
+                                </label>
+                                <label class="filter-option" data-filter="type" data-value="post">
+                                    <input type="radio" name="type" value="post">
+                                    <div class="filter-checkbox"><i class="fas fa-check"></i></div>
+                                    <span class="filter-label">帖子</span>
+                                    <span class="filter-count" id="count-post">0</span>
+                                </label>
+                                <label class="filter-option" data-filter="type" data-value="resource">
+                                    <input type="radio" name="type" value="resource">
+                                    <div class="filter-checkbox"><i class="fas fa-check"></i></div>
+                                    <span class="filter-label">资源</span>
+                                    <span class="filter-count" id="count-resource">0</span>
+                                </label>
+                                <label class="filter-option" data-filter="type" data-value="bounty">
+                                    <input type="radio" name="type" value="bounty">
+                                    <div class="filter-checkbox"><i class="fas fa-check"></i></div>
+                                    <span class="filter-label">悬赏</span>
+                                    <span class="filter-count" id="count-bounty">0</span>
+                                </label>
+                                <label class="filter-option" data-filter="type" data-value="user">
+                                    <input type="radio" name="type" value="user">
+                                    <div class="filter-checkbox"><i class="fas fa-check"></i></div>
+                                    <span class="filter-label">用户</span>
+                                    <span class="filter-count" id="count-user">0</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <h4 class="filter-group-title">排序方式</h4>
+                            <div class="filter-options">
+                                <label class="filter-option active" data-filter="sort" data-value="relevance">
+                                    <input type="radio" name="sort" value="relevance" checked>
+                                    <div class="filter-checkbox"><i class="fas fa-check"></i></div>
+                                    <span class="filter-label">相关度</span>
+                                </label>
+                                <label class="filter-option" data-filter="sort" data-value="time">
+                                    <input type="radio" name="sort" value="time">
+                                    <div class="filter-checkbox"><i class="fas fa-check"></i></div>
+                                    <span class="filter-label">最新</span>
+                                </label>
+                                <label class="filter-option" data-filter="sort" data-value="popularity">
+                                    <input type="radio" name="sort" value="popularity">
+                                    <div class="filter-checkbox"><i class="fas fa-check"></i></div>
+                                    <span class="filter-label">最热</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="suggestions-card">
+                        <h3 class="filter-card-title">
+                            <i class="fas fa-lightbulb"></i>
+                            热门搜索
+                        </h3>
+                        <div class="suggestion-list" id="hot-searches">
+                            <div class="suggestion-item" onclick="searchKeyword('IB')">
+                                <i class="fas fa-fire"></i>
+                                <span>IB课程</span>
+                            </div>
+                            <div class="suggestion-item" onclick="searchKeyword('AP')">
+                                <i class="fas fa-fire"></i>
+                                <span>AP考试</span>
+                            </div>
+                            <div class="suggestion-item" onclick="searchKeyword('SAT')">
+                                <i class="fas fa-fire"></i>
+                                <span>SAT备考</span>
+                            </div>
+                            <div class="suggestion-item" onclick="searchKeyword('申请')">
+                                <i class="fas fa-fire"></i>
+                                <span>留学申请</span>
+                            </div>
+                            <div class="suggestion-item" onclick="searchKeyword('文书')">
+                                <i class="fas fa-fire"></i>
+                                <span>申请文书</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-results-main">
+                    <div class="results-header">
+                        <h2 class="results-title" id="results-title">搜索结果</h2>
+                        <p class="results-stats" id="results-stats">找到 0 个结果</p>
+                        <div class="results-sort">
+                            <button class="sort-btn active" data-sort="relevance">相关度</button>
+                            <button class="sort-btn" data-sort="time">最新</button>
+                            <button class="sort-btn" data-sort="popularity">最热</button>
+                        </div>
+                    </div>
+
+                    <div class="results-list" id="results-list">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p class="loading-text">正在搜索...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/forum-service.js"></script>
+    <script src="js/resource-service.js"></script>
+    <script src="js/bounty-service.js"></script>
+    <script src="js/points-service.js"></script>
+    <script src="js/search-service.js"></script>
+    <script>
+        let authModal, userMenu;
+        let currentKeyword = '';
+        let currentType = 'all';
+        let currentSort = 'relevance';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            authModal = new AuthModal();
+            userMenu = new UserMenu('auth-container');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const keyword = urlParams.get('q');
+            const type = urlParams.get('type') || 'all';
+
+            if (keyword) {
+                document.getElementById('search-input').value = keyword;
+                currentKeyword = keyword;
+                currentType = type;
+                performSearch();
+            } else {
+                showEmptyState();
+            }
+
+            document.getElementById('search-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+            document.querySelectorAll('.filter-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    const value = this.dataset.value;
+
+                    if (filter === 'type') {
+                        currentType = value;
+                        document.querySelectorAll(`[data-filter="type"]`).forEach(opt => {
+                            opt.classList.toggle('active', opt.dataset.value === value);
+                        });
+                    } else if (filter === 'sort') {
+                        currentSort = value;
+                        document.querySelectorAll(`[data-filter="sort"]`).forEach(opt => {
+                            opt.classList.toggle('active', opt.dataset.value === value);
+                        });
+                    }
+
+                    performSearch();
+                });
+            });
+
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentSort = this.dataset.sort;
+                    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    performSearch();
+                });
+            });
+        });
+
+        function performSearch() {
+            const keyword = document.getElementById('search-input').value.trim();
+            
+            if (!keyword) {
+                showEmptyState();
+                return;
+            }
+
+            currentKeyword = keyword;
+
+            const url = new URL(window.location);
+            url.searchParams.set('q', keyword);
+            url.searchParams.set('type', currentType);
+            window.history.replaceState({}, '', url);
+
+            const results = SearchService.searchAll(keyword);
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            const list = document.getElementById('results-list');
+            const title = document.getElementById('results-title');
+            const stats = document.getElementById('results-stats');
+
+            title.innerHTML = `搜索结果: <mark>"${currentKeyword}"</mark>`;
+            
+            document.getElementById('count-all').textContent = results.total;
+            document.getElementById('count-post').textContent = results.posts.length;
+            document.getElementById('count-resource').textContent = results.resources.length;
+            document.getElementById('count-bounty').textContent = results.bounties.length;
+            document.getElementById('count-user').textContent = results.users.length;
+
+            let items = [];
+            
+            if (currentType === 'all') {
+                items = [...results.posts, ...results.resources, ...results.bounties, ...results.users];
+            } else {
+                items = results[currentType + 's'] || [];
+            }
+
+            stats.textContent = `找到 ${items.length} 个结果`;
+
+            if (items.length === 0) {
+                list.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>未找到相关结果</h3>
+                        <p>尝试使用其他关键词或调整筛选条件</p>
+                        <button onclick="clearFilters()">清除筛选</button>
+                    </div>
+                `;
+                return;
+            }
+
+            if (currentSort === 'time') {
+                items.sort((a, b) => {
+                    const dateA = a.data?.createdAt || 0;
+                    const dateB = b.data?.createdAt || 0;
+                    return new Date(dateB) - new Date(dateA);
+                });
+            } else if (currentSort === 'popularity') {
+                items.sort((a, b) => {
+                    const scoreA = (a.stats?.views || 0) + (a.stats?.likes || 0) * 2 + (a.stats?.replies || 0) * 3;
+                    const scoreB = (b.stats?.views || 0) + (b.stats?.likes || 0) * 2 + (b.stats?.replies || 0) * 3;
+                    return scoreB - scoreA;
+                });
+            }
+
+            list.innerHTML = items.map(item => {
+                const iconClass = item.type;
+                const iconMap = {
+                    post: 'fa-comments',
+                    resource: 'fa-gift',
+                    bounty: 'fa-coins',
+                    user: 'fa-user'
+                };
+                const typeLabelMap = {
+                    post: '帖子',
+                    resource: '资源',
+                    bounty: '悬赏',
+                    user: '用户'
+                };
+
+                const highlightedTitle = SearchService.highlightMatches(item.title, currentKeyword);
+                const statsHtml = getStatsHtml(item);
+
+                return `
+                    <div class="result-card" onclick="navigateToResult('${item.type}', '${item.id}')">
+                        <div class="result-card-header">
+                            <div class="result-icon ${iconClass}">
+                                <i class="fas ${iconMap[item.type]}"></i>
+                            </div>
+                            <div class="result-info">
+                                <span class="result-type">${typeLabelMap[item.type]}</span>
+                                <h3 class="result-title">${highlightedTitle}</h3>
+                                <p class="result-desc">${SearchService.highlightMatches(item.description, currentKeyword)}</p>
+                            </div>
+                        </div>
+                        ${item.tags && item.tags.length > 0 ? `
+                            <div class="result-tags">
+                                ${item.tags.slice(0, 5).map(tag => `<span class="result-tag">${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="result-meta">
+                            ${item.author ? `
+                                <div class="result-meta-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>${item.author.nickname || '匿名用户'}</span>
+                                </div>
+                            ` : ''}
+                            ${statsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getStatsHtml(item) {
+            if (item.type === 'post') {
+                return `
+                    <div class="result-meta-item">
+                        <i class="fas fa-eye"></i>
+                        <span>${item.stats?.views || 0}</span>
+                    </div>
+                    <div class="result-meta-item">
+                        <i class="fas fa-heart"></i>
+                        <span>${item.stats?.likes || 0}</span>
+                    </div>
+                    <div class="result-meta-item">
+                        <i class="fas fa-comment"></i>
+                        <span>${item.stats?.replies || 0}</span>
+                    </div>
+                `;
+            } else if (item.type === 'resource') {
+                return `
+                    <div class="result-meta-item">
+                        <i class="fas fa-eye"></i>
+                        <span>${item.stats?.views || 0}</span>
+                    </div>
+                    <div class="result-meta-item">
+                        <i class="fas fa-download"></i>
+                        <span>${item.stats?.downloads || 0}</span>
+                    </div>
+                    <div class="result-meta-item">
+                        <i class="fas fa-heart"></i>
+                        <span>${item.stats?.likes || 0}</span>
+                    </div>
+                `;
+            } else if (item.type === 'bounty') {
+                return `
+                    <div class="result-meta-item">
+                        <i class="fas fa-coins"></i>
+                        <span>${item.reward} 积分</span>
+                    </div>
+                    <div class="result-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>${item.deadline || '无截止日期'}</span>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function navigateToResult(type, id) {
+            const routes = {
+                post: `forum.html?post=${id}`,
+                resource: `resources.html?resource=${id}`,
+                bounty: `bounty.html?bounty=${id}`,
+                user: `profile.html?user=${id}`
+            };
+
+            window.location.href = routes[type] || '#';
+        }
+
+        function showEmptyState() {
+            const list = document.getElementById('results-list');
+            list.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <h3>输入关键词开始搜索</h3>
+                    <p>搜索帖子、资源、悬赏等内容</p>
+                </div>
+            `;
+        }
+
+        function clearFilters() {
+            currentType = 'all';
+            currentSort = 'relevance';
+            
+            document.querySelectorAll('.filter-option').forEach(opt => {
+                if (opt.dataset.filter === 'type' && opt.dataset.value === 'all') {
+                    opt.classList.add('active');
+                } else if (opt.dataset.filter === 'sort' && opt.dataset.value === 'relevance') {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.sort === 'relevance');
+            });
+
+            performSearch();
+        }
+
+        function searchKeyword(keyword) {
+            document.getElementById('search-input').value = keyword;
+            performSearch();
+        }
+    </script>
+</body>
+</html>

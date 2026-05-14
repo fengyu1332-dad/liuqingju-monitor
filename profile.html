@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人资料 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .profile-page {
+            min-height: 100vh;
+            background: var(--bg-light);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            padding: 60px 0 80px;
+            color: white;
+            text-align: center;
+        }
+
+        .profile-avatar-section {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            object-fit: cover;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .avatar-edit-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s;
+        }
+
+        .avatar-edit-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .profile-tags {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .profile-tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .profile-content {
+            max-width: 900px;
+            margin: -40px auto 40px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-tabs {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 25px;
+        }
+
+        .profile-tab {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: var(--bg-light);
+            border-radius: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .profile-tab:hover {
+            background: var(--secondary-color);
+        }
+
+        .profile-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .profile-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .info-item {
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .edit-btn {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .edit-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-modal.active {
+            display: flex;
+        }
+
+        .edit-modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .edit-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .edit-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .edit-modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-light);
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .edit-form label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .edit-form input,
+        .edit-form select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .edit-form input:focus,
+        .edit-form select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .edit-form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .edit-form-actions button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background: var(--bg-light);
+            border: none;
+            color: var(--text-secondary);
+        }
+
+        .save-btn {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            transition: transform 0.3s;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+        }
+
+        .activity-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .activity-meta {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .activity-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .action-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-icon-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .not-logged-in {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .not-logged-in i {
+            font-size: 60px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .not-logged-in h2 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .not-logged-in p {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+        }
+
+        .go-login-btn {
+            display: inline-block;
+            padding: 14px 30px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .points-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .points-balance-card,
+        .points-level-card,
+        .points-earning-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .points-balance-icon,
+        .points-earning-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .points-level-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .points-balance-info,
+        .points-level-info,
+        .points-earning-info {
+            flex: 1;
+        }
+
+        .points-balance-label,
+        .points-level-label,
+        .points-earning-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .points-balance-value,
+        .points-level-value,
+        .points-earning-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .points-peak-info {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .points-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .points-stat-item {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .points-stat-item i {
+            font-size: 32px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .points-stat-item .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .points-stat-item .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .points-history-section,
+        .points-rules-section {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .points-history-title,
+        .points-rules-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .points-history-title i,
+        .points-rules-title i {
+            color: var(--primary-color);
+        }
+
+        .points-history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .points-history-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .points-history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .history-icon.positive {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .history-icon.negative {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .history-content {
+            flex: 1;
+        }
+
+        .history-description {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .history-amount {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .history-amount.positive {
+            color: #4CAF50;
+        }
+
+        .history-amount.negative {
+            color: #E53935;
+        }
+
+        .points-rules-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .points-rule-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .rule-icon {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .rule-icon.positive {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .rule-icon.negative {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .rule-text {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .bookmark-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .bookmark-filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bookmark-filter-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .bookmark-filter-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .bookmark-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 6px;
+        }
+
+        .bookmark-type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .bookmark-type-badge.post {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .bookmark-type-badge.resource {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .bookmark-type-badge.bounty {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-modal.active {
+            display: flex;
+        }
+
+        .confirm-modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .confirm-modal-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #FFEBEE;
+            color: #E53935;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 20px;
+        }
+
+        .confirm-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .confirm-modal-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .confirm-modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-tabs {
+                flex-wrap: wrap;
+            }
+
+            .profile-tab {
+                flex: 1 1 45%;
+            }
+
+            .points-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .points-stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .points-rules-list {
+                grid-template-columns: 1fr;
+            }
+
+            .bookmark-filters {
+                gap: 8px;
+            }
+
+            .bookmark-filter-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body class="profile-page">
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-landmark"></i>
+                <span>留情局</span>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link">资源共享</a>
+                <a href="intelligence.html" class="nav-link">留学情报</a>
+                <a href="forum.html" class="nav-link">留子论坛</a>
+            </nav>
+            <div class="header-right" id="header-auth">
+            </div>
+        </div>
+    </header>
+
+    <div id="profile-content">
+    </div>
+
+    <div class="edit-modal" id="edit-modal">
+        <div class="edit-modal-content">
+            <div class="edit-modal-header">
+                <h3 class="edit-modal-title" id="edit-modal-title">编辑资料</h3>
+                <button class="edit-modal-close" id="edit-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="edit-form" id="edit-form">
+            </form>
+        </div>
+    </div>
+
+    <div class="confirm-modal" id="confirm-modal">
+        <div class="confirm-modal-content">
+            <div class="confirm-modal-icon">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+            <h3 class="confirm-modal-title" id="confirm-modal-title">确认取消收藏</h3>
+            <p class="confirm-modal-text" id="confirm-modal-text">确定要取消收藏这篇内容吗？</p>
+            <div class="confirm-modal-actions">
+                <button class="cancel-btn" id="confirm-modal-cancel">取消</button>
+                <button class="save-btn" id="confirm-modal-confirm">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>© 2024 留情局 Intelligence Bureau for Overseas Study. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/forum-service.js"></script>
+    <script src="js/resource-service.js"></script>
+    <script src="js/header-search.js"></script>
+    <script src="js/profile-service.js"></script>
+    <script>
+        let authModal, userMenu, headerSearch;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            authModal = new AuthModal();
+            userMenu = new UserMenu('header-auth');
+            headerSearch = initSearch('header-auth');
+
+            const user = AuthService.getCurrentUser();
+
+            if (!user) {
+                renderNotLoggedIn();
+            } else {
+                renderProfile(user);
+            }
+
+            document.getElementById('edit-modal-close').addEventListener('click', closeEditModal);
+            document.getElementById('edit-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'edit-modal') {
+                    closeEditModal();
+                }
+            });
+
+            document.getElementById('confirm-modal-cancel').addEventListener('click', closeConfirmModal);
+            document.getElementById('confirm-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'confirm-modal') {
+                    closeConfirmModal();
+                }
+            });
+
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                setTimeout(() => {
+                    const tab = document.querySelector(`.profile-tab[data-section="${hash}"]`);
+                    if (tab) {
+                        tab.click();
+                    }
+                }, 100);
+            }
+        });
+
+        function renderNotLoggedIn() {
+            document.getElementById('profile-content').innerHTML = `
+                <div class="profile-header">
+                    <div class="container">
+                        <h1>个人中心</h1>
+                    </div>
+                </div>
+                <div class="profile-content">
+                    <div class="profile-section not-logged-in">
+                        <i class="fas fa-user-circle"></i>
+                        <h2>登录后可查看个人资料</h2>
+                        <p>加入留情局，开始你的留学互助之旅</p>
+                        <button class="go-login-btn" onclick="authModal.open('login')">
+                            立即登录
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProfile(user) {
+            const studyStageText = {
+                'highschool': '高中',
+                'bachelor': '本科',
+                'master': '研究生'
+            };
+
+            const countryText = {
+                'usa': '美国',
+                'uk': '英国',
+                'canada': '加拿大',
+                'australia': '澳大利亚',
+                'singapore': '新加坡',
+                'hongkong': '香港',
+                'japan': '日本',
+                'europe': '欧洲其他国家'
+            };
+
+            const curriculumLabels = {
+                'ib': 'IB',
+                'ap': 'AP',
+                'alevel': 'A-Level',
+                'other': '其他'
+            };
+
+            const profile = user.profile || {};
+            const curriculumText = (profile.curriculum || []).map(c => curriculumLabels[c] || c).join('、');
+
+            document.getElementById('profile-content').innerHTML = `
+                <div class="profile-header">
+                    <div class="container">
+                        <div class="profile-avatar-section">
+                            <img src="${user.avatar}" alt="${user.nickname}" class="profile-avatar">
+                            <button class="avatar-edit-btn" onclick="alert('头像修改功能开发中')">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <h1 class="profile-name">${user.nickname}</h1>
+                        <p class="profile-email">${user.email}</p>
+                        <div class="profile-tags">
+                            <span class="profile-tag">${studyStageText[profile.studyStage] || '未设置'}</span>
+                            <span class="profile-tag">${countryText[profile.targetCountry] || '未设置'}</span>
+                            ${curriculumText ? `<span class="profile-tag">${curriculumText}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-content">
+                    <div class="profile-tabs">
+                        <button class="profile-tab active" data-section="info">
+                            <i class="fas fa-user"></i>
+                            基本信息
+                        </button>
+                        <button class="profile-tab" data-section="posts">
+                            <i class="fas fa-file-alt"></i>
+                            我的发布
+                        </button>
+                        <button class="profile-tab" data-section="bookmarks">
+                            <i class="fas fa-bookmark"></i>
+                            我的收藏
+                        </button>
+                        <button class="profile-tab" data-section="bounties">
+                            <i class="fas fa-coins"></i>
+                            我的悬赏
+                        </button>
+                        <button class="profile-tab" data-section="points">
+                            <i class="fas fa-star"></i>
+                            积分统计
+                        </button>
+                    </div>
+
+                    <div class="profile-section" id="section-info">
+                        <h2 class="section-title">
+                            <i class="fas fa-address-card"></i>
+                            基本信息
+                        </h2>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">昵称</div>
+                                <div class="info-value">${user.nickname}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">邮箱</div>
+                                <div class="info-value">${user.email}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">留学阶段</div>
+                                <div class="info-value">${studyStageText[profile.studyStage] || '未设置'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">意向国家</div>
+                                <div class="info-value">${countryText[profile.targetCountry] || '未设置'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">课程体系</div>
+                                <div class="info-value">${curriculumText || '未设置'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">目标院校</div>
+                                <div class="info-value">${profile.targetSchools || '未设置'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">意向专业</div>
+                                <div class="info-value">${profile.major || '未设置'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">擅长科目</div>
+                                <div class="info-value">${profile.strengths || '未设置'}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 25px;">
+                            <button class="edit-btn" onclick="openEditBasicInfo()">
+                                <i class="fas fa-edit"></i>
+                                编辑资料
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="profile-section" id="section-posts" style="display: none;">
+                        <h2 class="section-title">
+                            <i class="fas fa-file-alt"></i>
+                            我的发布
+                        </h2>
+                        <div class="bookmark-filters">
+                            <button class="bookmark-filter-btn active" data-filter="all">
+                                全部 <span class="bookmark-count" id="post-count-all">0</span>
+                            </button>
+                            <button class="bookmark-filter-btn" data-filter="post">
+                                帖子 <span class="bookmark-count" id="post-count-post">0</span>
+                            </button>
+                            <button class="bookmark-filter-btn" data-filter="resource">
+                                资源 <span class="bookmark-count" id="post-count-resource">0</span>
+                            </button>
+                            <button class="bookmark-filter-btn" data-filter="bounty">
+                                悬赏 <span class="bookmark-count" id="post-count-bounty">0</span>
+                            </button>
+                        </div>
+                        <div class="activity-list" id="activity-list-posts">
+                            <!-- 动态填充 -->
+                        </div>
+                    </div>
+
+                    <div class="profile-section" id="section-bookmarks" style="display: none;">
+                        <h2 class="section-title">
+                            <i class="fas fa-bookmark"></i>
+                            我的收藏
+                        </h2>
+                        <div class="bookmark-filters">
+                            <button class="bookmark-filter-btn active" data-filter="all">
+                                全部 <span class="bookmark-count" id="count-all">0</span>
+                            </button>
+                            <button class="bookmark-filter-btn" data-filter="post">
+                                帖子 <span class="bookmark-count" id="count-post">0</span>
+                            </button>
+                            <button class="bookmark-filter-btn" data-filter="resource">
+                                资源 <span class="bookmark-count" id="count-resource">0</span>
+                            </button>
+                            <button class="bookmark-filter-btn" data-filter="bounty">
+                                悬赏 <span class="bookmark-count" id="count-bounty">0</span>
+                            </button>
+                        </div>
+                        <div class="activity-list" id="activity-list-bookmarks">
+                            <!-- 动态填充 -->
+                        </div>
+                    </div>
+
+                    <div class="profile-section" id="section-bounties" style="display: none;">
+                        <h2 class="section-title">
+                            <i class="fas fa-coins"></i>
+                            我的悬赏
+                        </h2>
+                        <div class="activity-list" id="activity-list-bounties">
+                            <!-- 动态填充 -->
+                        </div>
+                    </div>
+
+                    <div class="profile-section" id="section-points" style="display: none;">
+                        <h2 class="section-title">
+                            <i class="fas fa-star"></i>
+                            积分统计
+                        </h2>
+                        <div id="points-stats-container">
+                            <!-- 动态填充 -->
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.querySelectorAll('.profile-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const section = tab.dataset.section;
+                    document.querySelectorAll('.profile-section').forEach(s => s.style.display = 'none');
+                    document.getElementById(`section-${section}`).style.display = 'block';
+
+                    if (section === 'posts') {
+                        renderUserPosts();
+                    } else if (section === 'bookmarks') {
+                        renderBookmarks();
+                    } else if (section === 'bounties') {
+                        renderUserBounties();
+                    } else if (section === 'points') {
+                        renderPointsStats();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.bookmark-filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const filter = btn.dataset.filter;
+                    renderBookmarks(filter);
+                });
+            });
+
+            document.getElementById('confirm-modal-confirm').addEventListener('click', () => {
+                if (pendingBookmarkId) {
+                    removeBookmark(pendingBookmarkId);
+                    closeConfirmModal();
+                }
+            });
+
+            renderUserPosts();
+        }
+
+        let currentPostFilter = 'all';
+
+        function renderUserPosts(filter = 'all') {
+            currentPostFilter = filter;
+            const user = AuthService.getCurrentUser();
+            if (!user) return;
+
+            const posts = ProfileService.getUserPosts(user.id);
+            const resources = ProfileService.getUserResources(user.id);
+            const bounties = ProfileService.getUserBounties(user.id);
+
+            document.getElementById('post-count-all').textContent = posts.length + resources.length + bounties.length;
+            document.getElementById('post-count-post').textContent = posts.length;
+            document.getElementById('post-count-resource').textContent = resources.length;
+            document.getElementById('post-count-bounty').textContent = bounties.length;
+
+            document.querySelectorAll('.bookmark-filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            let allItems = [];
+            
+            if (filter === 'all' || filter === 'post') {
+                allItems = [...allItems, ...posts.map(post => ({ type: 'post', data: post }))];
+            }
+            if (filter === 'all' || filter === 'resource') {
+                allItems = [...allItems, ...resources.map(res => ({ type: 'resource', data: res }))];
+            }
+            if (filter === 'all' || filter === 'bounty') {
+                allItems = [...allItems, ...bounties.map(b => ({ type: 'bounty', data: b }))];
+            }
+
+            allItems.sort((a, b) => new Date(b.data.createdAt) - new Date(a.data.createdAt));
+
+            const container = document.getElementById('activity-list-posts');
+
+            if (allItems.length === 0) {
+                const emptyText = {
+                    'all': '还没有发布任何内容',
+                    'post': '还没有发布帖子',
+                    'resource': '还没有发布资源',
+                    'bounty': '还没有发布悬赏'
+                };
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 40px 20px; background: transparent;">
+                        <i class="fas fa-file-alt" style="color: var(--text-light); margin-bottom: 15px;"></i>
+                        <h3 style="color: var(--text-secondary); margin-bottom: 10px;">${emptyText[filter]}</h3>
+                        <p style="color: var(--text-light);">去发布内容吧！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allItems.map(item => {
+                const data = item.data;
+                if (item.type === 'post') {
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">${data.title}</div>
+                                <div class="activity-meta">发布于 ${ProfileService.formatDate(data.createdAt)} | ${data.views || 0} 浏览 | ${data.likes || 0} 点赞</div>
+                            </div>
+                            <div class="activity-actions">
+                                <button class="action-icon-btn" onclick="window.location.href='forum.html'">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else if (item.type === 'resource') {
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">${data.title}</div>
+                                <div class="activity-meta">发布于 ${ProfileService.formatDate(data.createdAt)} | ${data.downloads || 0} 下载</div>
+                            </div>
+                            <div class="activity-actions">
+                                <button class="action-icon-btn" onclick="window.location.href='resources.html'">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">${data.title}</div>
+                                <div class="activity-meta">发布于 ${ProfileService.formatDate(data.createdAt)} | 悬赏 ${data.reward || 0} 积分 | ${data.status}</div>
+                            </div>
+                            <div class="activity-actions">
+                                <button class="action-icon-btn" onclick="window.location.href='bounty.html'">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        function renderPointsStats() {
+            const user = AuthService.getCurrentUser();
+            if (!user) return;
+
+            const container = document.getElementById('points-stats-container');
+            if (typeof PointsService === 'undefined') {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 40px 20px; background: transparent;">
+                        <i class="fas fa-star" style="color: var(--text-light); margin-bottom: 15px;"></i>
+                        <h3 style="color: var(--text-secondary); margin-bottom: 10px;">积分系统加载中...</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            const stats = PointsService.getStats(user.id);
+            const levelInfo = PointsService.getLevel(user.id);
+            const history = PointsService.getRecentHistory(user.id, 20);
+
+            const weeklyData = generateWeeklyData(history);
+            const chartHtml = generatePointsChart(weeklyData);
+
+            container.innerHTML = `
+                <div class="points-overview">
+                    <div class="points-balance-card">
+                        <div class="points-balance-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="points-balance-info">
+                            <div class="points-balance-label">当前积分余额</div>
+                            <div class="points-balance-value">${stats.tokens}</div>
+                        </div>
+                    </div>
+
+                    <div class="points-level-card">
+                        <div class="points-level-icon">
+                            <span class="level-icon-large">${levelInfo.icon}</span>
+                        </div>
+                        <div class="points-level-info">
+                            <div class="points-level-label">当前等级</div>
+                            <div class="points-level-value">Lv.${levelInfo.level} ${levelInfo.title}</div>
+                            <div class="points-peak-info">
+                                贡献值：${stats.contributionValue}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="points-earning-card">
+                        <div class="points-earning-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="points-earning-info">
+                            <div class="points-earning-label">累计获得</div>
+                            <div class="points-earning-value">${stats.totalEarnings}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="points-chart-section">
+                    <h3 class="points-history-title">
+                        <i class="fas fa-chart-bar"></i>
+                        近7天积分趋势
+                    </h3>
+                    ${chartHtml}
+                </div>
+
+                <div class="points-stats-grid">
+                    <div class="points-stat-item">
+                        <i class="fas fa-comment"></i>
+                        <div class="stat-value">${stats.totalPosts || 0}</div>
+                        <div class="stat-label">发布帖子</div>
+                    </div>
+                    <div class="points-stat-item">
+                        <i class="fas fa-reply"></i>
+                        <div class="stat-value">${stats.totalReplies || 0}</div>
+                        <div class="stat-label">回复帖子</div>
+                    </div>
+                    <div class="points-stat-item">
+                        <i class="fas fa-share-alt"></i>
+                        <div class="stat-value">${stats.totalResources || 0}</div>
+                        <div class="stat-label">发布资源</div>
+                    </div>
+                </div>
+
+                <div class="points-history-section">
+                    <h3 class="points-history-title">
+                        <i class="fas fa-history"></i>
+                        积分记录
+                    </h3>
+                    <div class="points-history-list">
+                        ${history.length === 0 ? '<div class="empty-history">暂无积分记录</div>' : ''}
+                        ${history.map(record => `
+                            <div class="points-history-item">
+                                <div class="history-icon ${record.amount > 0 ? 'positive' : 'negative'}">
+                                    <i class="fas fa-${record.amount > 0 ? 'arrow-up' : 'arrow-down'}"></i>
+                                </div>
+                                <div class="history-content">
+                                    <div class="history-description">${record.description}</div>
+                                    <div class="history-time">${PointsService.formatDate(record.createdAt)}</div>
+                                </div>
+                                <div class="history-amount ${record.amount > 0 ? 'positive' : 'negative'}">
+                                    ${record.amount > 0 ? '+' : ''}${record.amount}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="points-rules-section">
+                    <h3 class="points-rules-title">
+                        <i class="fas fa-info-circle"></i>
+                        积分规则
+                    </h3>
+                    <div class="points-rules-list">
+                        <div class="points-rule-item">
+                            <span class="rule-icon positive">+5</span>
+                            <span class="rule-text">每日首次登录</span>
+                        </div>
+                        <div class="points-rule-item">
+                            <span class="rule-icon positive">+10</span>
+                            <span class="rule-text">发布论坛帖子</span>
+                        </div>
+                        <div class="points-rule-item">
+                            <span class="rule-icon positive">+3</span>
+                            <span class="rule-text">回复帖子</span>
+                        </div>
+                        <div class="points-rule-item">
+                            <span class="rule-icon positive">+1</span>
+                            <span class="rule-text">帖子被点赞</span>
+                        </div>
+                        <div class="points-rule-item">
+                            <span class="rule-icon positive">+15</span>
+                            <span class="rule-text">发布资源</span>
+                        </div>
+                        <div class="points-rule-item">
+                            <span class="rule-icon positive">+2</span>
+                            <span class="rule-text">资源被下载</span>
+                        </div>
+                        <div class="points-rule-item">
+                            <span class="rule-icon negative">-悬赏金额</span>
+                            <span class="rule-text">发布悬赏</span>
+                        </div>
+                        <div class="points-rule-item">
+                            <span class="rule-icon positive">+悬赏金额</span>
+                            <span class="rule-text">完成悬赏</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateWeeklyData(history) {
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const result = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                const dayEarnings = history
+                    .filter(h => h.createdAt.startsWith(dateStr) && h.amount > 0)
+                    .reduce((sum, h) => sum + h.amount, 0);
+                
+                const daySpent = history
+                    .filter(h => h.createdAt.startsWith(dateStr) && h.amount < 0)
+                    .reduce((sum, h) => sum + Math.abs(h.amount), 0);
+                
+                result.push({
+                    day: days[date.getDay()],
+                    date: dateStr,
+                    earnings: dayEarnings,
+                    spent: daySpent,
+                    net: dayEarnings - daySpent
+                });
+            }
+            
+            return result;
+        }
+
+        function generatePointsChart(data) {
+            const maxValue = Math.max(...data.map(d => Math.max(d.earnings, d.spent)), 1);
+            
+            const barsHtml = data.map(item => {
+                const earningsHeight = (item.earnings / maxValue * 100) || 5;
+                const spentHeight = (item.spent / maxValue * 100) || 5;
+                
+                return `
+                    <div class="chart-bar-group" title="${item.date}: 收入${item.earnings} | 支出${item.spent}">
+                        <div class="chart-bar earnings" style="height: ${earningsHeight}%" title="收入"></div>
+                        <div class="chart-bar spent" style="height: ${spentHeight}%" title="支出"></div>
+                        <div class="chart-label">${item.day}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            return `
+                <div class="points-chart-container">
+                    <div class="chart-legend">
+                        <span class="legend-item"><span class="legend-dot earnings"></span>收入</span>
+                        <span class="legend-item"><span class="legend-dot spent"></span>支出</span>
+                    </div>
+                    <div class="points-chart">
+                        ${barsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        let currentFilter = 'all';
+        let pendingBookmarkId = null;
+        let pendingBookmarkTitle = null;
+
+        function renderBookmarks(filter = 'all') {
+            currentFilter = filter;
+            const allBookmarks = ProfileService.getAllBookmarks();
+            updateBookmarkCounts(allBookmarks);
+
+            const filteredBookmarks = filter === 'all'
+                ? allBookmarks
+                : allBookmarks.filter(item => item.type === filter);
+
+            const container = document.getElementById('activity-list-bookmarks');
+
+            document.querySelectorAll('.bookmark-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+
+            if (filteredBookmarks.length === 0) {
+                const emptyText = {
+                    'all': '还没有收藏任何内容',
+                    'post': '还没有收藏帖子',
+                    'resource': '还没有收藏资源',
+                    'bounty': '还没有收藏悬赏'
+                };
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 40px 20px; background: transparent;">
+                        <i class="fas fa-bookmark" style="color: var(--text-light); margin-bottom: 15px;"></i>
+                        <h3 style="color: var(--text-secondary); margin-bottom: 10px;">${emptyText[filter]}</h3>
+                        <p style="color: var(--text-light);">去论坛或资源区看看，收藏有用的内容吧！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredBookmarks.map(item => {
+                const typeIcons = {
+                    'post': 'fa-comment',
+                    'resource': 'fa-book',
+                    'bounty': 'fa-coins'
+                };
+                const typeNames = {
+                    'post': '帖子',
+                    'resource': '资源',
+                    'bounty': '悬赏'
+                };
+
+                return `
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas ${typeIcons[item.type]}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">
+                                ${item.title}
+                                <span class="bookmark-type-badge ${item.type}">${typeNames[item.type]}</span>
+                            </div>
+                            <div class="activity-meta">收藏于 ${ProfileService.formatDate(item.bookmarkedAt)}</div>
+                        </div>
+                        <div class="activity-actions">
+                            <button class="action-icon-btn" onclick="showRemoveBookmarkConfirm('${item.id}', '${item.title.replace(/'/g, "\\'")}')" title="取消收藏">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateBookmarkCounts(allBookmarks) {
+            const counts = {
+                'all': allBookmarks.length,
+                'post': allBookmarks.filter(item => item.type === 'post').length,
+                'resource': allBookmarks.filter(item => item.type === 'resource').length,
+                'bounty': allBookmarks.filter(item => item.type === 'bounty').length
+            };
+
+            Object.keys(counts).forEach(key => {
+                const el = document.getElementById(`count-${key}`);
+                if (el) el.textContent = counts[key];
+            });
+        }
+
+        function showRemoveBookmarkConfirm(bookmarkId, title) {
+            pendingBookmarkId = bookmarkId;
+            pendingBookmarkTitle = title;
+            document.getElementById('confirm-modal-title').textContent = '确认取消收藏';
+            document.getElementById('confirm-modal-text').textContent = `确定要取消收藏「${title}」吗？`;
+            document.getElementById('confirm-modal').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.remove('active');
+            pendingBookmarkId = null;
+            pendingBookmarkTitle = null;
+        }
+
+        function removeBookmark(bookmarkId) {
+            ProfileService.removeBookmark(bookmarkId);
+            renderBookmarks(currentFilter);
+        }
+
+        document.getElementById('confirm-modal-confirm').addEventListener('click', () => {
+            if (pendingBookmarkId) {
+                removeBookmark(pendingBookmarkId);
+                closeConfirmModal();
+            }
+        });
+
+        function renderUserBounties() {
+            const user = AuthService.getCurrentUser();
+            if (!user) return;
+
+            const bounties = ProfileService.getUserBounties(user.id);
+
+            const container = document.getElementById('activity-list-bounties');
+
+            if (bounties.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 40px 20px; background: transparent;">
+                        <i class="fas fa-coins" style="color: var(--text-light); margin-bottom: 15px;"></i>
+                        <h3 style="color: var(--text-secondary); margin-bottom: 10px;">还没有发布任何悬赏</h3>
+                        <p style="color: var(--text-light);">有问题需要帮助？发布悬赏找学长学姐吧！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = bounties.map(bounty => {
+                const isCompleted = bounty.status === 'completed';
+                const iconClass = isCompleted ? 'check-circle' : 'hand-holding-usd';
+                const bgColor = isCompleted ? '#E8F5E9' : '';
+                const textColor = isCompleted ? '#4CAF50' : '';
+                const statusText = isCompleted ? '已完成' : '待接单';
+
+                return `
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: ${bgColor || 'var(--secondary-color)'}; color: ${textColor || 'var(--primary-color)'};">
+                            <i class="fas fa-${iconClass}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">${bounty.title}</div>
+                            <div class="activity-meta">发布于 ${ProfileService.formatDate(bounty.createdAt)} | ${bounty.reward} 积分 | ${statusText}</div>
+                        </div>
+                        <div class="activity-actions">
+                            <button class="action-icon-btn">
+                                <i class="fas fa-${isCompleted ? 'star' : 'edit'}"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openEditBasicInfo() {
+            const user = AuthService.getCurrentUser();
+            const profile = user.profile || {};
+
+            document.getElementById('edit-modal-title').textContent = '编辑基本资料';
+            document.getElementById('edit-form').innerHTML = `
+                <div class="form-group">
+                    <label>昵称</label>
+                    <input type="text" name="nickname" value="${user.nickname}" required>
+                </div>
+                <div class="form-group">
+                    <label>留学阶段</label>
+                    <select name="studyStage">
+                        <option value="">请选择</option>
+                        <option value="highschool" ${profile.studyStage === 'highschool' ? 'selected' : ''}>高中</option>
+                        <option value="bachelor" ${profile.studyStage === 'bachelor' ? 'selected' : ''}>本科</option>
+                        <option value="master" ${profile.studyStage === 'master' ? 'selected' : ''}>研究生</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>意向国家/地区</label>
+                    <select name="targetCountry">
+                        <option value="">请选择</option>
+                        <option value="usa" ${profile.targetCountry === 'usa' ? 'selected' : ''}>美国</option>
+                        <option value="uk" ${profile.targetCountry === 'uk' ? 'selected' : ''}>英国</option>
+                        <option value="canada" ${profile.targetCountry === 'canada' ? 'selected' : ''}>加拿大</option>
+                        <option value="australia" ${profile.targetCountry === 'australia' ? 'selected' : ''}>澳大利亚</option>
+                        <option value="singapore" ${profile.targetCountry === 'singapore' ? 'selected' : ''}>新加坡</option>
+                        <option value="hongkong" ${profile.targetCountry === 'hongkong' ? 'selected' : ''}>香港</option>
+                        <option value="japan" ${profile.targetCountry === 'japan' ? 'selected' : ''}>日本</option>
+                        <option value="europe" ${profile.targetCountry === 'europe' ? 'selected' : ''}>欧洲其他国家</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>目标院校</label>
+                    <input type="text" name="targetSchools" value="${profile.targetSchools || ''}" placeholder="如：哈佛大学、MIT">
+                </div>
+                <div class="form-group">
+                    <label>意向专业</label>
+                    <input type="text" name="major" value="${profile.major || ''}" placeholder="如：计算机科学、经济学">
+                </div>
+                <div class="form-group">
+                    <label>擅长科目</label>
+                    <input type="text" name="strengths" value="${profile.strengths || ''}" placeholder="如：数学、物理、英语">
+                </div>
+                <div class="edit-form-actions">
+                    <button type="button" class="cancel-btn" onclick="closeEditModal()">取消</button>
+                    <button type="submit" class="save-btn" id="save-profile-btn">保存</button>
+                </div>
+            `;
+
+            document.getElementById('edit-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('save-profile-btn');
+                btn.textContent = '保存中...';
+                btn.disabled = true;
+
+                const formData = new FormData(e.target);
+                const updates = {
+                    nickname: formData.get('nickname'),
+                    profile: {
+                        studyStage: formData.get('studyStage'),
+                        targetCountry: formData.get('targetCountry'),
+                        targetSchools: formData.get('targetSchools'),
+                        major: formData.get('major'),
+                        strengths: formData.get('strengths')
+                    }
+                };
+
+                try {
+                    await AuthService.updateProfile(updates);
+                    closeEditModal();
+                    const user = AuthService.getCurrentUser();
+                    renderProfile(user);
+                } catch (error) {
+                    alert('保存失败：' + error.message);
+                }
+
+                btn.textContent = '保存';
+                btn.disabled = false;
+            });
+
+            document.getElementById('edit-modal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

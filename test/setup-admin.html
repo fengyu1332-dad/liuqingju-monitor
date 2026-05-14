@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>留情局管理员登录</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 50px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; }
+        .box { background: white; padding: 40px; border-radius: 15px; max-width: 450px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        h1 { color: #333; margin-bottom: 10px; font-size: 24px; }
+        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
+        button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 40px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 20px; transition: transform 0.2s; }
+        button:hover { transform: scale(1.05); }
+        button:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        .msg { margin: 20px 0; padding: 15px; border-radius: 8px; font-size: 14px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+        .loading { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .step { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; text-align: left; }
+        .step.done { background: #d4edda; }
+        .step.current { background: #cce5ff; font-weight: bold; }
+        .admin-icon { font-size: 48px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="admin-icon">🔐</div>
+        <h1>留情局管理员设置</h1>
+        <p class="subtitle">一键创建管理员账号并登录管理后台</p>
+        
+        <div id="status"></div>
+        <div id="steps"></div>
+        
+        <button id="actionBtn" onclick="runSetup()">开始设置</button>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        function updateStatus(msg, type) {
+            document.getElementById('status').innerHTML = '<div class="msg ' + type + '">' + msg + '</div>';
+        }
+        
+        function updateStep(num, text, status) {
+            const stepsDiv = document.getElementById('steps');
+            const stepId = 'step' + num;
+            let stepEl = document.getElementById(stepId);
+            if (!stepEl) {
+                stepEl = document.createElement('div');
+                stepEl.id = stepId;
+                stepEl.className = 'step';
+                stepEl.innerHTML = '<span class="num">' + num + '. </span>' + text;
+                stepsDiv.appendChild(stepEl);
+            }
+            stepEl.className = 'step ' + status;
+            stepEl.innerHTML = '<span class="num">' + (status === 'done' ? '✅' : (status === 'current' ? '⏳' : num + '.')) + ' </span>' + text;
+        }
+        
+        function runSetup() {
+            const btn = document.getElementById('actionBtn');
+            btn.disabled = true;
+            btn.innerText = '设置中...';
+            
+            updateStatus('正在初始化管理员账号...', 'loading');
+            
+            try {
+                const ADMIN_EMAIL = 'admin@liuqingju.com';
+                const ADMIN_PASSWORD = 'admin123';
+                
+                const users = AuthService.getUsers();
+                
+                const adminUser = {
+                    id: 'admin_' + Date.now(),
+                    email: ADMIN_EMAIL,
+                    password: AuthService.hashPassword(ADMIN_PASSWORD),
+                    nickname: '管理员',
+                    avatar: '',
+                    isAdmin: true,
+                    createdAt: new Date().toISOString(),
+                    stats: {
+                        tokens: 99999,
+                        contributionValue: 99999,
+                        lastLoginDate: new Date().toDateString(),
+                        totalPosts: 0,
+                        totalReplies: 0,
+                        totalResources: 0,
+                        totalEarnings: 0
+                    },
+                    profile: {
+                        studyStage: 'graduate',
+                        targetCountry: '',
+                        curriculum: [],
+                        targetSchools: [],
+                        major: '',
+                        strengths: []
+                    }
+                };
+                
+                updateStep(1, '检查用户数据...', 'current');
+                
+                const idx = users.findIndex(u => u.email === ADMIN_EMAIL);
+                if (idx >= 0) {
+                    users[idx] = adminUser;
+                    updateStep(1, '更新现有管理员账号', 'done');
+                } else {
+                    users.push(adminUser);
+                    updateStep(1, '创建管理员账号', 'done');
+                }
+                
+                AuthService.saveUsers(users);
+                
+                updateStep(2, '保存用户数据...', 'current');
+                
+                const userForSession = { ...adminUser };
+                delete userForSession.password;
+                
+                localStorage.setItem('liuqingju_auth_token', AuthService.generateToken());
+                localStorage.setItem('liuqingju_user_data', JSON.stringify(userForSession));
+                
+                updateStep(2, '保存用户数据', 'done');
+                
+                updateStep(3, '准备跳转到管理后台...', 'current');
+                
+                updateStatus('✅ 管理员账号创建成功！<br><br><strong>账号信息：</strong><br>邮箱：admin@liuqingju.com<br>密码：admin123<br><br><em>正在跳转到管理后台...</em>', 'success');
+                
+                btn.innerText = '跳转中...';
+                
+                updateStep(3, '准备跳转到管理后台', 'done');
+                
+                setTimeout(function() {
+                    window.location.href = 'admin.html';
+                }, 1500);
+                
+            } catch (e) {
+                updateStatus('❌ 错误: ' + e.message + '<br><br>' + e.stack, 'error');
+                btn.disabled = false;
+                btn.innerText = '重试';
+                console.error('Setup error:', e);
+            }
+        }
+    </script>
+</body>
+</html>
