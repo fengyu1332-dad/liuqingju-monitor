@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留情局资源保护测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 50px auto; padding: 20px; }
+        .card { background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        button { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #5a6fd6; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0; }
+        .stat-box { background: white; padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-box h3 { margin: 0; color: #667eea; font-size: 32px; }
+        .stat-box p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
+        .progress-bar { width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s; }
+        .resource-list { margin: 15px 0; }
+        .resource-item { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .resource-info h4 { margin: 0 0 5px 0; }
+        .resource-info p { margin: 0; color: #666; font-size: 14px; }
+        .download-btn { background: #48bb78; }
+        .download-btn:hover { background: #38a169; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 12px; max-width: 500px; }
+        .modal-close { float: right; font-size: 28px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ 留情局资源保护测试</h1>
+
+    <div class="card">
+        <h2>📊 下载统计</h2>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3 id="dailyUsed">0</h3>
+                <p>今日已用 / 3</p>
+                <div class="progress-bar"><div class="progress-fill" id="dailyProgress" style="width: 0%"></div></div>
+            </div>
+            <div class="stat-box">
+                <h3 id="weeklyUsed">0</h3>
+                <p>本周已用 / 20</p>
+                <div class="progress-bar"><div class="progress-fill" id="weeklyProgress" style="width: 0%"></div></div>
+            </div>
+            <div class="stat-box">
+                <h3 id="remaining">3</h3>
+                <p>今日剩余</p>
+            </div>
+        </div>
+        <button onclick="refreshStats()">🔄 刷新统计</button>
+        <button onclick="resetStats()">🗑️ 重置统计</button>
+    </div>
+
+    <div class="card">
+        <h2>📚 测试资源列表</h2>
+        <div class="resource-list" id="resourceList"></div>
+    </div>
+
+    <div class="card">
+        <h2>🔐 下载限制规则</h2>
+        <ul>
+            <li>每日下载上限：3次</li>
+            <li>每周下载上限：20次</li>
+            <li>同一资源下载间隔：10分钟</li>
+        </ul>
+    </div>
+
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="js/protection-service.js"></script>
+    <script>
+        const testResources = [
+            {
+                id: 'resource_001',
+                title: '【稀缺】SAT考试基础指南手册',
+                uploader: 'admin',
+                downloadPoints: 10,
+                downloads: 567,
+                rating: 4.7
+            },
+            {
+                id: 'resource_002',
+                title: '【优质】托福词汇记忆卡片',
+                uploader: 'system',
+                downloadPoints: 15,
+                downloads: 423,
+                rating: 4.6
+            },
+            {
+                id: 'resource_003',
+                title: '【稀缺】2024年最新版 SAT 考试真题合集',
+                uploader: 'admin',
+                downloadPoints: 50,
+                downloads: 234,
+                rating: 4.8
+            },
+            {
+                id: 'resource_004',
+                title: '【优质】托福听说读写全科备考资料包',
+                uploader: 'user_123',
+                downloadPoints: 30,
+                downloads: 189,
+                rating: 4.9
+            },
+            {
+                id: 'resource_005',
+                title: '【稀缺】哈佛耶鲁斯坦福成功案例集',
+                uploader: 'expert_001',
+                downloadPoints: 80,
+                downloads: 156,
+                rating: 5.0
+            }
+        ];
+
+        function refreshStats() {
+            const stats = ProtectionService.getAllStats();
+
+            document.getElementById('dailyUsed').textContent = stats.usage.daily.used;
+            document.getElementById('weeklyUsed').textContent = stats.usage.weekly.used;
+            document.getElementById('remaining').textContent = stats.usage.daily.remaining;
+
+            document.getElementById('dailyProgress').style.width = stats.usage.daily.percent + '%';
+            document.getElementById('weeklyProgress').style.width = stats.usage.weekly.percent + '%';
+
+            if (stats.usage.daily.percent >= 80) {
+                document.getElementById('dailyProgress').style.background = 'linear-gradient(90deg, #f56565, #e53e3e)';
+            } else if (stats.usage.daily.percent >= 50) {
+                document.getElementById('dailyProgress').style.background = 'linear-gradient(90deg, #f6e05e, #ecc94b)';
+            } else {
+                document.getElementById('dailyProgress').style.background = 'linear-gradient(90deg, #48bb78, #38a169)';
+            }
+
+            renderResourceList();
+        }
+
+        function renderResourceList() {
+            const listEl = document.getElementById('resourceList');
+            const userPoints = 50;
+            const userId = 'test_user';
+
+            listEl.innerHTML = testResources.map(resource => {
+                const canDownload = ProtectionService.canDownload(userId, resource, userPoints);
+                const accessLevel = ProtectionService.getAccessLevel(resource);
+
+                let statusHtml = '';
+                if (resource.downloadPoints > 0) {
+                    const color = resource.downloadPoints > 10 ? '#e53e3e' : resource.downloadPoints > 5 ? '#ed8936' : '#667eea';
+                    statusHtml = `<span style="background: ${color}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px;"><i class="fas fa-coins"></i> 需${resource.downloadPoints}积分</span>`;
+                } else {
+                    statusHtml = '<span style="background: #48bb78; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px;"><i class="fas fa-gift"></i> 免费</span>';
+                }
+
+                const btnClass = canDownload.allowed ? 'download-btn' : '';
+                const btnText = canDownload.allowed ? '下载' : '受限';
+
+                return `
+                    <div class="resource-item">
+                        <div class="resource-info">
+                            <h4>${resource.title}</h4>
+                            <p>
+                                上传者: ${resource.uploader} |
+                                下载: ${resource.downloads}次 |
+                                评分: ${resource.rating} ⭐ |
+                                ${statusHtml}
+                            </p>
+                        </div>
+                        <button class="${btnClass}" onclick="attemptDownload('${resource.id}')">${btnText}</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function attemptDownload(resourceId) {
+            const resource = testResources.find(r => r.id === resourceId);
+            const userPoints = 50;
+            const userId = 'test_user';
+
+            const result = ProtectionService.executeDownload(resourceId, resource, userId, userPoints);
+
+            const modal = document.getElementById('resultModal');
+            const content = document.getElementById('modalContent');
+
+            if (result.allowed) {
+                content.innerHTML = `
+                    <h2 class="success">✅ 下载准备就绪</h2>
+                    <p>资源: ${resource.title}</p>
+                    <p class="success">${result.message}</p>
+                    <hr>
+                    <p>今日剩余下载次数: <strong>${result.remainingDaily}</strong> 次</p>
+                    <p>本周剩余下载次数: <strong>${result.remainingWeekly}</strong> 次</p>
+                    <p>下载Token: ${result.downloadToken.token}</p>
+                    <p style="margin-top: 20px;"><em>（实际下载功能需要服务器端配合）</em></p>
+                `;
+            } else {
+                let errorMsg = `<p class="error">❌ 下载被阻止</p><p>${result.message}</p>`;
+
+                if (result.reason === 'daily_limit') {
+                    errorMsg += `<p class="warning">今日下载次数已用完，请明天再试</p>`;
+                } else if (result.reason === 'weekly_limit') {
+                    errorMsg += `<p class="warning">本周下载次数已用完，请下周再试</p>`;
+                } else if (result.reason === 'interval') {
+                    errorMsg += `<p class="warning">请 ${result.waitTime} 分钟后再试</p>`;
+                } else if (result.reason === 'insufficient_points') {
+                    errorMsg += `<p class="warning">积分不足，还差 ${result.shortPoints} 积分</p>`;
+                }
+
+                content.innerHTML = errorMsg;
+            }
+
+            modal.style.display = 'block';
+            refreshStats();
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('resultModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function resetStats() {
+            if (confirm('确定要重置所有下载统计吗？')) {
+                ProtectionService.resetStats();
+                alert('统计已重置');
+                refreshStats();
+            }
+        }
+
+        window.onload = function() {
+            refreshStats();
+        };
+    </script>
+</body>
+</html>

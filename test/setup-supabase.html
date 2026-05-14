@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>留情局 Supabase 配置</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 { color: #333; margin-bottom: 10px; font-size: 22px; }
+        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .current-config {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .current-config h3 { margin-top: 0; }
+        .test-btn {
+            background: #4caf50;
+            margin-top: 20px;
+        }
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .test-result.success { background: #d4edda; color: #155724; }
+        .test-result.error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>🔧 留情局 Supabase 配置</h1>
+        <p class="subtitle">配置 Supabase 连接信息，让情报中心能够读取 AI 采集的数据</p>
+
+        <div id="currentConfig" class="current-config">
+            <h3>当前配置</h3>
+            <div id="configStatus">加载中...</div>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="form-group">
+            <label for="supabaseUrl">Supabase Project URL</label>
+            <input type="text" id="supabaseUrl" placeholder="https://your-project.supabase.co">
+            <div class="hint">在 Supabase 项目设置 → General → Project URL 中找到</div>
+        </div>
+
+        <div class="form-group">
+            <label for="supabaseKey">Supabase Service Role Key</label>
+            <input type="password" id="supabaseKey" placeholder="eyJhbGci...">
+            <div class="hint">在 Supabase 项目设置 → API → service_role key 中找到（注意：是 service_role 不是 anon）</div>
+        </div>
+
+        <button onclick="saveConfig()">保存配置</button>
+        <button class="test-btn" onclick="testConnection()">测试连接</button>
+
+        <div id="testResult" class="test-result"></div>
+    </div>
+
+    <script>
+        function loadConfig() {
+            const url = localStorage.getItem('supabase_url');
+            const key = localStorage.getItem('supabase_key');
+            
+            if (url && key) {
+                document.getElementById('supabaseUrl').value = url;
+                document.getElementById('supabaseKey').value = key;
+                document.getElementById('configStatus').innerHTML = 
+                    `<span style="color: green;">✓ 已配置</span><br>` +
+                    `URL: ${url.substring(0, 30)}...<br>` +
+                    `Key: ${key.substring(0, 20)}...`;
+            } else {
+                document.getElementById('configStatus').innerHTML = 
+                    `<span style="color: red;">✗ 未配置</span><br>请填写上方表单进行配置`;
+            }
+        }
+
+        function saveConfig() {
+            const url = document.getElementById('supabaseUrl').value.trim();
+            const key = document.getElementById('supabaseKey').value.trim();
+            
+            if (!url || !key) {
+                showMessage('请填写完整的配置信息', 'error');
+                return;
+            }
+            
+            if (!url.startsWith('https://')) {
+                showMessage('URL 必须以 https:// 开头', 'error');
+                return;
+            }
+            
+            localStorage.setItem('supabase_url', url);
+            localStorage.setItem('supabase_key', key);
+            
+            showMessage('✅ 配置已保存！', 'success');
+            loadConfig();
+        }
+
+        function showMessage(msg, type) {
+            const div = document.getElementById('message');
+            div.className = type;
+            div.innerHTML = msg;
+            div.style.display = 'block';
+            
+            setTimeout(() => {
+                div.style.display = 'none';
+            }, 5000);
+        }
+
+        async function testConnection() {
+            const url = document.getElementById('supabaseUrl').value.trim();
+            const key = document.getElementById('supabaseKey').value.trim();
+            const testResult = document.getElementById('testResult');
+            
+            if (!url || !key) {
+                showMessage('请先填写配置信息', 'error');
+                return;
+            }
+            
+            testResult.style.display = 'block';
+            testResult.className = 'test-result';
+            testResult.innerHTML = '🔄 测试连接中...';
+            
+            try {
+                const response = await fetch(`${url}/rest/v1/intelligence_posts?select=id&limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+                
+                if (response.ok) {
+                    testResult.className = 'test-result success';
+                    testResult.innerHTML = '✅ 连接成功！情报中心已配置完毕！';
+                } else if (response.status === 404) {
+                    testResult.className = 'test-result error';
+                    testResult.innerHTML = '⚠️ 连接成功但未找到 intelligence_posts 视图。请先在 Supabase SQL Editor 中创建视图。';
+                } else {
+                    testResult.className = 'test-result error';
+                    testResult.innerHTML = `❌ 连接失败: HTTP ${response.status}`;
+                }
+            } catch (error) {
+                testResult.className = 'test-result error';
+                testResult.innerHTML = `❌ 连接失败: ${error.message}`;
+            }
+        }
+
+        window.onload = loadConfig;
+    </script>
+</body>
+</html>

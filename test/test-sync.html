@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留情局情报同步测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .card { background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #5a6fd6; }
+        .data-list { background: white; padding: 15px; border-radius: 5px; max-height: 400px; overflow-y: auto; }
+        .item { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .item:last-child { border-bottom: none; }
+        pre { background: #f0f0f0; padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🔄 留情局情报同步测试</h1>
+    
+    <div class="card">
+        <h2>1. 配置 Supabase</h2>
+        <input type="text" id="supabaseUrl" placeholder="Supabase Project URL" style="width: 100%; padding: 10px; margin: 5px 0;">
+        <input type="text" id="supabaseKey" placeholder="Supabase Service Role Key" style="width: 100%; padding: 10px; margin: 5px 0;">
+        <button onclick="saveConfig()">💾 保存配置</button>
+        <button onclick="testConnection()">🔗 测试连接</button>
+        <div id="connectionStatus"></div>
+    </div>
+
+    <div class="card">
+        <h2>2. 同步情报</h2>
+        <button onclick="syncNow()">🔄 立即同步</button>
+        <button onclick="forceSync()">🔄 强制同步</button>
+        <button onclick="clearCache()">🗑️ 清空缓存</button>
+        <div id="syncStatus"></div>
+    </div>
+
+    <div class="card">
+        <h2>3. 查看本地数据</h2>
+        <div class="data-list" id="dataList">
+            <p class="info">暂无数据，请先配置并同步</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>4. 控制台日志</h2>
+        <pre id="consoleLog"></pre>
+    </div>
+
+    <script src="js/intelligence-sync-service.js"></script>
+    <script>
+        let syncService = null;
+        let originalLog = console.log;
+        let originalError = console.error;
+
+        function log(message, type = 'info') {
+            const logEl = document.getElementById('consoleLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            logEl.innerHTML += `[${timestamp}] ${prefix} ${message}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+            originalLog.call(console, message);
+        }
+
+        function saveConfig() {
+            const url = document.getElementById('supabaseUrl').value.trim();
+            const key = document.getElementById('supabaseKey').value.trim();
+            
+            if (!url || !key) {
+                alert('请输入完整的配置信息');
+                return;
+            }
+            
+            localStorage.setItem('supabase_url', url);
+            localStorage.setItem('supabase_key', key);
+            
+            syncService = new IntelligenceSyncService(url, key);
+            log('配置已保存', 'success');
+        }
+
+        async function testConnection() {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.innerHTML = '<p class="info">正在测试连接...</p>';
+            
+            try {
+                const result = await syncService.fetchIntelligence(5);
+                
+                if (result.success || Array.isArray(result)) {
+                    const data = Array.isArray(result) ? result : result.data;
+                    statusEl.innerHTML = `<p class="success">✅ 连接成功！获取到 ${data.length} 条数据</p>`;
+                    log(`连接测试成功，获取到 ${data.length} 条数据`, 'success');
+                } else {
+                    statusEl.innerHTML = `<p class="error">❌ 连接失败: ${result.error || '未知错误'}</p>`;
+                    log(`连接失败: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                statusEl.innerHTML = `<p class="error">❌ 连接错误: ${error.message}</p>`;
+                log(`连接错误: ${error.message}`, 'error');
+            }
+        }
+
+        async function syncNow() {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.innerHTML = '<p class="info">正在同步...</p>';
+            log('开始同步数据...');
+            
+            try {
+                const result = await syncService.manualSync();
+                
+                if (result.status === 'success') {
+                    statusEl.innerHTML = `<p class="success">✅ 同步成功！新增 ${result.added} 条，总计 ${result.total} 条</p>`;
+                    log(`同步成功: 新增 ${result.added} 条，总计 ${result.total} 条`, 'success');
+                    updateDataList();
+                } else if (result.status === 'skipped') {
+                    statusEl.innerHTML = `<p class="info">⏰ 同步间隔未到，跳过</p>`;
+                    log('同步间隔未到，跳过', 'info');
+                } else {
+                    statusEl.innerHTML = `<p class="error">❌ 同步失败: ${result.error}</p>`;
+                    log(`同步失败: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                statusEl.innerHTML = `<p class="error">❌ 同步错误: ${error.message}</p>`;
+                log(`同步错误: ${error.message}`, 'error');
+            }
+        }
+
+        async function forceSync() {
+            log('开始强制同步...');
+            await syncNow();
+        }
+
+        function clearCache() {
+            syncService.clearIntelligence();
+            document.getElementById('dataList').innerHTML = '<p class="info">缓存已清空</p>';
+            log('本地缓存已清空', 'success');
+        }
+
+        function updateDataList() {
+            const dataListEl = document.getElementById('dataList');
+            const data = syncService.getLocalIntelligence();
+            
+            if (data.length === 0) {
+                dataListEl.innerHTML = '<p class="info">暂无数据</p>';
+                return;
+            }
+            
+            dataListEl.innerHTML = data.slice(0, 20).map((item, index) => `
+                <div class="item">
+                    <strong>${index + 1}. ${item.title}</strong><br>
+                    <small>
+                        🏫 ${item.source} | 
+                        🏷️ ${item.tagLabel} | 
+                        ⏰ ${new Date(item.time).toLocaleString()}
+                        ${item.isAutoGenerated ? ' | 🤖 AI采集' : ''}
+                    </small>
+                </div>
+            `).join('');
+            
+            log(`显示 ${Math.min(data.length, 20)} 条数据（共 ${data.length} 条）`, 'success');
+        }
+
+        window.onload = function() {
+            console.log = function() {
+                log(Array.from(arguments).join(' '));
+                originalLog.apply(console, arguments);
+            };
+            
+            console.error = function() {
+                log(Array.from(arguments).join(' '), 'error');
+                originalError.apply(console, arguments);
+            };
+            
+            const savedUrl = localStorage.getItem('supabase_url');
+            const savedKey = localStorage.getItem('supabase_key');
+            
+            if (savedUrl && savedKey) {
+                document.getElementById('supabaseUrl').value = savedUrl;
+                document.getElementById('supabaseKey').value = savedKey;
+                syncService = new IntelligenceSyncService(savedUrl, savedKey);
+                log('已加载保存的配置', 'success');
+                updateDataList();
+            } else {
+                log('请先配置 Supabase 连接信息', 'info');
+            }
+        };
+    </script>
+</body>
+</html>
