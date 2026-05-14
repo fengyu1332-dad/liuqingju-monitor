@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活动和专题 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .activities-page {
+            background: var(--bg-light);
+        }
+
+        .activities-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .activities-hero h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .activities-hero p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .activities-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .section-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .section-tab {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-tab:hover {
+            background: var(--secondary-color);
+        }
+
+        .section-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .activity-card-image {
+            height: 180px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .activity-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .activity-status {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .activity-status.upcoming {
+            background: rgba(255, 255, 255, 0.9);
+            color: #FF9800;
+        }
+
+        .activity-status.ongoing {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+        }
+
+        .activity-status.ended {
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+        }
+
+        .activity-card-content {
+            padding: 24px;
+        }
+
+        .activity-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .activity-type.webinar {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .activity-type.competition {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .activity-type.discussion {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        .activity-type.qa {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .activity-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .activity-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .activity-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .activity-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .activity-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .activity-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .activity-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .activity-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .activity-btn.secondary {
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .activity-btn.secondary:hover {
+            background: var(--secondary-color);
+        }
+
+        .topics-section {
+            margin-top: 60px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .topic-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-4px);
+        }
+
+        .topic-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .topic-icon.ib {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            color: #1976D2;
+        }
+
+        .topic-icon.ap {
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            color: #FF9800;
+        }
+
+        .topic-icon.sat {
+            background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+            color: #7B1FA2;
+        }
+
+        .topic-icon.school {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            color: #4CAF50;
+        }
+
+        .topic-icon.visa {
+            background: linear-gradient(135deg, #FFEBEE, #FFCDD2);
+            color: #E53935;
+        }
+
+        .topic-icon.life {
+            background: linear-gradient(135deg, #E0F7FA, #B2EBF2);
+            color: #00BCD4;
+        }
+
+        .topic-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .topic-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .topic-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .topic-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        @media (max-width: 968px) {
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body class="activities-page">
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link">资源共享</a>
+                <a href="intelligence.html" class="nav-link">留学情报</a>
+                <a href="forum.html" class="nav-link">留子论坛</a>
+                <a href="points-center.html" class="nav-link">积分中心</a>
+            </nav>
+            <div class="header-right" id="auth-container">
+                <button class="login-btn" id="login-btn" onclick="if(typeof authModal !== 'undefined') authModal.open('login');">登录 Login</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="activities-hero">
+        <div class="container">
+            <h1>🎯 活动与专题</h1>
+            <p>参与精彩活动，深入专题讨论，让留学之路不再孤单</p>
+        </div>
+    </section>
+
+    <section class="activities-container">
+        <div class="section-tabs">
+            <button class="section-tab active" data-tab="activities">
+                <i class="fas fa-calendar-check"></i>
+                全部活动
+            </button>
+            <button class="section-tab" data-tab="ongoing">
+                <i class="fas fa-play-circle"></i>
+                正在进行
+            </button>
+            <button class="section-tab" data-tab="upcoming">
+                <i class="fas fa-clock"></i>
+                即将开始
+            </button>
+            <button class="section-tab" data-tab="topics">
+                <i class="fas fa-fire"></i>
+                热门专题
+            </button>
+        </div>
+
+        <div class="activities-grid" id="activities-grid">
+        </div>
+
+        <section class="topics-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-th-large"></i>
+                    热门专题
+                </h2>
+                <a href="#" class="view-all-link">
+                    查看全部 <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="topics-grid" id="topics-grid">
+            </div>
+        </section>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>© 2024 留情局 Intelligence Bureau for Overseas Study. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script>
+        let authModal, userMenu;
+
+        const activities = [
+            {
+                id: '1',
+                type: 'webinar',
+                typeName: '线上讲座',
+                title: '2025Fall申请季全攻略',
+                description: '邀请TOP30学长学姐分享申请经验，涵盖选校、文书、面试等关键环节。',
+                date: '2024-01-20',
+                time: '20:00',
+                location: '线上直播',
+                participants: 456,
+                maxParticipants: 500,
+                status: 'upcoming',
+                image: null
+            },
+            {
+                id: '2',
+                type: 'competition',
+                typeName: '竞赛活动',
+                title: '首届留学情报写作大赛',
+                description: '用文字记录留学准备过程，分享你的独特经历和见解，丰厚奖励等你来拿！',
+                date: '2024-01-15',
+                time: '全天',
+                location: '留情局社区',
+                participants: 128,
+                maxParticipants: 200,
+                status: 'ongoing',
+                image: null
+            },
+            {
+                id: '3',
+                type: 'discussion',
+                typeName: '圆桌讨论',
+                title: 'IB vs AP：如何选择适合的国际课程',
+                description: '三位IB/AP满分学员在线对谈，深入分析两种课程的优劣和选择策略。',
+                date: '2024-01-18',
+                time: '19:30',
+                location: '腾讯会议',
+                participants: 234,
+                maxParticipants: 300,
+                status: 'upcoming',
+                image: null
+            },
+            {
+                id: '4',
+                type: 'qa',
+                typeName: '答疑活动',
+                title: 'SAT备考一对一答疑',
+                description: '专业老师在线解答SAT备考疑问，针对性制定学习计划。',
+                date: '2024-01-10',
+                time: '14:00',
+                location: '微信群',
+                participants: 89,
+                maxParticipants: 100,
+                status: 'ended',
+                image: null
+            }
+        ];
+
+        const topics = [
+            {
+                id: '1',
+                icon: 'ib',
+                name: 'IB课程专区',
+                description: 'IB课程学习心得、选课建议、EE/IA/TOK写作指南',
+                posts: 1256,
+                members: 3420
+            },
+            {
+                id: '2',
+                icon: 'ap',
+                name: 'AP备考圈',
+                description: 'AP各科备考经验、真题分享、高分技巧',
+                posts: 2341,
+                members: 5680
+            },
+            {
+                id: '3',
+                icon: 'sat',
+                name: 'SAT备考区',
+                description: 'SAT阅读、语法、数学备考策略与资源',
+                posts: 1892,
+                members: 4210
+            },
+            {
+                id: '4',
+                icon: 'school',
+                name: '择校攻略',
+                description: '英美澳加名校申请经验与数据分析',
+                posts: 3421,
+                members: 7890
+            },
+            {
+                id: '5',
+                icon: 'visa',
+                name: '签证指南',
+                description: '各国学生签证申请攻略与经验分享',
+                posts: 892,
+                members: 2130
+            },
+            {
+                id: '6',
+                icon: 'life',
+                name: '留学生活',
+                description: '海外生活点滴、租房经验、社交技巧',
+                posts: 1567,
+                members: 4560
+            }
+        ];
+
+        function renderActivities(filter = 'activities') {
+            const container = document.getElementById('activities-grid');
+            let filteredActivities = activities;
+
+            if (filter === 'ongoing') {
+                filteredActivities = activities.filter(a => a.status === 'ongoing');
+            } else if (filter === 'upcoming') {
+                filteredActivities = activities.filter(a => a.status === 'upcoming');
+            }
+
+            if (filteredActivities.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-calendar-times" style="font-size: 48px; color: var(--secondary-color); margin-bottom: 16px;"></i>
+                        <h3 style="color: var(--text-secondary);">暂无相关活动</h3>
+                        <p style="color: var(--text-light);">敬请期待更多精彩活动</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredActivities.map(activity => {
+                const statusText = {
+                    upcoming: '即将开始',
+                    ongoing: '进行中',
+                    ended: '已结束'
+                };
+
+                const typeIcons = {
+                    webinar: 'fa-video',
+                    competition: 'fa-trophy',
+                    discussion: 'fa-comments',
+                    qa: 'fa-question-circle'
+                };
+
+                const gradientColors = {
+                    webinar: 'linear-gradient(135deg, #667eea, #764ba2)',
+                    competition: 'linear-gradient(135deg, #f093fb, #f5576c)',
+                    discussion: 'linear-gradient(135deg, #4facfe, #00f2fe)',
+                    qa: 'linear-gradient(135deg, #11998e, #38ef7d)'
+                };
+
+                return `
+                    <div class="activity-card" onclick="showActivityDetail('${activity.id}')">
+                        <div class="activity-card-image" style="background: ${gradientColors[activity.type]}">
+                            <i class="fas ${typeIcons[activity.type]}" style="font-size: 48px; color: white; opacity: 0.8;"></i>
+                            <span class="activity-status ${activity.status}">${statusText[activity.status]}</span>
+                        </div>
+                        <div class="activity-card-content">
+                            <span class="activity-type ${activity.type}">${activity.typeName}</span>
+                            <h3>${activity.title}</h3>
+                            <p>${activity.description}</p>
+                            <div class="activity-meta">
+                                <span><i class="fas fa-calendar"></i> ${activity.date}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> ${activity.location}</span>
+                                <span><i class="fas fa-users"></i> ${activity.participants}/${activity.maxParticipants}</span>
+                            </div>
+                            <div class="activity-actions">
+                                <button class="activity-btn ${activity.status === 'ended' ? 'secondary' : 'primary'}" onclick="event.stopPropagation(); ${activity.status === 'ended' ? 'showActivitySummary()' : 'signUpActivity()'}">
+                                    <i class="fas ${activity.status === 'ended' ? 'fa-eye' : 'fa-ticket-alt'}"></i>
+                                    ${activity.status === 'ended' ? '查看回顾' : activity.status === 'ongoing' ? '参与活动' : '立即报名'}
+                                </button>
+                                <button class="activity-btn secondary" onclick="event.stopPropagation(); shareActivity()">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTopics() {
+            const container = document.getElementById('topics-grid');
+
+            const topicIcons = {
+                ib: 'fa-graduation-cap',
+                ap: 'fa-book',
+                sat: 'fa-pencil-alt',
+                school: 'fa-university',
+                visa: 'fa-passport',
+                life: 'fa-home'
+            };
+
+            container.innerHTML = topics.map(topic => `
+                <div class="topic-card" onclick="joinTopic('${topic.id}')">
+                    <div class="topic-icon ${topic.icon}">
+                        <i class="fas ${topicIcons[topic.icon]}"></i>
+                    </div>
+                    <h3>${topic.name}</h3>
+                    <p>${topic.description}</p>
+                    <div class="topic-stats">
+                        <span><i class="fas fa-file-alt"></i> ${topic.posts} 帖子</span>
+                        <span><i class="fas fa-users"></i> ${topic.members} 成员</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showActivityDetail(id) {
+            const activity = activities.find(a => a.id === id);
+            if (activity) {
+                alert(`活动详情：${activity.title}\n\n${activity.description}\n\n时间：${activity.date} ${activity.time}\n地点：${activity.location}\n参与人数：${activity.participants}/${activity.maxParticipants}`);
+            }
+        }
+
+        function signUpActivity() {
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) {
+                authModal.open('login');
+                return;
+            }
+            alert('报名成功！请查收通知。');
+        }
+
+        function showActivitySummary() {
+            alert('活动回顾即将上线，敬请期待！');
+        }
+
+        function shareActivity() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '留情局活动',
+                    text: '发现一个精彩活动，快来看看吧！',
+                    url: window.location.href
+                });
+            } else {
+                alert('链接已复制到剪贴板！');
+            }
+        }
+
+        function joinTopic(id) {
+            const topic = topics.find(t => t.id === id);
+            if (topic) {
+                window.location.href = `forum.html?topic=${id}`;
+            }
+        }
+
+        document.querySelectorAll('.section-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderActivities(tab.dataset.tab);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            authModal = new AuthModal();
+            userMenu = new UserMenu('auth-container');
+
+            const loginBtn = document.getElementById('login-btn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    authModal.open('login');
+                });
+            }
+
+            renderActivities();
+            renderTopics();
+        });
+    </script>
+</body>
+</html>

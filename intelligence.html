@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留学情报 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modal-style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link">资源共享</a>
+                <a href="intelligence.html" class="nav-link active">留学情报</a>
+                <a href="forum.html" class="nav-link">留子论坛</a>
+                <a href="points-center.html" class="nav-link">积分中心</a>
+            </nav>
+            <div class="header-right" id="auth-container">
+                <button class="login-btn" id="login-btn" onclick="if(typeof authModal !== 'undefined') authModal.open('login');">登录 Login</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="intelligence-hero">
+        <div class="container">
+            <h1>情报中心</h1>
+            <p>为您追踪全球竞赛、申请截止日期和独家留学情报。我们将混乱的信息流转化为清晰的成长路线。</p>
+        </div>
+    </section>
+
+    <section class="intelligence-content">
+        <div class="container">
+            <div class="intelligence-grid">
+                <div class="main-content">
+                    <div class="hot-intelligence">
+                        <div class="section-header">
+                            <h2><i class="fas fa-flame"></i> 热点情报 (Rising Intelligence)</h2>
+                            <a href="#" class="view-all">查看全部 →</a>
+                        </div>
+                        <div class="intelligence-card">
+                            <span class="tag policy">POLICY</span>
+                            <span class="time">2 hours ago</span>
+                            <h3>UC系统重大政策更新：针对2025届申请者的最新标准化考试要求</h3>
+                            <p class="views">1.2k views</p>
+                        </div>
+                        <div class="intelligence-card">
+                            <span class="tag resources">RESOURCES</span>
+                            <span class="time">5 hours ago</span>
+                            <h3>【资源下载】常春藤联校最新文书真题题库及教授点评版</h3>
+                            <p class="views">850 downloads</p>
+                        </div>
+                        <div class="intelligence-card">
+                            <span class="tag competition">COMPETITION</span>
+                            <span class="time">Yesterday</span>
+                            <h3>2025赛季学术竞赛路线图：从AMC到USACO的全年备赛建议</h3>
+                            <p class="views">2.4k views</p>
+                        </div>
+                    </div>
+
+                    <div class="key-milestones">
+                        <div class="section-header">
+                            <h2><i class="fas fa-calendar-check"></i> 关键时点 (Key Milestones)</h2>
+                            <a href="#" class="view-all">查看全部时点 →</a>
+                        </div>
+                        <div class="milestone-list">
+                            <div class="milestone-item">
+                                <div class="milestone-icon purple">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="milestone-content">
+                                    <h3>AMC 10/12 美国数学竞赛</h3>
+                                    <p>报名截止日期：2024年10月28日</p>
+                                </div>
+                                <button class="milestone-btn">详情 →</button>
+                            </div>
+                            <div class="milestone-item">
+                                <div class="milestone-icon orange">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div class="milestone-content">
+                                    <h3>UC Application Deadline 加州大学申请截止</h3>
+                                    <p>截止日期：2024年11月30日</p>
+                                </div>
+                                <button class="milestone-btn secondary">加入日历</button>
+                            </div>
+                            <div class="milestone-item">
+                                <div class="milestone-icon green">
+                                    <i class="fas fa-passport"></i>
+                                </div>
+                                <div class="milestone-content">
+                                    <h3>Student Visa Early Appointment 学生签证预约开始</h3>
+                                    <p>开始时间：2025年5月</p>
+                                </div>
+                                <button class="milestone-btn secondary">加入日历</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="personal-timeline">
+                        <h2><i class="fas fa-list-alt"></i> 我的日程 (Personal)</h2>
+                        <div class="timeline-list">
+                            <div class="timeline-item today">
+                                <span class="timeline-dot"></span>
+                                <div class="timeline-content">
+                                    <h4>提交文书第一稿 (Common App)</h4>
+                                    <p class="countdown">剩余时间: 12小时</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-dot"></span>
+                                <div class="timeline-content">
+                                    <span class="timeline-date">OCT 15</span>
+                                    <h4>牛剑面试材料上传截止</h4>
+                                    <p>牛津大学/剑桥大学</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-dot"></span>
+                                <div class="timeline-content">
+                                    <span class="timeline-date">NOV 01</span>
+                                    <h4>ED/EA 提前录取申请截止</h4>
+                                    <p>关键截止点 - 全面检查</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-dot"></span>
+                                <div class="timeline-content">
+                                    <span class="timeline-date">OCT 25</span>
+                                    <h4>托福成绩提交 (TOEFL Score Submission)</h4>
+                                    <p>官方送分至目标院校</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-dot"></span>
+                                <div class="timeline-content">
+                                    <span class="timeline-date">NOV 05</span>
+                                    <h4>联系老师撰写推荐信</h4>
+                                    <p>确认推荐人名单并发送请求</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-dot"></span>
+                                <div class="timeline-content">
+                                    <span class="timeline-date">NOV 15</span>
+                                    <h4>模拟面试练习 (Mock Interview)</h4>
+                                    <p>预约校友或导师进行1对1模拟</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-reminder">+ 添加提醒</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 情报详情模态框 -->
+    <div id="intelDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeIntelModal()">&times;</span>
+            <div id="intelDetailContent"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fas fa-landmark"></i>
+                        <span>留情局</span>
+                    </div>
+                    <p>专业的海外教育情报与资源共享平台，助力每一位学子的全球升学之路。</p>
+                </div>
+                <div class="footer-links">
+                    <h4>关于我们</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Study Guide</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>帮助与支持</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 留情局 Intelligence Bureau for Overseas Study. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/intelligence-service.js"></script>
+    <script src="js/intelligence-sync-service.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let syncService = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            initSyncService();
+            renderIntelligence();
+            renderMilestones();
+            renderTimeline();
+            initCalendar();
+
+            await performInitialSync();
+        });
+
+        function initSyncService() {
+            const supabaseUrl = localStorage.getItem('supabase_url');
+            const supabaseKey = localStorage.getItem('supabase_key');
+
+            if (supabaseUrl && supabaseKey) {
+                syncService = new IntelligenceSyncService(supabaseUrl, supabaseKey);
+                syncService.startAutoSync(30 * 60 * 1000);
+                updateSyncStatus();
+            }
+        }
+
+        async function performInitialSync() {
+            if (!syncService) return;
+
+            const result = await syncService.manualSync();
+            if (result.status === 'success' && result.added > 0) {
+                showSyncNotification(`新增 ${result.added} 条情报`, 'success');
+                renderIntelligence();
+            }
+            updateSyncStatus();
+        }
+
+        function updateSyncStatus() {
+            if (!syncService) return;
+
+            const stats = syncService.getStats();
+            const meta = syncService.getSyncMeta();
+
+            const statusEl = document.getElementById('sync-status');
+            if (statusEl) {
+                const lastSync = meta.lastSync ? formatTimeAgo(meta.lastSync) : '从未同步';
+                statusEl.innerHTML = `
+                    <div class="sync-status-badge">
+                        <i class="fas fa-sync ${meta.lastSync ? 'synced' : ''}"></i>
+                        <span>${lastSync}</span>
+                        <span class="sync-count">${stats.total} 条情报</span>
+                    </div>
+                `;
+            }
+        }
+
+        function showSyncNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `sync-notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function renderIntelligence() {
+            const intelList = document.querySelector('.hot-intelligence');
+            const intelligence = IntelligenceService.getIntelligence();
+
+            const cardsHtml = intelligence.slice(0, 4).map(item => `
+                <div class="intelligence-card ${item.isAutoGenerated ? 'auto-generated' : ''}" data-id="${item.id}" onclick="showIntelDetail('${item.id}')">
+                    <div class="card-header">
+                        <span class="tag ${item.tag}">${item.tagLabel}</span>
+                        ${item.isAutoGenerated ? '<span class="auto-badge"><i class="fas fa-robot"></i> AI采集</span>' : ''}
+                        <span class="time">${IntelligenceService.formatTimeAgo(item.time)}</span>
+                    </div>
+                    <h3>${item.title}</h3>
+                    <div class="card-footer">
+                        <span class="source"><i class="fas fa-university"></i> ${item.source}</span>
+                        <span class="views"><i class="fas fa-eye"></i> ${item.views.toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            intelList.innerHTML = `
+                <div class="section-header">
+                    <h2><i class="fas fa-flame"></i> 热点情报 (Rising Intelligence)</h2>
+                    <div class="section-actions">
+                        <button class="sync-btn" onclick="manualSync()" title="手动同步">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <a href="#" class="view-all">查看全部 <span class="total-count">(${intelligence.length})</span> →</a>
+                    </div>
+                </div>
+                ${intelligence.length === 0 ? '<p class="empty-intel">暂无情报，AI正在采集中...</p>' : cardsHtml}
+            `;
+        }
+
+        async function manualSync() {
+            if (!syncService) {
+                showSyncNotification('请先配置 Supabase', 'error');
+                return;
+            }
+
+            const btn = event.target.closest('.sync-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            const result = await syncService.manualSync();
+
+            if (result.status === 'success') {
+                showSyncNotification(`同步成功！新增 ${result.added} 条情报`, 'success');
+                renderIntelligence();
+            } else {
+                showSyncNotification('同步失败: ' + result.error, 'error');
+            }
+
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+            btn.disabled = false;
+            updateSyncStatus();
+        }
+
+        function showIntelDetail(id) {
+            const intel = IntelligenceService.getIntelligence().find(i => i.id === id);
+            if (!intel) {
+                alert('未找到情报详情');
+                return;
+            }
+
+            const content = `
+                <div style="padding: 20px;">
+                    <div style="margin-bottom: 15px;">
+                        <span class="tag ${intel.tag}" style="margin-right: 10px;">${intel.tagLabel}</span>
+                        ${intel.isAutoGenerated ? '<span style="background: #e3f2fd; color: #1976d2; padding: 3px 8px; border-radius: 4px; font-size: 12px;">🤖 AI采集</span>' : ''}
+                    </div>
+                    <h2 style="color: #333; margin-bottom: 15px; font-size: 20px;">${intel.title}</h2>
+                    <div style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                        <p style="margin: 5px 0;">🏫 来源: ${intel.source || '未知'}</p>
+                        <p style="margin: 5px 0;">⏰ 发布时间: ${new Date(intel.time).toLocaleString('zh-CN')}</p>
+                    </div>
+                    <div style="border-top: 1px solid #eee; padding-top: 20px;">
+                        <h3 style="color: #555; margin-bottom: 10px;">📄 内容详情</h3>
+                        <div style="color: #444; line-height: 1.8; font-size: 15px;">
+                            ${intel.content || '暂无详细内容'}
+                        </div>
+                    </div>
+                    ${intel.sourceUrl ? `<div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                        <a href="${intel.sourceUrl}" target="_blank" style="color: #667eea; text-decoration: none; font-size: 14px;">
+                            🔗 查看原文 →
+                        </a>
+                    </div>` : ''}
+                </div>
+            `;
+
+            document.getElementById('intelDetailContent').innerHTML = content;
+            document.getElementById('intelDetailModal').style.display = 'block';
+        }
+
+        function closeIntelModal() {
+            document.getElementById('intelDetailModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('intelDetailModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function renderMilestones() {
+            const milestoneList = document.querySelector('.milestone-list');
+            const milestones = IntelligenceService.getUpcomingEvents(90);
+            
+            const itemsHtml = milestones.slice(0, 4).map(mile => {
+                const countdown = IntelligenceService.getCountdown(mile.date);
+                return `
+                    <div class="milestone-item">
+                        <div class="milestone-icon ${mile.color}">
+                            <i class="fas fa-${mile.icon}"></i>
+                        </div>
+                        <div class="milestone-content">
+                            <h3>${mile.title}</h3>
+                            <p>${mile.description}：${mile.date} ${countdown.expired ? '(已过期)' : `(${countdown.text})`}</p>
+                        </div>
+                        <button class="milestone-btn" onclick="addToCalendar('${mile.id}')">${countdown.expired ? '已结束' : '加入日历'}</button>
+                    </div>
+                `;
+            }).join('');
+            
+            milestoneList.innerHTML = itemsHtml;
+        }
+
+        function renderTimeline() {
+            const timelineList = document.querySelector('.timeline-list');
+            const timeline = IntelligenceService.getTimelineItems();
+            const today = new Date().toISOString().split('T')[0];
+            
+            const itemsHtml = timeline.map(item => {
+                const isToday = item.date === today;
+                const countdown = IntelligenceService.getCountdown(item.date);
+                return `
+                    <div class="timeline-item ${isToday ? 'today' : ''} ${item.completed ? 'completed' : ''}">
+                        <span class="timeline-dot ${item.priority}"></span>
+                        <div class="timeline-content">
+                            ${isToday ? `<span class="countdown">剩余时间: ${countdown.text}</span>` : `<span class="timeline-date">${item.date.slice(5)}</span>`}
+                            <h4>${item.title}</h4>
+                            <p>${item.description}</p>
+                        </div>
+                        ${!item.completed ? `<button class="timeline-check" onclick="completeTask('${item.id}')"><i class="fas fa-check"></i></button>` : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            timelineList.innerHTML = itemsHtml;
+        }
+
+        function completeTask(taskId) {
+            IntelligenceService.completeTimelineItem(taskId);
+            renderTimeline();
+        }
+
+        function addToCalendar(milestoneId) {
+            const milestones = IntelligenceService.getMilestones();
+            const mile = milestones.find(m => m.id === milestoneId);
+            if (!mile) return;
+            
+            const event = {
+                title: mile.title,
+                start: mile.date,
+                description: mile.description
+            };
+            
+            alert(`已将 "${mile.title}" 添加到日历！\n日期: ${mile.date}`);
+        }
+
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+
+        function initCalendar() {
+            const calendarContainer = document.createElement('div');
+            calendarContainer.className = 'calendar-section';
+            calendarContainer.innerHTML = `
+                <h2><i class="fas fa-calendar"></i> 申请日历 (Application Calendar)</h2>
+                <div class="calendar-header">
+                    <button class="calendar-nav" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <span class="calendar-title" id="calendar-title">${currentYear}年 ${currentMonth + 1}月</span>
+                    <button class="calendar-nav" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
+                <div class="calendar-legend">
+                    <span class="legend-item"><span class="legend-dot purple"></span>竞赛</span>
+                    <span class="legend-item"><span class="legend-dot orange"></span>截止日期</span>
+                    <span class="legend-item"><span class="legend-dot green"></span>签证</span>
+                    <span class="legend-item"><span class="legend-dot blue"></span>申请</span>
+                </div>
+            `;
+            
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.appendChild(calendarContainer);
+            renderCalendar();
+        }
+
+        function changeMonth(delta) {
+            currentMonth += delta;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendar-grid');
+            const calendarTitle = document.getElementById('calendar-title');
+            
+            calendarTitle.textContent = `${currentYear}年 ${currentMonth + 1}月`;
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const events = IntelligenceService.getCalendarEvents(currentYear, currentMonth);
+            
+            let html = '<div class="calendar-weekdays"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>';
+            html += '<div class="calendar-days">';
+            
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="calendar-day empty"></div>';
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayEvents = events.filter(e => e.date === dateStr);
+                const hasEvent = dayEvents.length > 0;
+                const eventColor = hasEvent ? dayEvents[0].color : '';
+                
+                html += `
+                    <div class="calendar-day ${hasEvent ? 'has-event' : ''} ${eventColor}">
+                        ${day}
+                        ${hasEvent ? '<div class="event-dot"></div>' : ''}
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            calendarGrid.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

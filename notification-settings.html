@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知设置 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .settings-page {
+            min-height: 100vh;
+            background: var(--bg-light);
+            padding: 40px 0;
+        }
+
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .settings-page-header {
+            margin-bottom: 30px;
+        }
+
+        .settings-page-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-page-header h1 i {
+            color: var(--primary-color);
+        }
+
+        .settings-page-header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .settings-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .settings-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .settings-card-title i {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .quick-presets {
+            display: flex;
+            gap: 10px;
+        }
+
+        .preset-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: var(--bg-white);
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--secondary-color);
+        }
+
+        .preset-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .channel-item:hover {
+            background: var(--secondary-color);
+        }
+
+        .channel-item.disabled {
+            opacity: 0.5;
+        }
+
+        .channel-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .channel-icon.inapp {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .channel-icon.email {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .channel-icon.push {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .channel-info {
+            flex: 1;
+        }
+
+        .channel-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .channel-desc {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .notification-types-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .notification-type-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .notification-type-card:hover {
+            background: var(--secondary-color);
+        }
+
+        .notification-type-card.disabled {
+            opacity: 0.6;
+        }
+
+        .type-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .type-icon.social {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .type-icon.interaction {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .type-icon.reward {
+            background: linear-gradient(135deg, #fbbd23, #ec008c);
+            color: white;
+        }
+
+        .type-icon.system {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .type-content {
+            flex: 1;
+        }
+
+        .type-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .type-desc {
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .dnd-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .dnd-main-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            color: white;
+        }
+
+        .dnd-main-toggle.disabled {
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .dnd-info h4 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .dnd-info p {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .dnd-options-panel {
+            padding: 24px;
+            background: var(--bg-light);
+            border-radius: 16px;
+        }
+
+        .dnd-options-panel.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .time-range-picker {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .time-picker {
+            flex: 1;
+        }
+
+        .time-picker label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .time-picker input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .time-picker input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .time-separator {
+            font-size: 20px;
+            color: var(--text-light);
+            margin-top: 24px;
+        }
+
+        .weekend-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-white);
+            border-radius: 10px;
+        }
+
+        .weekend-toggle span {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .dnd-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: var(--bg-white);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .dnd-status i {
+            color: var(--primary-color);
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 12px;
+        }
+
+        .stat-card.main {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .progress-bar {
+            margin-top: 20px;
+            height: 8px;
+            background: var(--bg-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+        }
+
+        .action-btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-outline {
+            padding: 12px 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-white);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary-color);
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .help-section {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .help-card {
+            flex: 1;
+            padding: 16px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .help-card i {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .help-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .help-card p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--border-color);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--primary-color);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+        @media (max-width: 768px) {
+            .channel-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .notification-types-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-presets {
+                flex-wrap: wrap;
+            }
+
+            .time-range-picker {
+                flex-direction: column;
+            }
+
+            .time-separator {
+                margin: 0;
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link">资源共享</a>
+                <a href="intelligence.html" class="nav-link">留学情报</a>
+                <a href="forum.html" class="nav-link">留子论坛</a>
+                <a href="points-center.html" class="nav-link">积分中心</a>
+            </nav>
+            <div class="header-right" id="auth-container">
+                <button class="login-btn" id="login-btn" onclick="if(typeof authModal !== 'undefined') authModal.open('login');">登录 Login</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="settings-page">
+        <div class="settings-container">
+            <div class="settings-page-header">
+                <h1>
+                    <i class="fas fa-bell"></i>
+                    通知设置
+                </h1>
+                <p>管理您希望接收的通知类型和推送方式</p>
+            </div>
+
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-card-title">
+                        <i class="fas fa-rocket"></i>
+                        快速设置
+                    </div>
+                    <div class="quick-presets">
+                        <button class="preset-btn" onclick="applyPreset('all')">
+                            <i class="fas fa-check-circle"></i>
+                            全部开启
+                        </button>
+                        <button class="preset-btn" onclick="applyPreset('important')">
+                            <i class="fas fa-star"></i>
+                            仅重要
+                        </button>
+                        <button class="preset-btn" onclick="applyPreset('none')">
+                            <i class="fas fa-bell-slash"></i>
+                            全部关闭
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-overview" id="stats-overview">
+                    <div class="stat-card main">
+                        <div class="stat-value" id="stat-enabled">0</div>
+                        <div class="stat-label">已开启</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-disabled">0</div>
+                        <div class="stat-label">已关闭</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-label">总类型</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-percent">0%</div>
+                        <div class="stat-label">开启率</div>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-card-title">
+                        <i class="fas fa-broadcast-tower"></i>
+                        通知渠道
+                    </div>
+                </div>
+
+                <div class="channel-grid">
+                    <div class="channel-item" onclick="toggleChannel('inApp')">
+                        <div class="channel-icon inapp">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="channel-info">
+                            <div class="channel-name">应用内通知</div>
+                            <div class="channel-desc">在留情局内接收通知</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="channel-inapp" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="channel-item" onclick="toggleChannel('email')">
+                        <div class="channel-icon email">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="channel-info">
+                            <div class="channel-name">邮件通知</div>
+                            <div class="channel-desc">接收邮件提醒</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="channel-email">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="channel-item" onclick="toggleChannel('push')">
+                        <div class="channel-icon push">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="channel-info">
+                            <div class="channel-name">推送通知</div>
+                            <div class="channel-desc">浏览器推送</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="channel-push">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-card-title">
+                        <i class="fas fa-list-ul"></i>
+                        通知类型
+                    </div>
+                </div>
+
+                <div class="notification-types-grid" id="notification-types">
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-card-title">
+                        <i class="fas fa-moon"></i>
+                        免打扰模式
+                    </div>
+                </div>
+
+                <div class="dnd-container">
+                    <div class="dnd-main-toggle" id="dnd-main">
+                        <div class="dnd-info">
+                            <h4 id="dnd-title">免打扰模式已关闭</h4>
+                            <p id="dnd-desc">开启后在指定时间段内不接收普通通知</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="dnd-toggle" onchange="toggleDND(this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="dnd-options-panel" id="dnd-options">
+                        <div class="time-range-picker">
+                            <div class="time-picker">
+                                <label>开始时间</label>
+                                <input type="time" id="dnd-start" value="22:00" onchange="updateDND()">
+                            </div>
+                            <span class="time-separator">至</span>
+                            <div class="time-picker">
+                                <label>结束时间</label>
+                                <input type="time" id="dnd-end" value="08:00" onchange="updateDND()">
+                            </div>
+                        </div>
+                        <div class="weekend-toggle">
+                            <span><i class="fas fa-calendar-weekend"></i> 周末全天免打扰</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="dnd-weekends" onchange="updateDND()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="dnd-status" id="dnd-status">
+                            <i class="fas fa-info-circle"></i>
+                            <span>当前处于免打扰时间内，仅系统公告会推送</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions-bar">
+                <div class="action-btn-group">
+                    <button class="btn-outline" onclick="exportSettings()">
+                        <i class="fas fa-download"></i>
+                        导出设置
+                    </button>
+                    <button class="btn-outline" onclick="importSettings()">
+                        <i class="fas fa-upload"></i>
+                        导入设置
+                    </button>
+                    <button class="btn-outline" onclick="resetSettings()">
+                        <i class="fas fa-undo"></i>
+                        重置默认
+                    </button>
+                </div>
+                <button class="btn-primary" onclick="saveSettings()">
+                    <i class="fas fa-save"></i>
+                    保存设置
+                </button>
+            </div>
+
+            <div class="help-section">
+                <div class="help-card">
+                    <i class="fas fa-question-circle"></i>
+                    <div>
+                        <h4>遇到问题？</h4>
+                        <p>查看帮助文档获取详细说明</p>
+                    </div>
+                </div>
+                <div class="help-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <h4>隐私保护</h4>
+                        <p>您的设置数据仅存储在本地</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>© 2024 留情局 Intelligence Bureau for Overseas Study. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/notification-settings.js"></script>
+    <script>
+        let authModal, userMenu;
+        let notificationService;
+
+        const typeCategories = {
+            social: ['postReply', 'postLike', 'postBookmark'],
+            interaction: ['resourceDownload', 'resourceLike'],
+            reward: ['bountyResponse', 'bountyAccepted', 'bountyCompleted'],
+            system: ['pointsEarned', 'levelUp', 'dailyTask', 'weeklyTask', 'achievement', 'system']
+        };
+
+        const typeIcons = {
+            postReply: 'fa-comment',
+            postLike: 'fa-heart',
+            postBookmark: 'fa-bookmark',
+            resourceDownload: 'fa-download',
+            resourceLike: 'fa-thumbs-up',
+            bountyResponse: 'fa-hand-pointer',
+            bountyAccepted: 'fa-check-circle',
+            bountyCompleted: 'fa-trophy',
+            pointsEarned: 'fa-coins',
+            levelUp: 'fa-arrow-up',
+            dailyTask: 'fa-calendar-check',
+            weeklyTask: 'fa-calendar-week',
+            achievement: 'fa-medal',
+            system: 'fa-bullhorn'
+        };
+
+        function initPage() {
+            notificationService = new NotificationSettingsService();
+            updateStats();
+            renderChannels();
+            renderNotificationTypes();
+            initDND();
+        }
+
+        function updateStats() {
+            const count = notificationService.getNotificationCount();
+            document.getElementById('stat-enabled').textContent = count.enabled;
+            document.getElementById('stat-disabled').textContent = count.total - count.enabled;
+            document.getElementById('stat-total').textContent = count.total;
+            document.getElementById('stat-percent').textContent = count.percentage + '%';
+            document.getElementById('progress-fill').style.width = count.percentage + '%';
+        }
+
+        function renderChannels() {
+            const channels = notificationService.settings.channels;
+            document.getElementById('channel-inapp').checked = channels.inApp;
+            document.getElementById('channel-email').checked = channels.email;
+            document.getElementById('channel-push').checked = channels.push;
+        }
+
+        function renderNotificationTypes() {
+            const container = document.getElementById('notification-types');
+            const types = notificationService.settings.types;
+
+            let html = '';
+            Object.entries(types).forEach(([type, config]) => {
+                const category = Object.keys(typeCategories).find(cat => 
+                    typeCategories[cat].includes(type)
+                ) || 'system';
+
+                const iconClass = typeIcons[type] || 'fa-bell';
+
+                html += `
+                    <div class="notification-type-card ${config.enabled ? '' : 'disabled'}" data-type="${type}">
+                        <div class="type-icon ${category}">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                        <div class="type-content">
+                            <div class="type-name">${config.label}</div>
+                            <div class="type-desc">${config.description}</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${config.enabled ? 'checked' : ''} 
+                                   onchange="toggleType('${type}', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function initDND() {
+            const dnd = notificationService.settings.doNotDisturb;
+            document.getElementById('dnd-toggle').checked = dnd.enabled;
+            document.getElementById('dnd-start').value = dnd.startTime;
+            document.getElementById('dnd-end').value = dnd.endTime;
+            document.getElementById('dnd-weekends').checked = dnd.weekends;
+
+            updateDNDUI(dnd.enabled);
+        }
+
+        function updateDNDUI(enabled) {
+            const main = document.getElementById('dnd-main');
+            const options = document.getElementById('dnd-options');
+            const title = document.getElementById('dnd-title');
+            const desc = document.getElementById('dnd-desc');
+
+            if (enabled) {
+                main.classList.remove('disabled');
+                options.classList.remove('disabled');
+                title.textContent = '免打扰模式已开启';
+                desc.textContent = '在指定时间段内不接收普通通知';
+
+                if (notificationService.isInDoNotDisturbPeriod()) {
+                    document.getElementById('dnd-status').innerHTML = 
+                        '<i class="fas fa-moon"></i><span>目前处于免打扰时间内，仅系统公告会推送</span>';
+                } else {
+                    document.getElementById('dnd-status').innerHTML = 
+                        '<i class="fas fa-sun"></i><span>目前不在免打扰时间内，所有通知正常推送</span>';
+                }
+            } else {
+                main.classList.add('disabled');
+                options.classList.add('disabled');
+                title.textContent = '免打扰模式已关闭';
+                desc.textContent = '开启后在指定时间段内不接收普通通知';
+                document.getElementById('dnd-status').innerHTML = 
+                    '<i class="fas fa-bell"></i><span>所有通知正常推送</span>';
+            }
+        }
+
+        function toggleChannel(channel) {
+            const checkbox = document.getElementById('channel-' + channel.toLowerCase());
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                notificationService.enableChannel(channel);
+            } else {
+                notificationService.disableChannel(channel);
+            }
+        }
+
+        function toggleType(type, enabled) {
+            if (enabled) {
+                notificationService.enableType(type);
+            } else {
+                notificationService.disableType(type);
+            }
+            
+            const card = document.querySelector(`.notification-type-card[data-type="${type}"]`);
+            if (card) {
+                card.classList.toggle('disabled', !enabled);
+            }
+            
+            updateStats();
+        }
+
+        function toggleDND(enabled) {
+            notificationService.setDoNotDisturb(enabled);
+            updateDNDUI(enabled);
+        }
+
+        function updateDND() {
+            const startTime = document.getElementById('dnd-start').value;
+            const endTime = document.getElementById('dnd-end').value;
+            const weekends = document.getElementById('dnd-weekends').checked;
+
+            notificationService.setDoNotDisturb(true, { startTime, endTime, weekends });
+            updateDNDUI(true);
+        }
+
+        function applyPreset(preset) {
+            const types = notificationService.settings.types;
+            
+            Object.keys(types).forEach(type => {
+                let enabled = true;
+                
+                if (preset === 'all') {
+                    enabled = true;
+                } else if (preset === 'important') {
+                    enabled = ['postReply', 'bountyResponse', 'bountyCompleted', 'pointsEarned', 'system'].includes(type);
+                } else if (preset === 'none') {
+                    enabled = false;
+                }
+                
+                notificationService.toggleType(type, enabled);
+            });
+
+            renderNotificationTypes();
+            updateStats();
+            saveSettings();
+        }
+
+        function exportSettings() {
+            const data = notificationService.exportSettings();
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'notification-settings.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importSettings() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        if (notificationService.importSettings(event.target.result)) {
+                            initPage();
+                            alert('设置导入成功！');
+                        } else {
+                            alert('设置导入失败，请检查文件格式。');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function resetSettings() {
+            if (confirm('确定要重置所有设置为默认值吗？')) {
+                notificationService.reset();
+                initPage();
+                alert('设置已重置为默认值');
+            }
+        }
+
+        function saveSettings() {
+            alert('设置已保存！');
+            window.dispatchEvent(new CustomEvent('notificationSettingsUpdated'));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            authModal = new AuthModal();
+            userMenu = new UserMenu('auth-container');
+            
+            const loginBtn = document.getElementById('login-btn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    authModal.open('login');
+                });
+            }
+
+            initPage();
+        });
+    </script>
+</body>
+</html>

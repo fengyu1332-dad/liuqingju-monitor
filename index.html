@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#8B4513">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>留情局 - 留学生学术资源互助与情报共享社区</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hero-section {
+            padding: 60px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .hero-left h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            line-height: 1.2;
+        }
+        
+        .hero-left h2 {
+            font-size: 20px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin: 0 0 24px 0;
+        }
+        
+        .hero-left p {
+            font-size: 16px;
+            opacity: 0.85;
+            line-height: 1.8;
+            margin-bottom: 28px;
+        }
+        
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .hero-btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .hero-btn.primary {
+            background: white;
+            color: #667eea;
+        }
+        
+        .hero-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .hero-btn.secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .hero-btn.secondary:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .hero-right {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .hero-stat:last-child {
+            border-bottom: none;
+        }
+        
+        .hero-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .hero-stat-label {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        .hot-section {
+            padding: 50px 0;
+            background: var(--bg-gray);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-title i {
+            color: var(--primary-color);
+        }
+        
+        .view-all-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        
+        .view-all-link:hover {
+            gap: 10px;
+        }
+        
+        .hot-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 4px;
+            background: var(--bg-white);
+            border-radius: 12px;
+            width: fit-content;
+        }
+        
+        .hot-tab {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .hot-tab:hover {
+            color: var(--primary-color);
+        }
+        
+        .hot-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .hot-content-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .hot-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 22px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+        
+        .hot-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .hot-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .hot-card-tag {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .hot-card-tag.resources {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+        
+        .hot-card-tag.forum {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+        
+        .hot-card-tag.intelligence {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+        
+        .hot-card-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #FF6B00;
+            font-weight: 600;
+        }
+        
+        .hot-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .hot-card-meta {
+            display: flex;
+            gap: 16px;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+        
+        .hot-card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .quality-badge-small {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .hot-card-footer {
+            display: flex;
+            align-items: center;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .hot-card-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+        
+        .author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .author-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .author-badge {
+            font-size: 11px;
+            padding: 1px 6px;
+            background: #E3F2FD;
+            color: #1976D2;
+            border-radius: 4px;
+        }
+        
+        .trending-section {
+            padding: 50px 0;
+        }
+        
+        .trending-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .trending-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--bg-white);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .trending-item:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .trending-rank {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .trending-rank.top-3 {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        
+        .trending-content {
+            flex: 1;
+        }
+        
+        .trending-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .trending-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .trending-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .trending-trend-up {
+            color: #E53935;
+        }
+        
+        .pillars-section {
+            padding: 50px 0;
+            background: var(--bg-gray);
+        }
+        
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .pillar-card {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 36px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid var(--border-color);
+        }
+        
+        .pillar-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .pillar-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: white;
+        }
+        
+        .pillar-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 12px 0;
+        }
+        
+        .pillar-card p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+        
+        .pillar-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .pillar-link:hover {
+            gap: 12px;
+        }
+        
+        @media (max-width: 968px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .hot-content-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .trending-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pillars-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .hot-content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link">资源共享</a>
+                <a href="intelligence.html" class="nav-link">留学情报</a>
+                <a href="forum.html" class="nav-link">留子论坛</a>
+                <a href="points-center.html" class="nav-link">积分中心</a>
+            </nav>
+            <div class="header-right" id="auth-container">
+                <button class="login-btn" id="login-btn" onclick="if(typeof authModal !== 'undefined') authModal.open('login');">登录 Login</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-left">
+                    <h1>连接全球留子，打破信息差</h1>
+                    <h2>留学生学术资源互助与情报共享社区</h2>
+                    <p>在这里，你可以找到学长学姐沉淀的精品学习资源，获取最新留学情报，和全球留子一起交流经验，让留学之路不再孤单。</p>
+                    <div class="hero-actions">
+                        <button class="hero-btn primary" onclick="window.location.href='resources.html'">
+                            <i class="fas fa-search"></i>
+                            浏览资源
+                        </button>
+                        <button class="hero-btn secondary" onclick="window.location.href='forum.html'">
+                            <i class="fas fa-comments"></i>
+                            加入讨论
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-right">
+                    <div class="hero-stat">
+                        <div>
+                            <div class="hero-stat-value">12,580</div>
+                            <div class="hero-stat-label">优质资源</div>
+                        </div>
+                        <div>
+                            <div class="hero-stat-value">8,640</div>
+                            <div class="hero-stat-label">社区用户</div>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div>
+                            <div class="hero-stat-value">3,210</div>
+                            <div class="hero-stat-label">活跃帖子</div>
+                        </div>
+                        <div>
+                            <div class="hero-stat-value">486</div>
+                            <div class="hero-stat-label">每日新增</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ticker">
+        <div class="container">
+            <div class="ticker-content">
+                <span class="ticker-icon"><i class="fas fa-bolt"></i></span>
+                <span class="ticker-label">情报快讯 Intelligence Ticker:</span>
+                <div class="ticker-items">
+                    <span>申请季时间轴已更新，建议尽早准备</span>
+                    <span>|</span>
+                    <span>北美藤校最新招生简章发布</span>
+                    <span>|</span>
+                    <span>留情局首届"学术悬赏"正式启动</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hot-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-fire"></i>
+                    热门内容
+                </h2>
+                <a href="#" class="view-all-link">
+                    查看全部 <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="hot-tabs" id="hot-tabs">
+                <button class="hot-tab active" data-type="all">全部</button>
+                <button class="hot-tab" data-type="resources">资源</button>
+                <button class="hot-tab" data-type="forum">论坛</button>
+                <button class="hot-tab" data-type="intelligence">情报</button>
+            </div>
+            <div class="hot-content-grid" id="hot-content">
+            </div>
+        </div>
+    </section>
+
+    <section class="trending-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    热搜排行
+                </h2>
+                <a href="#" class="view-all-link">
+                    更多热搜 <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="trending-grid" id="trending-content">
+            </div>
+        </div>
+    </section>
+
+    <section class="pillars-section">
+        <div class="container">
+            <div class="section-header" style="justify-content: center;">
+                <h2 class="section-title">
+                    <i class="fas fa-th-large"></i>
+                    核心板块
+                </h2>
+            </div>
+            <div class="pillars-grid">
+                <div class="pillar-card">
+                    <div class="pillar-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3>资源共享</h3>
+                    <p>留学路上所需的学习资源共享，获取学长学姐沉淀的精品学术资料，或发布悬赏求助。</p>
+                    <a href="resources.html" class="pillar-link">
+                        进入资料库 <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>留学情报</h3>
+                    <p>全球留学最新情报，精准锁定每一个关键时点，学习节奏一目了然。</p>
+                    <a href="intelligence.html" class="pillar-link">
+                        查看日历 <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>留子论坛</h3>
+                    <p>全球留子共话留学生活，真实分享不踩坑，寻找学术伙伴。</p>
+                    <a href="forum.html" class="pillar-link">
+                        前往论坛 <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fas fa-landmark"></i>
+                        <span>留情局</span>
+                    </div>
+                    <p>致力于打造留子和留子们的优质资源共享、最新信息速递、交流交友平台。我们的使命是连接全球学子，打破信息差，成就卓越未来。</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Study Guide</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-subscribe">
+                    <h4>Subscribe</h4>
+                    <div class="subscribe-form">
+                        <input type="email" placeholder="Email Address" class="subscribe-input">
+                        <button class="subscribe-btn">Join</button>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 留情局 Intelligence Bureau for Overseas Study. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/enhanced-search.js"></script>
+    <script src="js/header-search.js"></script>
+    <script src="js/post-quality-service.js"></script>
+    <script src="js/quality-badge.js"></script>
+    <script src="js/toast-init.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered: ', registration);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
+    <script>
+        let authModal, userMenu, headerSearch;
+        const hotData = {
+            all: [
+                { id: 1, type: 'resources', title: '常春藤名校录取文书范文合集', views: 12450, likes: 856, author: '李明', authorVerified: true, quality: 92 },
+                { id: 2, type: 'forum', title: '牛剑面试避坑指南 - 真实面经分享', views: 8920, likes: 623, author: '王芳', authorVerified: true, quality: 88 },
+                { id: 3, type: 'intelligence', title: '2025北美高校申请截止日期汇总', views: 7680, likes: 432, author: '张伟', authorVerified: false, quality: 76 },
+                { id: 4, type: 'resources', title: 'AP宏观经济一页纸通关指南', views: 6540, likes: 378, author: '刘洋', authorVerified: true, quality: 82 },
+                { id: 5, type: 'forum', title: '2025早申数据深度解读与趋势分析', views: 5890, likes: 298, author: '陈静', authorVerified: false, quality: 74 },
+                { id: 6, type: 'resources', title: 'IB物理HL公式与考点深度解析', views: 4320, likes: 256, author: '赵磊', authorVerified: true, quality: 85 }
+            ],
+            resources: [
+                { id: 1, type: 'resources', title: '常春藤名校录取文书范文合集', views: 12450, likes: 856, author: '李明', authorVerified: true, quality: 92 },
+                { id: 4, type: 'resources', title: 'AP宏观经济一页纸通关指南', views: 6540, likes: 378, author: '刘洋', authorVerified: true, quality: 82 },
+                { id: 6, type: 'resources', title: 'IB物理HL公式与考点深度解析', views: 4320, likes: 256, author: '赵磊', authorVerified: true, quality: 85 }
+            ],
+            forum: [
+                { id: 2, type: 'forum', title: '牛剑面试避坑指南 - 真实面经分享', views: 8920, likes: 623, author: '王芳', authorVerified: true, quality: 88 },
+                { id: 5, type: 'forum', title: '2025早申数据深度解读与趋势分析', views: 5890, likes: 298, author: '陈静', authorVerified: false, quality: 74 }
+            ],
+            intelligence: [
+                { id: 3, type: 'intelligence', title: '2025北美高校申请截止日期汇总', views: 7680, likes: 432, author: '张伟', authorVerified: false, quality: 76 }
+            ]
+        };
+
+        const trendingData = [
+            { rank: 1, keyword: 'IB课程', count: 1234, trend: 'up' },
+            { rank: 2, keyword: 'AP考试', count: 1156, trend: 'up' },
+            { rank: 3, keyword: 'SAT备考', count: 987, trend: 'stable' },
+            { rank: 4, keyword: '留学申请', count: 876, trend: 'down' },
+            { rank: 5, keyword: '申请文书', count: 765, trend: 'up' },
+            { rank: 6, keyword: '托福备考', count: 654, trend: 'stable' }
+        ];
+
+        function getQualityLevel(score) {
+            if (score >= 80) return { label: '精华', icon: '🏆', color: '#FFD700', bgColor: '#FFF8E1' };
+            if (score >= 60) return { label: '优质', icon: '⭐', color: '#FFA000', bgColor: '#FFF3E0' };
+            if (score >= 40) return { label: '良好', icon: '👍', color: '#4CAF50', bgColor: '#E8F5E9' };
+            return { label: '普通', icon: '📝', color: '#9E9E9E', bgColor: '#F5F5F5' };
+        }
+
+        function renderHotCard(item) {
+            const quality = getQualityLevel(item.quality);
+            const typeLabels = { resources: '资源', forum: '论坛', intelligence: '情报' };
+            
+            return `
+                <div class="hot-card" data-id="${item.id}">
+                    <div class="hot-card-header">
+                        <span class="hot-card-tag ${item.type}">${typeLabels[item.type]}</span>
+                        <span class="hot-card-badge">
+                            <i class="fas fa-fire"></i>
+                            热门
+                        </span>
+                    </div>
+                    <div class="hot-card-title">${item.title}</div>
+                    <div class="hot-card-meta">
+                        <span><i class="fas fa-eye"></i>${item.views.toLocaleString()}</span>
+                        <span><i class="fas fa-heart"></i>${item.likes.toLocaleString()}</span>
+                        <span class="quality-badge-small" style="background: ${quality.bgColor}; color: ${quality.color};">
+                            ${quality.icon} ${quality.label}
+                        </span>
+                    </div>
+                    <div class="hot-card-footer">
+                        <div class="hot-card-author">
+                            <div class="author-avatar">${item.author.charAt(0)}</div>
+                            <span class="author-name">${item.author}</span>
+                            ${item.authorVerified ? '<span class="author-badge"><i class="fas fa-check-circle"></i> 认证</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTrendingItem(item) {
+            const isTop3 = item.rank <= 3;
+            const trendIcon = item.trend === 'up' ? 'fa-arrow-up' : item.trend === 'down' ? 'fa-arrow-down' : 'fa-minus';
+            const trendClass = item.trend === 'up' ? 'trending-trend-up' : '';
+            
+            return `
+                <div class="trending-item" onclick="handleTrendingClick('${item.keyword}')">
+                    <div class="trending-rank ${isTop3 ? 'top-3' : ''}">${item.rank}</div>
+                    <div class="trending-content">
+                        <div class="trending-title">${item.keyword}</div>
+                        <div class="trending-stats">
+                            <span><i class="fas fa-search"></i> ${item.count} 次搜索</span>
+                            <span class="${trendClass}"><i class="fas ${trendIcon}"></i> ${item.trend === 'up' ? '上升' : item.trend === 'down' ? '下降' : '持平'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderHotContent(type) {
+            const container = document.getElementById('hot-content');
+            const data = hotData[type] || hotData.all;
+            container.innerHTML = data.map(item => renderHotCard(item)).join('');
+        }
+
+        function renderTrending() {
+            const container = document.getElementById('trending-content');
+            container.innerHTML = trendingData.map(item => renderTrendingItem(item)).join('');
+        }
+
+        function initHotTabs() {
+            const tabs = document.querySelectorAll('.hot-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    renderHotContent(tab.dataset.type);
+                });
+            });
+        }
+
+        function handleTrendingClick(keyword) {
+            if (headerSearch && headerSearch.input) {
+                headerSearch.input.value = keyword;
+                headerSearch.input.focus();
+                if (headerSearch.performSearch) {
+                    headerSearch.performSearch(keyword);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            authModal = new AuthModal();
+            userMenu = new UserMenu('auth-container');
+            headerSearch = initSearch('auth-container');
+            
+            const loginBtn = document.getElementById('login-btn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    authModal.open('login');
+                });
+            }
+
+            renderHotContent('all');
+            renderTrending();
+            initHotTabs();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>悬赏中心 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .bounty-hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            padding: 50px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .bounty-hero h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .bounty-hero p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .bounty-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .bounty-stat {
+            text-align: center;
+        }
+
+        .bounty-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .bounty-stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .bounty-content {
+            padding: 40px 0;
+        }
+
+        .bounty-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        .bounty-sidebar {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-item {
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .filter-item:hover {
+            background: var(--bg-light);
+        }
+
+        .filter-item.active {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .filter-item i {
+            width: 20px;
+        }
+
+        .filter-count {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .bounty-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bounty-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+        .bounty-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .bounty-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .bounty-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .bounty-meta {
+            flex: 1;
+        }
+
+        .bounty-author {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .bounty-time {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .bounty-status {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .bounty-status.open {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .bounty-status.in_progress {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .bounty-status.completed {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .bounty-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .bounty-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .bounty-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .bounty-tag {
+            padding: 4px 12px;
+            background: var(--bg-light);
+            border-radius: 15px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .bounty-tag.category {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .bounty-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .bounty-reward {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .bounty-reward i {
+            font-size: 20px;
+        }
+
+        .bounty-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .bounty-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bounty-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bounty-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bounty-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .bounty-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .bounty-btn.secondary {
+            background: var(--bg-light);
+            color: var(--text-secondary);
+        }
+
+        .bounty-btn.secondary:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .bookmark-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .bookmark-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .bookmark-btn.bookmarked {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .bookmark-btn.bookmarked:hover {
+            background: #FFE0B2;
+            color: #F57C00;
+        }
+
+        .create-bounty-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .create-bounty-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-white);
+            border-radius: 16px;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .bounty-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bounty-modal.active {
+            display: flex;
+        }
+
+        .bounty-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .bounty-modal-container {
+            position: relative;
+            width: 680px;
+            max-width: 90vw;
+            max-height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bounty-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .bounty-modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .bounty-modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-light);
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .bounty-modal-close:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .bounty-modal-body {
+            padding: 25px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .bounty-modal-body .form-group {
+            margin-bottom: 20px;
+        }
+
+        .bounty-modal-body .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .bounty-modal-body .form-group label i {
+            color: var(--primary-color);
+        }
+
+        .bounty-modal-body .form-group input,
+        .bounty-modal-body .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .bounty-modal-body .form-group input:focus,
+        .bounty-modal-body .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .bounty-modal-body .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .char-count {
+            display: block;
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .reward-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reward-selector input {
+            flex: 1;
+        }
+
+        .reward-unit {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .reward-presets {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .reward-preset {
+            padding: 8px 16px;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .reward-preset:hover {
+            background: var(--secondary-color);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .bounty-modal .category-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .bounty-modal .category-option input {
+            display: none;
+        }
+
+        .bounty-modal .category-card {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bounty-modal .category-card:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-light);
+        }
+
+        .bounty-modal .category-option input:checked + .category-card {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.1), rgba(205, 133, 63, 0.1));
+        }
+
+        .bounty-modal .category-card i {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .bounty-modal .category-card span {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .bounty-modal .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .bounty-modal .cancel-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bounty-modal .cancel-btn:hover {
+            background: var(--border-color);
+        }
+
+        .bounty-modal .submit-btn {
+            flex: 2;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bounty-modal .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .required {
+            color: #E53935;
+        }
+
+        .bounty-modal .form-error {
+            color: #E53935;
+            font-size: 14px;
+            margin-bottom: 15px;
+            min-height: 20px;
+        }
+
+        .sidebar-bookmarks {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            margin-top: 20px;
+        }
+
+        .sidebar-bookmarks-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-bookmarks-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-bookmarks-title i {
+            color: #FFA000;
+        }
+
+        .sidebar-bookmarks-link {
+            font-size: 13px;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-bookmarks-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .sidebar-bookmarks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-bookmark-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .sidebar-bookmark-item:hover {
+            background: var(--secondary-color);
+            transform: translateX(3px);
+        }
+
+        .sidebar-bookmark-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-bookmark-icon.post {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .sidebar-bookmark-icon.resource {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .sidebar-bookmark-icon.bounty {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .sidebar-bookmark-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-bookmark-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-bookmark-type {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .sidebar-bookmarks-empty {
+            text-align: center;
+            padding: 20px 10px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .sidebar-bookmarks-empty i {
+            font-size: 24px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .bounty-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bounty-modal .category-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bounty-modal-container {
+                width: 100%;
+                max-width: 100%;
+                max-height: 100%;
+                border-radius: 0;
+            }
+
+            .bounty-footer {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .bounty-reward {
+                justify-content: center;
+            }
+
+            .bounty-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link">资源共享</a>
+                <a href="intelligence.html" class="nav-link">留学情报</a>
+                <a href="forum.html" class="nav-link">留子论坛</a>
+                <a href="bounty.html" class="nav-link active">悬赏中心</a>
+            </nav>
+            <div class="header-right" id="auth-container">
+                <button class="login-btn" id="login-btn" onclick="if(typeof authModal !== 'undefined') authModal.open('login');">登录 Login</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="bounty-hero">
+        <div class="container">
+            <h1><i class="fas fa-coins"></i> 悬赏中心</h1>
+            <p>有问题？发布悬赏！学长学姐帮你解决留学路上的一切难题</p>
+            <div class="bounty-stats">
+                <div class="bounty-stat">
+                    <div class="bounty-stat-value" id="total-bounties">0</div>
+                    <div class="bounty-stat-label">全部悬赏</div>
+                </div>
+                <div class="bounty-stat">
+                    <div class="bounty-stat-value" id="total-reward">0</div>
+                    <div class="bounty-stat-label">悬赏总额</div>
+                </div>
+                <div class="bounty-stat">
+                    <div class="bounty-stat-value" id="completed-count">0</div>
+                    <div class="bounty-stat-label">已完成</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="bounty-content">
+        <div class="container">
+            <div class="bounty-grid">
+                <div class="bounty-sidebar">
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">
+                            <i class="fas fa-filter"></i>
+                            分类筛选
+                        </h3>
+                        <div class="filter-list" id="category-filter">
+                            <div class="filter-item active" data-category="all">
+                                <i class="fas fa-globe"></i>
+                                <span>全部</span>
+                                <span class="filter-count" id="count-all">0</span>
+                            </div>
+                            <div class="filter-item" data-category="ib">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>IB</span>
+                                <span class="filter-count" id="count-ib">0</span>
+                            </div>
+                            <div class="filter-item" data-category="ap">
+                                <i class="fas fa-book"></i>
+                                <span>AP</span>
+                                <span class="filter-count" id="count-ap">0</span>
+                            </div>
+                            <div class="filter-item" data-category="alevel">
+                                <i class="fas fa-certificate"></i>
+                                <span>A-Level</span>
+                                <span class="filter-count" id="count-alevel">0</span>
+                            </div>
+                            <div class="filter-item" data-category="sat">
+                                <i class="fas fa-pencil-alt"></i>
+                                <span>SAT/ACT</span>
+                                <span class="filter-count" id="count-sat">0</span>
+                            </div>
+                            <div class="filter-item" data-category="competition">
+                                <i class="fas fa-trophy"></i>
+                                <span>竞赛</span>
+                                <span class="filter-count" id="count-competition">0</span>
+                            </div>
+                            <div class="filter-item" data-category="application">
+                                <i class="fas fa-university"></i>
+                                <span>申请</span>
+                                <span class="filter-count" id="count-application">0</span>
+                            </div>
+                            <div class="filter-item" data-category="interview">
+                                <i class="fas fa-comments"></i>
+                                <span>面试</span>
+                                <span class="filter-count" id="count-interview">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">
+                            <i class="fas fa-clock"></i>
+                            状态筛选
+                        </h3>
+                        <div class="filter-list" id="status-filter">
+                            <div class="filter-item active" data-status="all">
+                                <i class="fas fa-globe"></i>
+                                <span>全部</span>
+                                <span class="filter-count" id="status-all">0</span>
+                            </div>
+                            <div class="filter-item" data-status="open">
+                                <i class="fas fa-hand-holding-usd"></i>
+                                <span>待接单</span>
+                                <span class="filter-count" id="status-open">0</span>
+                            </div>
+                            <div class="filter-item" data-status="completed">
+                                <i class="fas fa-check-circle"></i>
+                                <span>已完成</span>
+                                <span class="filter-count" id="status-completed">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-bookmarks" id="sidebar-bookmarks">
+                        <div class="sidebar-bookmarks-header">
+                            <h3 class="sidebar-bookmarks-title">
+                                <i class="fas fa-star"></i>
+                                我的收藏
+                            </h3>
+                            <a href="profile.html?tab=bookmarks" class="sidebar-bookmarks-link">查看全部</a>
+                        </div>
+                        <div class="sidebar-bookmarks-list" id="sidebar-bookmarks-list">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bounty-main">
+                    <button class="create-bounty-btn" id="create-bounty-btn">
+                        <i class="fas fa-plus"></i>
+                        发布悬赏
+                    </button>
+
+                    <div class="bounty-list" id="bounty-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fas fa-landmark"></i>
+                        <span>留情局</span>
+                    </div>
+                    <p>连接全球中国留学生，打造最专业、最有温度的学术与生活情报社区。</p>
+                </div>
+                <div class="footer-links">
+                    <h4>探索</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Study Guide</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>支持</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 留情局 Intelligence Bureau for Overseas Study. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/points-service.js"></script>
+    <script src="js/bounty-service.js"></script>
+    <script src="js/forum-service.js"></script>
+    <script src="js/resource-service.js"></script>
+    <script src="js/bounty-modal.js"></script>
+    <script src="js/bookmark-service.js"></script>
+    <script src="js/header-search.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let authModal, userMenu, bountyModal, headerSearch;
+        let currentCategory = 'all';
+        let currentStatus = 'all';
+
+        function updateStats() {
+            const bounties = BountyService.getBounties();
+            const totalReward = bounties.reduce((sum, b) => sum + (b.reward || 0), 0);
+            const completedCount = bounties.filter(b => b.status === 'completed').length;
+
+            document.getElementById('total-bounties').textContent = bounties.length;
+            document.getElementById('total-reward').textContent = totalReward.toLocaleString();
+            document.getElementById('completed-count').textContent = completedCount;
+
+            const categories = ['ib', 'ap', 'alevel', 'sat', 'competition', 'application', 'interview'];
+            categories.forEach(cat => {
+                const count = bounties.filter(b => b.category === cat).length;
+                document.getElementById('count-' + cat).textContent = count;
+            });
+            document.getElementById('count-all').textContent = bounties.length;
+
+            document.getElementById('status-open').textContent = bounties.filter(b => b.status === 'open').length;
+            document.getElementById('status-completed').textContent = completedCount;
+            document.getElementById('status-all').textContent = bounties.length;
+        }
+
+        function renderBounties() {
+            const container = document.getElementById('bounty-list');
+            let bounties = BountyService.getBounties();
+
+            if (currentCategory !== 'all') {
+                bounties = bounties.filter(b => b.category === currentCategory);
+            }
+
+            if (currentStatus !== 'all') {
+                bounties = bounties.filter(b => b.status === currentStatus);
+            }
+
+            bounties.sort((a, b) => {
+                if (a.status === 'open' && b.status !== 'open') return -1;
+                if (a.status !== 'open' && b.status === 'open') return 1;
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+
+            if (bounties.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-coins"></i>
+                        <h3>暂无悬赏</h3>
+                        <p>成为第一个发布悬赏的人吧！</p>
+                        <button class="create-bounty-btn" onclick="bountyModal.open()">
+                            <i class="fas fa-plus"></i>
+                            发布悬赏
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = bounties.map(bounty => {
+                const statusClass = bounty.status;
+                const statusLabel = BountyService.getStatusLabel(bounty.status);
+                const categoryLabel = BountyService.getCategoryLabel(bounty.category);
+
+                return `
+                    <div class="bounty-card" onclick="viewBountyDetail('${bounty.id}')" style="cursor: pointer;">
+                        <div class="bounty-header">
+                            <img src="${bounty.poster?.avatar || 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=default%20user%20avatar&image_size=square'}" alt="${bounty.poster?.nickname || '用户'}" class="bounty-avatar">
+                            <div class="bounty-meta">
+                                <div class="bounty-author">${bounty.poster?.nickname || '匿名用户'}</div>
+                                <div class="bounty-time">${BountyService.formatDate(bounty.createdAt)}</div>
+                            </div>
+                            <span class="bounty-status ${statusClass}">${statusLabel}</span>
+                        </div>
+                        <h2 class="bounty-title">${bounty.title}</h2>
+                        <p class="bounty-description">${bounty.description}</p>
+                        <div class="bounty-tags">
+                            <span class="bounty-tag category">${categoryLabel}</span>
+                            ${bounty.deadline ? `<span class="bounty-tag"><i class="fas fa-clock"></i> ${bounty.deadline}</span>` : ''}
+                            <span class="bounty-tag"><i class="fas fa-comment"></i> ${(bounty.responses || []).length} 回复</span>
+                        </div>
+                        <div class="bounty-footer">
+                            <div class="bounty-reward">
+                                <i class="fas fa-coins"></i>
+                                <span>${bounty.reward} 积分</span>
+                            </div>
+                            <div class="bounty-stats">
+                                <div class="bounty-stat-item">
+                                    <i class="fas fa-eye"></i>
+                                    <span>${bounty.views || 0}</span>
+                                </div>
+                                <div class="bounty-stat-item">
+                                    <i class="fas fa-comment"></i>
+                                    <span>${(bounty.responses || []).length}</span>
+                                </div>
+                            </div>
+                            <div class="bounty-actions">
+                                <button class="bookmark-btn" id="bookmark-btn-${bounty.id}" onclick="event.stopPropagation(); toggleBountyBookmark('${bounty.id}')" title="收藏">
+                                    ☆
+                                </button>
+                                <button class="bounty-btn primary" onclick="event.stopPropagation(); viewBountyDetail('${bounty.id}')">
+                                    <i class="fas fa-eye"></i>
+                                    查看详情
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function respondToBounty(bountyId) {
+            const user = AuthService.getCurrentUser();
+            if (!user) {
+                authModal.open('login');
+                return;
+            }
+
+            const bounty = BountyService.getBountyById(bountyId);
+            if (!bounty) return;
+
+            if (bounty.poster?.id === user.id) {
+                alert('这是你发布的悬赏！');
+                return;
+            }
+
+            const response = prompt('请简要描述你能提供的帮助：');
+            if (response && response.trim()) {
+                BountyService.addResponse(bountyId, {
+                    author: {
+                        id: user.id,
+                        nickname: user.nickname,
+                        avatar: user.avatar
+                    },
+                    content: response.trim()
+                });
+                renderBounties();
+                updateStats();
+                alert('已提交回复，等待悬赏者确认！');
+            }
+        }
+
+        function viewBountyDetail(bountyId) {
+            const user = AuthService.getCurrentUser();
+            const bounty = BountyService.getBountyById(bountyId);
+            if (!bounty) return;
+
+            const isOwner = user && bounty.poster?.id === user.id;
+
+            let responsesHtml = '';
+            if (bounty.responses && bounty.responses.length > 0) {
+                responsesHtml = bounty.responses.map(resp => `
+                    <div class="bounty-response-item" style="padding: 15px; background: #f9f9f9; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <img src="${resp.author?.avatar || 'https://via.placeholder.com/40'}" style="width: 40px; height: 40px; border-radius: 50%;">
+                            <div>
+                                <div style="font-weight: 600;">${resp.author?.nickname || '匿名用户'}</div>
+                                <div style="font-size: 12px; color: #999;">${BountyService.formatDate(resp.createdAt)}</div>
+                            </div>
+                            ${resp.status === 'accepted' ? '<span style="background: #4CAF50; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px;">已采纳</span>' : ''}
+                        </div>
+                        <div style="color: #666;">${resp.content}</div>
+                        ${isOwner && resp.status !== 'accepted' && bounty.status !== 'completed' ? `
+                            <button onclick="acceptResponse('${bountyId}', '${resp.id}')" style="margin-top: 10px; padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                <i class="fas fa-check"></i> 采纳此回复
+                            </button>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } else {
+                responsesHtml = '<div style="text-align: center; padding: 30px; color: #999;">暂无回复</div>';
+            }
+
+            const modal = document.createElement('div');
+            modal.id = 'bounty-detail-modal';
+            modal.className = 'bounty-modal active';
+            modal.innerHTML = `
+                <div class="bounty-modal-overlay" onclick="closeBountyDetail()"></div>
+                <div class="bounty-modal-container" style="width: 600px; max-height: 80vh;">
+                    <div class="bounty-modal-header">
+                        <h2>悬赏详情</h2>
+                        <button class="bounty-modal-close" onclick="closeBountyDetail()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="bounty-modal-body" style="max-height: calc(80vh - 80px); overflow-y: auto;">
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="font-size: 20px; margin-bottom: 10px;">${bounty.title}</h3>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                                <span class="bounty-status ${bounty.status}">${BountyService.getStatusLabel(bounty.status)}</span>
+                                <span style="color: #D4A574; font-size: 24px; font-weight: bold;">${bounty.reward} 积分</span>
+                                <span style="font-size: 12px; color: #999;">（含10%平台手续费）</span>
+                            </div>
+                            <p style="color: #666; line-height: 1.6;">${bounty.description}</p>
+                        </div>
+
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <img src="${bounty.poster?.avatar || 'https://via.placeholder.com/40'}" style="width: 40px; height: 40px; border-radius: 50%;">
+                                <div>
+                                    <div style="font-weight: 600;">${bounty.poster?.nickname || '匿名用户'}</div>
+                                    <div style="font-size: 12px; color: #999;">发布于 ${BountyService.formatDate(bounty.createdAt)}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 style="margin-bottom: 15px;">回复 (${(bounty.responses || []).length})</h4>
+                            ${responsesHtml}
+                        </div>
+
+                        ${!isOwner && bounty.status === 'open' ? `
+                            <button onclick="respondToBounty('${bountyId}'); closeBountyDetail();" style="width: 100%; padding: 12px; background: #D4A574; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 20px;">
+                                <i class="fas fa-hand-holding-usd"></i> 我要接单
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function toggleBountyBookmark(bountyId) {
+            const user = AuthService.getCurrentUser();
+            if (!user) {
+                authModal.open('login');
+                return;
+            }
+
+            const isBookmarked = BookmarkService.toggleBookmark(user.id, 'bounty', bountyId);
+            const btn = document.getElementById(`bookmark-btn-${bountyId}`);
+
+            if (btn) {
+                if (isBookmarked) {
+                    btn.classList.add('bookmarked');
+                    btn.innerHTML = '★';
+                } else {
+                    btn.classList.remove('bookmarked');
+                    btn.innerHTML = '☆';
+                }
+            }
+        }
+
+        function updateBookmarkButtons() {
+            const user = AuthService.getCurrentUser();
+            if (!user) return;
+
+            document.querySelectorAll('.bookmark-btn').forEach(btn => {
+                const bountyId = btn.id.replace('bookmark-btn-', '');
+                if (BookmarkService.isBookmarked(user.id, bountyId)) {
+                    btn.classList.add('bookmarked');
+                    btn.innerHTML = '★';
+                }
+            });
+        }
+
+        function closeBountyDetail() {
+            const modal = document.getElementById('bounty-detail-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        const BOUNTY_FEE_RATE = 0.10; // 悬赏手续费 10%
+
+        function acceptResponse(bountyId, responseId) {
+            const bounty = BountyService.getBountyById(bountyId);
+            if (!bounty) return;
+
+            const fee = Math.round(bounty.reward * BOUNTY_FEE_RATE);
+            const actualReward = bounty.reward - fee;
+            const message = `确认采纳此回复？悬赏积分将转给接单者。\n\n悬赏金额：${bounty.reward} 积分\n平台手续费（10%）：${fee} 积分\n实际到账：${actualReward} 积分`;
+
+            if (!confirm(message)) return;
+
+            const response = bounty.responses.find(r => r.id === responseId);
+            if (!response) return;
+
+            if (typeof PointsService !== 'undefined') {
+                PointsService.addTokens(
+                    response.author.id,
+                    actualReward,
+                    'bounty_completed',
+                    `完成悬赏：${bounty.title}（已扣除${fee}积分手续费）`,
+                    bountyId
+                );
+            }
+
+            if (typeof NotificationService !== 'undefined') {
+                NotificationService.onBountyAccepted(
+                    response.author,
+                    bounty.title,
+                    actualReward
+                );
+            }
+
+            BountyService.acceptResponse(bountyId, responseId);
+
+            closeBountyDetail();
+            renderBounties();
+            updateStats();
+            alert(`悬赏已完成！已向 ${response.author.nickname} 转账 ${actualReward} 积分（已扣除 ${fee} 积分手续费）`);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            authModal = new AuthModal();
+            userMenu = new UserMenu('auth-container');
+            bountyModal = new BountyModal();
+            headerSearch = initSearch('auth-container');
+
+            renderBounties();
+            updateStats();
+            renderSidebarBookmarks();
+
+            const loginBtn = document.getElementById('login-btn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    authModal.open('login');
+                });
+            }
+
+            const createBountyBtn = document.getElementById('create-bounty-btn');
+            if (createBountyBtn) {
+                createBountyBtn.addEventListener('click', function() {
+                    bountyModal.open();
+                });
+            }
+
+            document.querySelectorAll('#category-filter .filter-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('#category-filter .filter-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    currentCategory = this.dataset.category;
+                    renderBounties();
+                });
+            });
+
+            document.querySelectorAll('#status-filter .filter-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('#status-filter .filter-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    currentStatus = this.dataset.status;
+                    renderBounties();
+                });
+            });
+
+            window.addEventListener('bountyCreated', function() {
+                renderBounties();
+                updateStats();
+            });
+
+            setTimeout(updateBookmarkButtons, 100);
+        });
+
+        function renderSidebarBookmarks() {
+            const container = document.getElementById('sidebar-bookmarks-list');
+            if (!container) return;
+
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) {
+                container.innerHTML = `
+                    <div class="sidebar-bookmarks-empty">
+                        <i class="fas fa-user-circle"></i>
+                        <p>登录后查看收藏</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const bookmarks = BookmarkService.getBookmarks(currentUser.id);
+            const recentBookmarks = bookmarks.slice(0, 5);
+
+            if (recentBookmarks.length === 0) {
+                container.innerHTML = `
+                    <div class="sidebar-bookmarks-empty">
+                        <i class="far fa-star"></i>
+                        <p>暂无收藏内容</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const bookmarkItems = recentBookmarks.map(itemId => {
+                let type = 'post';
+                let title = '未知内容';
+                let link = '#';
+
+                if (itemId.startsWith('post_')) {
+                    type = 'post';
+                    const post = ForumService?.getPostById(itemId.replace('post_', ''));
+                    if (post) {
+                        title = post.title;
+                        link = `forum.html?post=${itemId.replace('post_', '')}`;
+                    }
+                } else if (itemId.startsWith('resource_')) {
+                    type = 'resource';
+                    const resource = ResourceService?.getResourceById(itemId.replace('resource_', ''));
+                    if (resource) {
+                        title = resource.title;
+                        link = `resources.html?resource=${itemId.replace('resource_', '')}`;
+                    }
+                } else if (itemId.startsWith('bounty_')) {
+                    type = 'bounty';
+                    const bounty = BountyService.getBountyById(itemId.replace('bounty_', ''));
+                    if (bounty) {
+                        title = bounty.title;
+                        link = `bounty.html?bounty=${itemId.replace('bounty_', '')}`;
+                    }
+                }
+
+                const typeLabels = {
+                    post: '帖子',
+                    resource: '资源',
+                    bounty: '悬赏'
+                };
+
+                const typeIcons = {
+                    post: 'fa-comments',
+                    resource: 'fa-gift',
+                    bounty: 'fa-coins'
+                };
+
+                return `
+                    <a href="${link}" class="sidebar-bookmark-item">
+                        <div class="sidebar-bookmark-icon ${type}">
+                            <i class="fas ${typeIcons[type]}"></i>
+                        </div>
+                        <div class="sidebar-bookmark-content">
+                            <div class="sidebar-bookmark-title">${title}</div>
+                            <div class="sidebar-bookmark-type">${typeLabels[type]}</div>
+                        </div>
+                    </a>
+                `;
+            });
+
+            container.innerHTML = bookmarkItems.join('');
+        }
+    </script>
+</body>
+</html>

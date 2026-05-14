@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员登录 - 留情局</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .loading {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 留情局管理员登录</h1>
+        
+        <div id="status" class="info">
+            正在检查登录状态...
+        </div>
+        
+        <div id="actions">
+            <button id="loginBtn" onclick="doLogin()">
+                <i class="fas fa-sign-in-alt"></i> 创建并登录管理员
+            </button>
+        </div>
+        
+        <div id="result" style="margin-top: 20px; text-align: left;"></div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        const ADMIN_EMAIL = 'admin@liuqingju.com';
+        const ADMIN_PASSWORD = 'admin123';
+
+        function updateStatus(message, type = 'info') {
+            document.getElementById('status').innerHTML = message;
+            document.getElementById('status').className = 'status ' + type;
+        }
+
+        function showResult(message) {
+            document.getElementById('result').innerHTML = message;
+        }
+
+        function doLogin() {
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = '<i class="fas fa-spinner loading"></i> 处理中...';
+            btn.disabled = true;
+
+            try {
+                // 获取现有用户
+                let users = [];
+                const stored = localStorage.getItem('liuqingju_users');
+                if (stored) {
+                    users = JSON.parse(stored);
+                }
+
+                // 创建管理员用户
+                const adminUser = {
+                    id: 'admin_' + Date.now(),
+                    email: ADMIN_EMAIL,
+                    password: ADMIN_PASSWORD,
+                    nickname: '管理员',
+                    avatar: '',
+                    profile: {
+                        studyStage: 'graduate',
+                        curriculum: 'Engineering'
+                    },
+                    points: {
+                        balance: 99999,
+                        contribution: 99999,
+                        level: 10
+                    },
+                    stats: {
+                        totalPosts: 0,
+                        totalResources: 0,
+                        totalReplies: 0
+                    },
+                    createdAt: new Date().toISOString(),
+                    lastLoginDate: new Date().toISOString()
+                };
+
+                // 检查是否已存在
+                const existsIndex = users.findIndex(u => u.email === ADMIN_EMAIL);
+                if (existsIndex >= 0) {
+                    users[existsIndex] = adminUser;
+                    updateStatus('✅ 管理员账号已存在，已更新登录信息', 'success');
+                } else {
+                    users.push(adminUser);
+                    updateStatus('✅ 管理员账号创建成功！', 'success');
+                }
+
+                // 保存用户
+                localStorage.setItem('liuqingju_users', JSON.stringify(users));
+
+                // 设置当前登录用户
+                localStorage.setItem('liuqingju_current_user', JSON.stringify(adminUser));
+
+                showResult(`
+                    <div class="status success">
+                        <strong>登录信息：</strong><br>
+                        账号：${ADMIN_EMAIL}<br>
+                        密码：${ADMIN_PASSWORD}<br>
+                        贡献值：99999<br>
+                        等级：Lv.10
+                    </div>
+                `);
+
+                // 跳转到管理后台
+                updateStatus('🚀 正在跳转到管理后台...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1500);
+
+            } catch (error) {
+                updateStatus('❌ 登录失败：' + error.message, 'error');
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> 重试';
+                btn.disabled = false;
+            }
+        }
+
+        // 页面加载时检查
+        window.onload = function() {
+            const currentUser = localStorage.getItem('liuqingju_current_user');
+            
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                if (user.email === ADMIN_EMAIL) {
+                    updateStatus('✅ 已登录为管理员，正在跳转到管理后台...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1000);
+                    return;
+                }
+            }
+            
+            updateStatus('管理员账号未登录，请点击下方按钮创建并登录', 'info');
+        };
+    </script>
+</body>
+</html>

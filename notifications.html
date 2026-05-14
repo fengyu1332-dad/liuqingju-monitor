@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知中心 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/notification-style.css">
+    <style>
+        .notifications-page {
+            min-height: 100vh;
+            background: var(--bg-light);
+        }
+
+        .notifications-content {
+            padding: 40px 0;
+        }
+
+        .notifications-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .notifications-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .notifications-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: var(--secondary-color);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .action-btn i {
+            font-size: 14px;
+        }
+
+        .notifications-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: white;
+            padding: 10px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tab-btn i {
+            font-size: 16px;
+        }
+
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .notification-card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .notification-card.unread {
+            border-left-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--secondary-color), white);
+        }
+
+        .notification-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .notification-card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .notification-card-icon.post_reply {
+            background: #E3F2FD;
+        }
+
+        .notification-card-icon.resource_download {
+            background: #E8F5E9;
+        }
+
+        .notification-card-icon.bounty_response {
+            background: #FFF3E0;
+        }
+
+        .notification-card-icon.bounty_accepted {
+            background: #E8F5E9;
+        }
+
+        .notification-card-icon.bounty_completed {
+            background: #FFF8E1;
+        }
+
+        .notification-card-icon.points_change {
+            background: #FFF8E1;
+        }
+
+        .notification-card-icon.level_up {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .notification-card-icon.system {
+            background: var(--bg-light);
+        }
+
+        .notification-card-content {
+            flex: 1;
+        }
+
+        .notification-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        .notification-card-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .notification-card-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .notification-card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notification-card-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .notification-card:hover .notification-card-actions {
+            opacity: 1;
+        }
+
+        .card-action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-light);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .card-action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .card-action-btn.delete:hover {
+            background: #E53935;
+        }
+
+        .no-notifications {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 16px;
+        }
+
+        .no-notifications i {
+            font-size: 80px;
+            color: var(--secondary-color);
+            margin-bottom: 25px;
+        }
+
+        .no-notifications h3 {
+            font-size: 22px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .no-notifications p {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .unread-badge {
+            background: var(--primary-color);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .notifications-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: stretch;
+            }
+
+            .notifications-tabs {
+                flex-direction: column;
+            }
+
+            .notification-card-header {
+                flex-direction: column;
+            }
+
+            .notification-card-actions {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="notifications-page">
+    <header class="resources-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link">资源共享</a>
+                <a href="intelligence.html" class="nav-link">留学情报</a>
+                <a href="forum.html" class="nav-link">留子论坛</a>
+                <a href="points-center.html" class="nav-link">积分中心</a>
+            </nav>
+            <div class="header-actions" id="header-actions">
+                <div id="notification-container"></div>
+                <div id="auth-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="notifications-content">
+            <div class="notifications-container">
+                <div class="notifications-header">
+                    <div>
+                        <h1 class="notifications-title">
+                            通知中心
+                            <span class="unread-badge" id="unread-count" style="display: inline-block;">0</span>
+                        </h1>
+                    </div>
+                    <div class="notifications-actions">
+                        <button class="action-btn" onclick="openNotificationSettings()">
+                            <i class="fas fa-cog"></i>
+                            通知设置
+                        </button>
+                        <button class="action-btn" onclick="markAllAsRead()">
+                            <i class="fas fa-check-double"></i>
+                            全部已读
+                        </button>
+                        <button class="action-btn" onclick="clearAllNotifications()">
+                            <i class="fas fa-trash"></i>
+                            清空通知
+                        </button>
+                    </div>
+                </div>
+
+                <div class="notifications-tabs">
+                    <button class="tab-btn active" data-tab="all">
+                        <i class="fas fa-list"></i>
+                        全部通知
+                    </button>
+                    <button class="tab-btn" data-tab="互动">
+                        <i class="fas fa-heart"></i>
+                        互动
+                    </button>
+                    <button class="tab-btn" data-tab="悬赏">
+                        <i class="fas fa-coins"></i>
+                        悬赏
+                    </button>
+                    <button class="tab-btn" data-tab="系统">
+                        <i class="fas fa-cog"></i>
+                        系统
+                    </button>
+                </div>
+
+                <div class="notifications-list" id="notifications-list">
+                    <div style="text-align: center; padding: 80px;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: var(--text-light);"></i>
+                        <p style="margin-top: 20px; color: var(--text-secondary);">加载中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/notification-service.js"></script>
+    <script src="js/notification-center.js"></script>
+    <script src="js/notification-settings.js"></script>
+    <script>
+        let authModal, userMenu, notificationCenter;
+        let currentTab = 'all';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            authModal = new AuthModal();
+            userMenu = new UserMenu('auth-container');
+            notificationCenter = initNotificationCenter('notification-container');
+
+            loadNotifications();
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentTab = this.dataset.tab;
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    loadNotifications();
+                });
+            });
+
+            window.addEventListener('notificationAdded', function() {
+                loadNotifications();
+            });
+
+            window.addEventListener('allNotificationsRead', function() {
+                loadNotifications();
+            });
+        });
+
+        function loadNotifications() {
+            const currentUser = AuthService.getCurrentUser();
+            const list = document.getElementById('notifications-list');
+
+            if (!currentUser) {
+                list.innerHTML = `
+                    <div class="no-notifications">
+                        <i class="fas fa-user-lock"></i>
+                        <h3>请先登录</h3>
+                        <p>登录后即可查看您的通知</p>
+                    </div>
+                `;
+                document.getElementById('unread-count').style.display = 'none';
+                return;
+            }
+
+            let notifications = NotificationService.getNotifications(currentUser.id);
+
+            const typeMap = {
+                '互动': ['post_reply', 'resource_download'],
+                '悬赏': ['bounty_response', 'bounty_accepted', 'bounty_completed'],
+                '系统': ['points_change', 'level_up', 'system']
+            };
+
+            if (currentTab !== 'all') {
+                const allowedTypes = typeMap[currentTab] || [];
+                notifications = notifications.filter(n => allowedTypes.includes(n.type));
+            }
+
+            const unreadCount = NotificationService.getUnreadCount(currentUser.id);
+            const unreadBadge = document.getElementById('unread-count');
+            if (unreadCount > 0) {
+                unreadBadge.textContent = unreadCount;
+                unreadBadge.style.display = 'inline-block';
+            } else {
+                unreadBadge.style.display = 'none';
+            }
+
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="no-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>暂无通知</h3>
+                        <p>${currentTab === 'all' ? '您还没有收到任何通知' : '该分类下暂无通知'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = notifications.map(notification => {
+                const config = NotificationService.getNotificationConfig(notification.type);
+                const timeAgo = NotificationService.formatDate(notification.createdAt);
+                const readClass = notification.read ? 'read' : 'unread';
+
+                return `
+                    <div class="notification-card ${readClass}" data-id="${notification.id}">
+                        <div class="notification-card-header">
+                            <div class="notification-card-icon ${notification.type}">
+                                ${config.icon || '🔔'}
+                            </div>
+                            <div class="notification-card-content">
+                                <h3 class="notification-card-title">${config.title || '新通知'}</h3>
+                                <p class="notification-card-message">${notification.message}</p>
+                                <div class="notification-card-meta">
+                                    <span><i class="fas fa-clock"></i> ${timeAgo}</span>
+                                    ${notification.data?.actor ? `<span><i class="fas fa-user"></i> ${notification.data.actor}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="notification-card-actions">
+                                ${!notification.read ? `
+                                    <button class="card-action-btn" onclick="markAsRead('${notification.id}')" title="标为已读">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                ` : ''}
+                                <button class="card-action-btn delete" onclick="deleteNotification('${notification.id}')" title="删除">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.notification-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('.card-action-btn')) return;
+                    handleNotificationClick(this.dataset.id);
+                });
+            });
+        }
+
+        function handleNotificationClick(notificationId) {
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) return;
+
+            const notifications = NotificationService.getNotifications(currentUser.id);
+            const notification = notifications.find(n => n.id === notificationId);
+
+            if (!notification.read) {
+                NotificationService.markAsRead(notificationId);
+                loadNotifications();
+            }
+
+            if (notification.data) {
+                switch (notification.type) {
+                    case 'post_reply':
+                        if (notification.data.postId) {
+                            window.location.href = `forum.html?post=${notification.data.postId}`;
+                        }
+                        break;
+                    case 'resource_download':
+                        if (notification.data.resourceId) {
+                            window.location.href = `resources.html?resource=${notification.data.resourceId}`;
+                        }
+                        break;
+                    case 'bounty_response':
+                    case 'bounty_accepted':
+                    case 'bounty_completed':
+                        if (notification.data.bountyId) {
+                            window.location.href = `bounty.html?bounty=${notification.data.bountyId}`;
+                        }
+                        break;
+                    case 'level_up':
+                        window.location.href = 'points-center.html';
+                        break;
+                }
+            }
+        }
+
+        function markAsRead(notificationId) {
+            NotificationService.markAsRead(notificationId);
+            loadNotifications();
+            notificationCenter.updateUnreadCount();
+        }
+
+        function markAllAsRead() {
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) return;
+
+            NotificationService.markAllAsRead(currentUser.id);
+            loadNotifications();
+            notificationCenter.updateUnreadCount();
+            window.dispatchEvent(new CustomEvent('allNotificationsRead'));
+        }
+
+        function deleteNotification(notificationId) {
+            if (!confirm('确定要删除这条通知吗？')) return;
+
+            NotificationService.deleteNotification(notificationId);
+            loadNotifications();
+            notificationCenter.updateUnreadCount();
+        }
+
+        function clearAllNotifications() {
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser) return;
+
+            if (!confirm('确定要清空所有通知吗？')) return;
+
+            const notifications = NotificationService.getNotifications(currentUser.id);
+            notifications.forEach(n => {
+                NotificationService.deleteNotification(n.id);
+            });
+
+            loadNotifications();
+            notificationCenter.updateUnreadCount();
+        }
+
+        function openNotificationSettings() {
+            const settingsPanel = NotificationSettingsUI.renderSettingsPanel();
+            const modal = document.createElement('div');
+            modal.id = 'notification-settings-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 10000;
+                background: rgba(0,0,0,0.6);
+                backdrop-filter: blur(4px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow-y: auto;
+                padding: 40px 20px;
+            `;
+
+            modal.innerHTML = `
+                <div style="
+                    width: 100%;
+                    max-width: 700px;
+                    background: white;
+                    border-radius: 20px;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                    overflow: hidden;
+                    animation: modalSlideIn 0.3s ease;
+                ">
+                    <div style="
+                        padding: 24px 28px;
+                        background: linear-gradient(135deg, var(--primary-color, #667eea), var(--secondary-color, #764ba2));
+                        color: white;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    ">
+                        <h2 style="margin: 0;">通知设置</h2>
+                        <button onclick="closeNotificationSettings()" style="
+                            width: 36px;
+                            height: 36px;
+                            border: none;
+                            background: rgba(255,255,255,0.2);
+                            color: white;
+                            border-radius: 50%;
+                            cursor: pointer;
+                            font-size: 18px;
+                        ">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div style="padding: 28px; max-height: 70vh; overflow-y: auto;" id="settings-content">
+                        ${typeof NotificationSettingsUI !== 'undefined' ? NotificationSettingsUI.renderSettingsPanel() : '<p>加载中...</p>'}
+                    </div>
+                </div>
+                <style>
+                    @keyframes modalSlideIn {
+                        from { opacity: 0; transform: translateY(-20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                </style>
+            `;
+
+            document.body.appendChild(modal);
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeNotificationSettings();
+                }
+            });
+        }
+
+        function closeNotificationSettings() {
+            const modal = document.getElementById('notification-settings-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+    </script>
+</body>
+</html>
