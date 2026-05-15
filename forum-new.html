@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留子论坛 - 留情局</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ============================================
+           论坛页面样式 - 清晰的两栏布局
+           ============================================ */
+        
+        .forum-hero {
+            background: linear-gradient(135deg, var(--primary-color, #8B4513) 0%, var(--accent-color, #CD853F) 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .forum-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .forum-hero p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* 主内容区域 - 两栏布局 */
+        .forum-main {
+            padding: 40px 0;
+            background: var(--bg-light, #f8f9fa);
+        }
+        
+        .forum-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 通用卡片样式 */
+        .forum-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+        
+        .forum-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--bg-light, #f0f0f0);
+        }
+        
+        .forum-card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary, #231a13);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .forum-card-title i {
+            color: var(--primary-color, #8B4513);
+        }
+        
+        /* ============================================
+           左侧主内容区
+           ============================================ */
+        
+        /* 标签页导航 */
+        .forum-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--bg-light, #f0f0f0);
+            padding-bottom: 12px;
+        }
+        
+        .forum-tab {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary, #564337);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .forum-tab:hover {
+            background: var(--bg-light, #f5f5f5);
+            color: var(--primary-color, #8B4513);
+        }
+        
+        .forum-tab.active {
+            background: var(--primary-color, #8B4513);
+            color: white;
+        }
+        
+        /* 发帖按钮 */
+        .create-post-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary-color, #8B4513), var(--accent-color, #CD853F));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+        
+        .create-post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        }
+        
+        /* 筛选和排序 */
+        .forum-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 16px;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid var(--bg-light, #e0e0e0);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary, #564337);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--primary-color, #8B4513);
+            color: var(--primary-color, #8B4513);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary-color, #8B4513);
+            border-color: var(--primary-color, #8B4513);
+            color: white;
+        }
+        
+        .sort-select {
+            padding: 8px 16px;
+            border: 2px solid var(--bg-light, #e0e0e0);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary, #231a13);
+            background: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+        
+        /* 帖子卡片 */
+        .post-item {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 16px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .post-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color, #8B4513);
+        }
+        
+        .post-item.featured {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.05), rgba(205, 133, 63, 0.05));
+            border: 2px solid var(--primary-color, #8B4513);
+        }
+        
+        .post-item.pinned {
+            border-left: 4px solid var(--primary-color, #8B4513);
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+        
+        .post-category {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+        
+        .post-category.experience {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+        
+        .post-category.resources {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+        
+        .post-category.school {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+        
+        .post-category.competition {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+        
+        .post-category.interview {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .post-category.qa {
+            background: #E0F7FA;
+            color: #00838F;
+        }
+        
+        .post-badges {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .badge.pinned {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+        
+        .badge.hot {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .badge.ai {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+        
+        .post-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary, #231a13);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .post-item.featured .post-title {
+            font-size: 1.3rem;
+        }
+        
+        .post-excerpt {
+            font-size: 0.95rem;
+            color: var(--text-secondary, #564337);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .post-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        
+        .post-tag {
+            padding: 4px 12px;
+            background: var(--bg-light, #f5f5f5);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: var(--text-secondary, #564337);
+            transition: all 0.3s;
+        }
+        
+        .post-tag:hover {
+            background: var(--primary-color, #8B4513);
+            color: white;
+        }
+        
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--bg-light, #f0f0f0);
+        }
+        
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .author-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary, #231a13);
+        }
+        
+        .post-meta {
+            font-size: 0.8rem;
+            color: var(--text-light, #999);
+        }
+        
+        .post-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--text-secondary, #564337);
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* ============================================
+           右侧边栏
+           ============================================ */
+        .forum-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+        
+        .sidebar-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--bg-light, #f0f0f0);
+        }
+        
+        .sidebar-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary, #231a13);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sidebar-card-title i {
+            color: var(--primary-color, #8B4513);
+        }
+        
+        /* 快速发帖卡片 */
+        .quick-post-card {
+            background: linear-gradient(135deg, var(--primary-color, #8B4513), var(--accent-color, #CD853F));
+            color: white;
+            text-align: center;
+        }
+        
+        .quick-post-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .quick-post-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+        
+        .quick-post-btn {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: var(--primary-color, #8B4513);
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .quick-post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 热门话题 */
+        .topic-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--bg-light, #f0f0f0);
+            transition: all 0.3s;
+        }
+        
+        .topic-item:last-child {
+            border-bottom: none;
+        }
+        
+        .topic-item:hover {
+            background: var(--bg-light, #fafafa);
+            margin: 0 -12px;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .topic-rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .topic-rank.top {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+        }
+        
+        .topic-rank.normal {
+            background: var(--bg-light, #f0f0f0);
+            color: var(--text-secondary, #564337);
+        }
+        
+        .topic-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .topic-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary, #231a13);
+            margin-bottom: 4px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .topic-stats {
+            font-size: 0.8rem;
+            color: var(--text-light, #999);
+        }
+        
+        /* 我的收藏 */
+        .favorite-item {
+            display: flex;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--bg-light, #f0f0f0);
+            transition: all 0.3s;
+        }
+        
+        .favorite-item:last-child {
+            border-bottom: none;
+        }
+        
+        .favorite-item:hover {
+            background: var(--bg-light, #fafafa);
+            margin: 0 -12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+        }
+        
+        .favorite-category {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: var(--bg-light, #f0f0f0);
+            color: var(--text-secondary, #564337);
+            flex-shrink: 0;
+            height: fit-content;
+        }
+        
+        .favorite-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .favorite-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary, #231a13);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .favorite-meta {
+            font-size: 0.75rem;
+            color: var(--text-light, #999);
+        }
+        
+        /* 活跃用户 */
+        .active-user {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-light, #f5f5f5);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .active-user:hover {
+            background: var(--primary-color, #8B4513);
+            color: white;
+            transform: translateY(-4px);
+        }
+        
+        .active-user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+        
+        .active-user-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .active-user-posts {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        /* ============================================
+           发帖模态框
+           ============================================ */
+        .post-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .post-modal.active {
+            display: flex;
+        }
+        
+        .post-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        
+        .post-modal-container {
+            position: relative;
+            width: 680px;
+            max-width: 90vw;
+            max-height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .post-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+        
+        .post-modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .post-modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .post-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .post-modal-body {
+            padding: 25px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary, #231a13);
+            margin-bottom: 10px;
+        }
+        
+        .form-group label i {
+            color: var(--primary-color, #8B4513);
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color, #8B4513);
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .category-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .category-option input {
+            display: none;
+        }
+        
+        .category-card {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-card:hover {
+            border-color: var(--primary-color, #8B4513);
+            background: var(--bg-light, #fafafa);
+        }
+        
+        .category-option input:checked + .category-card {
+            border-color: var(--primary-color, #8B4513);
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.1), rgba(205, 133, 63, 0.1));
+        }
+        
+        .category-card i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--primary-color, #8B4513);
+        }
+        
+        .category-card span {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary, #231a13);
+        }
+        
+        .post-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 25px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-light, #fafafa);
+        }
+        
+        .btn-secondary {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary, #564337);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--primary-color, #8B4513);
+            color: var(--primary-color, #8B4513);
+        }
+        
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary-color, #8B4513), var(--accent-color, #CD853F));
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        }
+        
+        /* ============================================
+           响应式布局
+           ============================================ */
+        @media (max-width: 992px) {
+            .forum-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .forum-sidebar {
+                order: -1;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .quick-post-card {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .forum-hero {
+                padding: 40px 20px;
+            }
+            
+            .forum-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .forum-tabs {
+                overflow-x: auto;
+                gap: 8px;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .forum-tab {
+                white-space: nowrap;
+            }
+            
+            .post-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .post-footer {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            
+            .post-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .forum-sidebar {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-post-card {
+                grid-column: span 1;
+            }
+            
+            .users-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-landmark"></i>
+                    <span>留情局</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="resources.html" class="nav-link">资源共享</a>
+                <a href="intelligence.html" class="nav-link">留学情报</a>
+                <a href="forum.html" class="nav-link active">留子论坛</a>
+                <a href="points-center.html" class="nav-link">积分中心</a>
+            </nav>
+            <div class="header-right" id="auth-container">
+                <button class="login-btn" id="login-btn" onclick="if(typeof authModal !== 'undefined') authModal.open('login');">登录 Login</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="forum-hero">
+        <div class="container">
+            <h1>💬 留子论坛</h1>
+            <p>分享申请经验、讨论择校问题、交流学习心得。在这里，每一位留学生都是主角。</p>
+        </div>
+    </section>
+
+    <section class="forum-main">
+        <div class="forum-grid">
+            <!-- 左侧主内容 -->
+            <div class="forum-content">
+                <!-- 标签页 -->
+                <div class="forum-tabs">
+                    <button class="forum-tab active" onclick="switchTab('all', this)">
+                        <i class="fas fa-list"></i>
+                        全部帖子
+                    </button>
+                    <button class="forum-tab" onclick="switchTab('experience', this)">
+                        <i class="fas fa-lightbulb"></i>
+                        经验分享
+                    </button>
+                    <button class="forum-tab" onclick="switchTab('school', this)">
+                        <i class="fas fa-university"></i>
+                        择校讨论
+                    </button>
+                    <button class="forum-tab" onclick="switchTab('competition', this)">
+                        <i class="fas fa-trophy"></i>
+                        竞赛交流
+                    </button>
+                    <button class="forum-tab" onclick="switchTab('qa', this)">
+                        <i class="fas fa-question-circle"></i>
+                        问答互助
+                    </button>
+                    <button class="create-post-btn" onclick="openPostModal()">
+                        <i class="fas fa-plus"></i>
+                        发帖
+                    </button>
+                </div>
+
+                <!-- 筛选和排序 -->
+                <div class="forum-filters">
+                    <div class="filter-group">
+                        <button class="filter-btn active" onclick="setFilter('latest', this)">
+                            <i class="fas fa-clock"></i> 最新
+                        </button>
+                        <button class="filter-btn" onclick="setFilter('hot', this)">
+                            <i class="fas fa-fire"></i> 热门
+                        </button>
+                        <button class="filter-btn" onclick="setFilter('pinned', this)">
+                            <i class="fas fa-thumbtack"></i> 精华
+                        </button>
+                    </div>
+                    <select class="sort-select" onchange="sortPosts(this.value)">
+                        <option value="time">按时间排序</option>
+                        <option value="views">按热度排序</option>
+                        <option value="likes">按点赞排序</option>
+                    </select>
+                </div>
+
+                <!-- 帖子列表 -->
+                <div id="posts-container">
+                    <!-- 帖子将由 JS 渲染 -->
+                </div>
+            </div>
+
+            <!-- 右侧边栏 -->
+            <div class="forum-sidebar">
+                <!-- 快速发帖 -->
+                <div class="sidebar-card quick-post-card">
+                    <h3><i class="fas fa-pen"></i> 分享你的故事</h3>
+                    <p>把你的留学经验分享给更多人</p>
+                    <button class="quick-post-btn" onclick="openPostModal()">
+                        <i class="fas fa-plus"></i>
+                        立即发帖
+                    </button>
+                </div>
+
+                <!-- 热门话题 -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h3 class="sidebar-card-title">
+                            <i class="fas fa-fire"></i>
+                            热门话题
+                        </h3>
+                    </div>
+                    <div id="hot-topics">
+                        <!-- 热门话题将由 JS 渲染 -->
+                    </div>
+                </div>
+
+                <!-- 我的收藏 -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h3 class="sidebar-card-title">
+                            <i class="fas fa-bookmark"></i>
+                            我的收藏
+                        </h3>
+                    </div>
+                    <div id="my-favorites">
+                        <!-- 收藏将由 JS 渲染 -->
+                    </div>
+                </div>
+
+                <!-- 活跃用户 -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h3 class="sidebar-card-title">
+                            <i class="fas fa-users"></i>
+                            活跃用户
+                        </h3>
+                    </div>
+                    <div id="active-users">
+                        <!-- 活跃用户将由 JS 渲染 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 发帖模态框 -->
+    <div id="postModal" class="post-modal">
+        <div class="post-modal-overlay" onclick="closePostModal()"></div>
+        <div class="post-modal-container">
+            <div class="post-modal-header">
+                <h2><i class="fas fa-pen"></i> 发帖</h2>
+                <button class="post-modal-close" onclick="closePostModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="post-modal-body">
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> 标题</label>
+                    <input type="text" id="postTitle" placeholder="简洁明了地描述你的问题或分享..." maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-folder"></i> 分类</label>
+                    <div class="category-selector">
+                        <label class="category-option">
+                            <input type="radio" name="category" value="experience">
+                            <div class="category-card">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>经验分享</span>
+                            </div>
+                        </label>
+                        <label class="category-option">
+                            <input type="radio" name="category" value="school">
+                            <div class="category-card">
+                                <i class="fas fa-university"></i>
+                                <span>择校讨论</span>
+                            </div>
+                        </label>
+                        <label class="category-option">
+                            <input type="radio" name="category" value="competition">
+                            <div class="category-card">
+                                <i class="fas fa-trophy"></i>
+                                <span>竞赛交流</span>
+                            </div>
+                        </label>
+                        <label class="category-option">
+                            <input type="radio" name="category" value="interview">
+                            <div class="category-card">
+                                <i class="fas fa-comments"></i>
+                                <span>面试经验</span>
+                            </div>
+                        </label>
+                        <label class="category-option">
+                            <input type="radio" name="category" value="qa">
+                            <div class="category-card">
+                                <i class="fas fa-question-circle"></i>
+                                <span>问答互助</span>
+                            </div>
+                        </label>
+                        <label class="category-option">
+                            <input type="radio" name="category" value="resources">
+                            <div class="category-card">
+                                <i class="fas fa-book"></i>
+                                <span>资源共享</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> 内容</label>
+                    <textarea id="postContent" placeholder="详细描述你的问题或分享你的经验..."></textarea>
+                </div>
+            </div>
+            <div class="post-modal-footer">
+                <button class="btn-secondary" onclick="closePostModal()">取消</button>
+                <button class="btn-primary" onclick="submitPost()">
+                    <i class="fas fa-paper-plane"></i>
+                    发布帖子
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fas fa-landmark"></i>
+                        <span>留情局</span>
+                    </div>
+                    <p>专业的海外教育情报与资源共享平台，助力每一位学子的全球升学之路。</p>
+                </div>
+                <div class="footer-links">
+                    <h4>关于我们</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Study Guide</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>帮助与支持</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 留情局 Intelligence Bureau for Overseas Study. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/auth-modal.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/forum-service.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let currentTab = 'all';
+        let currentFilter = 'latest';
+        let currentSort = 'time';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPosts();
+            loadHotTopics();
+            loadMyFavorites();
+            loadActiveUsers();
+        });
+
+        function loadPosts() {
+            const container = document.getElementById('posts-container');
+            const posts = ForumService.getPosts(currentTab, currentSort);
+
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div class="forum-card" style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-comments" style="font-size: 3rem; color: var(--text-light); margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">暂无帖子</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">成为第一个发帖的人！</p>
+                        <button class="create-post-btn" onclick="openPostModal()">
+                            <i class="fas fa-plus"></i>
+                            立即发帖
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = posts.map(post => `
+                <div class="post-item ${post.isPinned ? 'pinned' : ''} ${post.isHighlighted ? 'featured' : ''}" onclick="viewPost('${post.id}')">
+                    <div class="post-header">
+                        <span class="post-category ${post.category}">${getCategoryName(post.category)}</span>
+                        <div class="post-badges">
+                            ${post.isPinned ? '<span class="badge pinned"><i class="fas fa-thumbtack"></i> 置顶</span>' : ''}
+                            ${post.views > 5000 ? '<span class="badge hot"><i class="fas fa-fire"></i> 热门</span>' : ''}
+                        </div>
+                    </div>
+                    <h3 class="post-title">${post.title}</h3>
+                    <p class="post-excerpt">${post.content}</p>
+                    <div class="post-tags">
+                        ${(post.tags || []).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="post-footer">
+                        <div class="post-author">
+                            <img src="${post.author.avatar}" alt="${post.author.nickname}" class="author-avatar">
+                            <div class="author-info">
+                                <span class="author-name">${post.author.nickname}</span>
+                                <span class="post-meta">${ForumService.formatTimeAgo(post.createdAt)}</span>
+                            </div>
+                        </div>
+                        <div class="post-stats">
+                            <span class="stat-item">
+                                <i class="far fa-eye"></i>
+                                ${post.views.toLocaleString()}
+                            </span>
+                            <span class="stat-item">
+                                <i class="far fa-heart"></i>
+                                ${post.likes}
+                            </span>
+                            <span class="stat-item">
+                                <i class="far fa-comment"></i>
+                                ${post.replies}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadHotTopics() {
+            const container = document.getElementById('hot-topics');
+            const topics = ForumService.getHotTopics();
+
+            if (topics.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">暂无热门话题</p>';
+                return;
+            }
+
+            container.innerHTML = topics.map((topic, index) => `
+                <div class="topic-item" onclick="viewPost('${topic.id}')">
+                    <span class="topic-rank ${index < 3 ? 'top' : 'normal'}">${index + 1}</span>
+                    <div class="topic-content">
+                        <h4 class="topic-title">${topic.title}</h4>
+                        <span class="topic-stats">${topic.views} 阅读 · ${topic.replies} 回复</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadMyFavorites() {
+            const container = document.getElementById('my-favorites');
+            const favorites = ForumService.getFavorites();
+
+            if (favorites.length === 0) {
+                container.innerHTML = `
+                    <p style="text-align: center; color: var(--text-secondary); padding: 20px 0;">
+                        暂无收藏<br>
+                        <small>收藏感兴趣的帖子</small>
+                    </p>
+                `;
+                return;
+            }
+
+            container.innerHTML = favorites.map(fav => `
+                <div class="favorite-item" onclick="viewPost('${fav.id}')">
+                    <span class="favorite-category">${getCategoryName(fav.category)}</span>
+                    <div class="favorite-content">
+                        <h4 class="favorite-title">${fav.title}</h4>
+                        <span class="favorite-meta">${ForumService.formatTimeAgo(fav.createdAt)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadActiveUsers() {
+            const container = document.getElementById('active-users');
+            const users = ForumService.getActiveUsers();
+
+            if (users.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">暂无活跃用户</p>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="users-grid">
+                    ${users.map(user => `
+                        <div class="active-user" onclick="viewUserProfile('${user.id}')">
+                            <img src="${user.avatar}" alt="${user.nickname}" class="active-user-avatar">
+                            <span class="active-user-name">${user.nickname}</span>
+                            <span class="active-user-posts">${user.posts} 帖子</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function switchTab(tab, btn) {
+            currentTab = tab;
+            document.querySelectorAll('.forum-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            loadPosts();
+        }
+
+        function setFilter(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadPosts();
+        }
+
+        function sortPosts(sortBy) {
+            currentSort = sortBy;
+            loadPosts();
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                experience: '经验分享',
+                school: '择校讨论',
+                competition: '竞赛交流',
+                interview: '面试经验',
+                qa: '问答互助',
+                resources: '资源共享'
+            };
+            return names[category] || category;
+        }
+
+        function viewPost(postId) {
+            window.location.href = `post.html?id=${postId}`;
+        }
+
+        function viewUserProfile(userId) {
+            window.location.href = `profile.html?id=${userId}`;
+        }
+
+        function openPostModal() {
+            document.getElementById('postModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePostModal() {
+            document.getElementById('postModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            // 清空表单
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+            document.querySelectorAll('input[name="category"]').forEach(r => r.checked = false);
+        }
+
+        function submitPost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const category = document.querySelector('input[name="category"]:checked');
+
+            if (!title) {
+                alert('请输入帖子标题');
+                return;
+            }
+
+            if (!content) {
+                alert('请输入帖子内容');
+                return;
+            }
+
+            if (!category) {
+                alert('请选择帖子分类');
+                return;
+            }
+
+            const newPost = {
+                title,
+                content,
+                category: category.value
+            };
+
+            ForumService.createPost(newPost);
+            closePostModal();
+            loadPosts();
+            alert('发帖成功！');
+        }
+    </script>
+</body>
+</html>
