@@ -7,6 +7,687 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/modal-style.css">
+    <style>
+        /* ============================================
+           新的情报中心样式 - 清晰三栏布局
+           ============================================ */
+        
+        .intelligence-hero {
+            background: linear-gradient(135deg, var(--primary-color, #8B4513) 0%, var(--accent-color, #CD853F) 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .intelligence-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .intelligence-hero p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* 主内容区域 - 三栏布局 */
+        .intelligence-main {
+            padding: 40px 0;
+            background: var(--bg-light, #f8f9fa);
+        }
+        
+        .intelligence-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 300px;
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 通用卡片样式 */
+        .intel-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+        
+        .intel-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--bg-light, #f0f0f0);
+        }
+        
+        .intel-card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary, #231a13);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .intel-card-title i {
+            color: var(--primary-color, #8B4513);
+        }
+        
+        /* ============================================
+           左侧 - 个人日程
+           ============================================ */
+        .personal-timeline {
+            position: sticky;
+            top: 20px;
+        }
+        
+        .timeline-section {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        .timeline-section::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .timeline-section::-webkit-scrollbar-thumb {
+            background: var(--primary-color, #8B4513);
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--bg-light, #f0f0f0);
+            transition: all 0.3s;
+        }
+        
+        .timeline-item:hover {
+            background: var(--bg-light, #fafafa);
+            margin: 0 -12px;
+            padding: 16px 12px;
+            border-radius: 8px;
+        }
+        
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+        
+        .timeline-item.today {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.08), rgba(205, 133, 63, 0.08));
+            border-radius: 12px;
+            margin: 0 -12px;
+            padding: 16px 12px;
+            border: 2px solid var(--primary-color, #8B4513);
+        }
+        
+        .timeline-item.completed {
+            opacity: 0.5;
+        }
+        
+        .timeline-item.completed .timeline-content h4 {
+            text-decoration: line-through;
+        }
+        
+        .timeline-marker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 40px;
+        }
+        
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color, #8B4513);
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 6px;
+        }
+        
+        .timeline-item.today .timeline-dot {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-color, #CD853F);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .timeline-item.completed .timeline-dot {
+            background: #4CAF50;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary, #231a13);
+            margin-bottom: 4px;
+        }
+        
+        .timeline-content p {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #564337);
+            margin: 0;
+        }
+        
+        .timeline-date {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-color, #8B4513);
+            background: rgba(139, 69, 19, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+        
+        .timeline-countdown {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent-color, #CD853F);
+            margin-bottom: 4px;
+        }
+        
+        .timeline-check {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color, #8B4513);
+            background: white;
+            color: var(--primary-color, #8B4513);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        
+        .timeline-check:hover {
+            background: var(--primary-color, #8B4513);
+            color: white;
+        }
+        
+        .add-reminder-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color, #8B4513), var(--accent-color, #CD853F));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .add-reminder-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        }
+        
+        /* ============================================
+           中间 - 热点情报
+           ============================================ */
+        .intelligence-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .intelligence-item {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .intelligence-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color, #8B4513);
+        }
+        
+        .intelligence-item.featured {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.05), rgba(205, 133, 63, 0.05));
+            border: 2px solid var(--primary-color, #8B4513);
+        }
+        
+        .intelligence-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .intelligence-tag {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .intelligence-tag.policy {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+        
+        .intelligence-tag.resources {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+        
+        .intelligence-tag.competition {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+        
+        .intelligence-tag.admission {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+        
+        .intelligence-tag.deadline {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .intelligence-time {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #564337);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .intelligence-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary, #231a13);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .intelligence-item.featured .intelligence-title {
+            font-size: 1.3rem;
+        }
+        
+        .intelligence-excerpt {
+            font-size: 0.95rem;
+            color: var(--text-secondary, #564337);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .intelligence-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--bg-light, #f0f0f0);
+        }
+        
+        .intelligence-source {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #564337);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .intelligence-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--text-secondary, #564337);
+        }
+        
+        .intelligence-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            color: #1976D2;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 12px;
+        }
+        
+        /* ============================================
+           右侧 - 关键时点
+           ============================================ */
+        .milestones-section {
+            position: sticky;
+            top: 20px;
+        }
+        
+        .milestone-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+        
+        .milestone-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--bg-light, #f0f0f0);
+            transition: all 0.3s;
+        }
+        
+        .milestone-item:last-child {
+            border-bottom: none;
+        }
+        
+        .milestone-item:hover {
+            background: var(--bg-light, #fafafa);
+            margin: 0 -12px;
+            padding: 16px 12px;
+            border-radius: 8px;
+        }
+        
+        .milestone-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .milestone-icon.purple {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            color: #1976D2;
+        }
+        
+        .milestone-icon.orange {
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            color: #F57C00;
+        }
+        
+        .milestone-icon.green {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            color: #388E3C;
+        }
+        
+        .milestone-icon.red {
+            background: linear-gradient(135deg, #FFEBEE, #FFCDD2);
+            color: #C62828;
+        }
+        
+        .milestone-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .milestone-content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary, #231a13);
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+        
+        .milestone-content p {
+            font-size: 0.85rem;
+            color: var(--text-secondary, #564337);
+            margin: 0;
+        }
+        
+        .milestone-countdown {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-color, #CD853F);
+            margin-top: 4px;
+        }
+        
+        .milestone-btn {
+            padding: 6px 12px;
+            background: var(--primary-color, #8B4513);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            align-self: center;
+        }
+        
+        .milestone-btn:hover {
+            background: var(--accent-color, #CD853F);
+            transform: translateY(-2px);
+        }
+        
+        .milestone-btn.secondary {
+            background: var(--bg-light, #f0f0f0);
+            color: var(--text-primary, #231a13);
+        }
+        
+        .milestone-btn.secondary:hover {
+            background: var(--primary-color, #8B4513);
+            color: white;
+        }
+        
+        /* ============================================
+           日历组件
+           ============================================ */
+        .mini-calendar {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .calendar-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary, #231a13);
+        }
+        
+        .calendar-nav {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--bg-light, #e0e0e0);
+            background: white;
+            color: var(--text-primary, #231a13);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .calendar-nav:hover {
+            background: var(--primary-color, #8B4513);
+            color: white;
+            border-color: var(--primary-color, #8B4513);
+        }
+        
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .calendar-weekdays div {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary, #564337);
+            padding: 4px 0;
+        }
+        
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: var(--text-primary, #231a13);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .calendar-day:hover {
+            background: var(--bg-light, #f0f0f0);
+        }
+        
+        .calendar-day.empty {
+            color: #ccc;
+            cursor: default;
+        }
+        
+        .calendar-day.today {
+            background: var(--primary-color, #8B4513);
+            color: white;
+            font-weight: 700;
+        }
+        
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent-color, #CD853F);
+        }
+        
+        .calendar-day.purple.has-event::after {
+            background: #1976D2;
+        }
+        
+        .calendar-day.orange.has-event::after {
+            background: #F57C00;
+        }
+        
+        .calendar-day.green.has-event::after {
+            background: #388E3C;
+        }
+        
+        /* ============================================
+           响应式布局
+           ============================================ */
+        @media (max-width: 1200px) {
+            .intelligence-grid {
+                grid-template-columns: 1fr 300px;
+            }
+            
+            .personal-timeline {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .intelligence-grid {
+                grid-template-columns: 1fr;
+                padding: 0 16px;
+            }
+            
+            .intelligence-hero {
+                padding: 40px 20px;
+            }
+            
+            .intelligence-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .milestones-section {
+                position: static;
+            }
+            
+            .intelligence-item {
+                padding: 20px;
+            }
+        }
+        
+        /* 同步状态提示 */
+        .sync-status {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-primary, #231a13);
+            z-index: 100;
+            transition: all 0.3s;
+        }
+        
+        .sync-status.synced {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        }
+        
+        .sync-status i {
+            color: var(--primary-color, #8B4513);
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -31,138 +712,84 @@
 
     <section class="intelligence-hero">
         <div class="container">
-            <h1>情报中心</h1>
+            <h1>🎯 情报中心</h1>
             <p>为您追踪全球竞赛、申请截止日期和独家留学情报。我们将混乱的信息流转化为清晰的成长路线。</p>
         </div>
     </section>
 
-    <section class="intelligence-content">
-        <div class="container">
-            <div class="intelligence-grid">
-                <div class="main-content">
-                    <div class="hot-intelligence">
-                        <div class="section-header">
-                            <h2><i class="fas fa-flame"></i> 热点情报 (Rising Intelligence)</h2>
-                            <a href="#" class="view-all">查看全部 →</a>
-                        </div>
-                        <div class="intelligence-card">
-                            <span class="tag policy">POLICY</span>
-                            <span class="time">2 hours ago</span>
-                            <h3>UC系统重大政策更新：针对2025届申请者的最新标准化考试要求</h3>
-                            <p class="views">1.2k views</p>
-                        </div>
-                        <div class="intelligence-card">
-                            <span class="tag resources">RESOURCES</span>
-                            <span class="time">5 hours ago</span>
-                            <h3>【资源下载】常春藤联校最新文书真题题库及教授点评版</h3>
-                            <p class="views">850 downloads</p>
-                        </div>
-                        <div class="intelligence-card">
-                            <span class="tag competition">COMPETITION</span>
-                            <span class="time">Yesterday</span>
-                            <h3>2025赛季学术竞赛路线图：从AMC到USACO的全年备赛建议</h3>
-                            <p class="views">2.4k views</p>
-                        </div>
+    <section class="intelligence-main">
+        <div class="intelligence-grid">
+            <!-- 左侧 - 个人日程 -->
+            <div class="personal-timeline">
+                <div class="intel-card">
+                    <div class="intel-card-header">
+                        <h2 class="intel-card-title">
+                            <i class="fas fa-list-alt"></i>
+                            我的日程
+                        </h2>
                     </div>
+                    <div class="timeline-section" id="timeline-section">
+                        <!-- 时间线内容将由 JS 渲染 -->
+                    </div>
+                    <button class="add-reminder-btn">
+                        <i class="fas fa-plus"></i>
+                        添加提醒
+                    </button>
+                </div>
+            </div>
 
-                    <div class="key-milestones">
-                        <div class="section-header">
-                            <h2><i class="fas fa-calendar-check"></i> 关键时点 (Key Milestones)</h2>
-                            <a href="#" class="view-all">查看全部时点 →</a>
-                        </div>
-                        <div class="milestone-list">
-                            <div class="milestone-item">
-                                <div class="milestone-icon purple">
-                                    <i class="fas fa-trophy"></i>
-                                </div>
-                                <div class="milestone-content">
-                                    <h3>AMC 10/12 美国数学竞赛</h3>
-                                    <p>报名截止日期：2024年10月28日</p>
-                                </div>
-                                <button class="milestone-btn">详情 →</button>
-                            </div>
-                            <div class="milestone-item">
-                                <div class="milestone-icon orange">
-                                    <i class="fas fa-graduation-cap"></i>
-                                </div>
-                                <div class="milestone-content">
-                                    <h3>UC Application Deadline 加州大学申请截止</h3>
-                                    <p>截止日期：2024年11月30日</p>
-                                </div>
-                                <button class="milestone-btn secondary">加入日历</button>
-                            </div>
-                            <div class="milestone-item">
-                                <div class="milestone-icon green">
-                                    <i class="fas fa-passport"></i>
-                                </div>
-                                <div class="milestone-content">
-                                    <h3>Student Visa Early Appointment 学生签证预约开始</h3>
-                                    <p>开始时间：2025年5月</p>
-                                </div>
-                                <button class="milestone-btn secondary">加入日历</button>
-                            </div>
-                        </div>
+            <!-- 中间 - 热点情报 -->
+            <div class="intelligence-feed" id="intelligence-feed">
+                <!-- 情报内容将由 JS 渲染 -->
+            </div>
+
+            <!-- 右侧 - 关键时点 -->
+            <div class="milestones-section">
+                <div class="milestone-card">
+                    <div class="intel-card-header">
+                        <h2 class="intel-card-title">
+                            <i class="fas fa-clock"></i>
+                            关键时点
+                        </h2>
+                        <a href="#" class="view-all">查看全部</a>
+                    </div>
+                    <div id="milestones-section">
+                        <!-- 关键时点将由 JS 渲染 -->
                     </div>
                 </div>
 
-                <div class="sidebar">
-                    <div class="personal-timeline">
-                        <h2><i class="fas fa-list-alt"></i> 我的日程 (Personal)</h2>
-                        <div class="timeline-list">
-                            <div class="timeline-item today">
-                                <span class="timeline-dot"></span>
-                                <div class="timeline-content">
-                                    <h4>提交文书第一稿 (Common App)</h4>
-                                    <p class="countdown">剩余时间: 12小时</p>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <span class="timeline-dot"></span>
-                                <div class="timeline-content">
-                                    <span class="timeline-date">OCT 15</span>
-                                    <h4>牛剑面试材料上传截止</h4>
-                                    <p>牛津大学/剑桥大学</p>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <span class="timeline-dot"></span>
-                                <div class="timeline-content">
-                                    <span class="timeline-date">NOV 01</span>
-                                    <h4>ED/EA 提前录取申请截止</h4>
-                                    <p>关键截止点 - 全面检查</p>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <span class="timeline-dot"></span>
-                                <div class="timeline-content">
-                                    <span class="timeline-date">OCT 25</span>
-                                    <h4>托福成绩提交 (TOEFL Score Submission)</h4>
-                                    <p>官方送分至目标院校</p>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <span class="timeline-dot"></span>
-                                <div class="timeline-content">
-                                    <span class="timeline-date">NOV 05</span>
-                                    <h4>联系老师撰写推荐信</h4>
-                                    <p>确认推荐人名单并发送请求</p>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <span class="timeline-dot"></span>
-                                <div class="timeline-content">
-                                    <span class="timeline-date">NOV 15</span>
-                                    <h4>模拟面试练习 (Mock Interview)</h4>
-                                    <p>预约校友或导师进行1对1模拟</p>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="add-reminder">+ 添加提醒</button>
+                <div class="mini-calendar">
+                    <div class="calendar-header">
+                        <button class="calendar-nav" onclick="changeMonth(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="calendar-title" id="calendar-title">2024年10月</span>
+                        <button class="calendar-nav" onclick="changeMonth(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <div>日</div>
+                        <div>一</div>
+                        <div>二</div>
+                        <div>三</div>
+                        <div>四</div>
+                        <div>五</div>
+                        <div>六</div>
+                    </div>
+                    <div class="calendar-days" id="calendar-days">
+                        <!-- 日历将由 JS 渲染 -->
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- 同步状态 -->
+    <div class="sync-status" id="sync-status">
+        <i class="fas fa-sync"></i>
+        <span>同步中...</span>
+    </div>
 
     <!-- 情报详情模态框 -->
     <div id="intelDetailModal" class="modal">
@@ -212,14 +839,15 @@
     <script src="js/main.js"></script>
     <script>
         let syncService = null;
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
 
         document.addEventListener('DOMContentLoaded', async function() {
             initSyncService();
             renderIntelligence();
             renderMilestones();
             renderTimeline();
-            initCalendar();
-
+            renderCalendar();
             await performInitialSync();
         });
 
@@ -230,111 +858,255 @@
             if (supabaseUrl && supabaseKey) {
                 syncService = new IntelligenceSyncService(supabaseUrl, supabaseKey);
                 syncService.startAutoSync(30 * 60 * 1000);
-                updateSyncStatus();
             }
         }
 
         async function performInitialSync() {
-            if (!syncService) return;
-
-            const result = await syncService.manualSync();
-            if (result.status === 'success' && result.added > 0) {
-                showSyncNotification(`新增 ${result.added} 条情报`, 'success');
-                renderIntelligence();
+            if (!syncService) {
+                updateSyncStatus('未配置', false);
+                return;
             }
-            updateSyncStatus();
+
+            updateSyncStatus('同步中...', false);
+            const result = await syncService.manualSync();
+            
+            if (result.status === 'success') {
+                updateSyncStatus(`${result.added} 条新情报`, true);
+                renderIntelligence();
+                setTimeout(() => {
+                    document.getElementById('sync-status').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('sync-status').style.display = 'none';
+                    }, 300);
+                }, 3000);
+            } else {
+                updateSyncStatus('同步失败', false);
+            }
         }
 
-        function updateSyncStatus() {
-            if (!syncService) return;
-
-            const stats = syncService.getStats();
-            const meta = syncService.getSyncMeta();
-
+        function updateSyncStatus(message, success) {
             const statusEl = document.getElementById('sync-status');
             if (statusEl) {
-                const lastSync = meta.lastSync ? formatTimeAgo(meta.lastSync) : '从未同步';
                 statusEl.innerHTML = `
-                    <div class="sync-status-badge">
-                        <i class="fas fa-sync ${meta.lastSync ? 'synced' : ''}"></i>
-                        <span>${lastSync}</span>
-                        <span class="sync-count">${stats.total} 条情报</span>
-                    </div>
+                    <i class="fas fa-${success ? 'check-circle' : 'sync'} ${success ? 'success' : ''}"></i>
+                    <span>${message}</span>
                 `;
+                statusEl.className = `sync-status ${success ? 'synced' : ''}`;
+                statusEl.style.display = 'flex';
+                statusEl.style.opacity = '1';
             }
-        }
-
-        function showSyncNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `sync-notification ${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
-            `;
-            document.body.appendChild(notification);
-
-            setTimeout(() => notification.classList.add('show'), 10);
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
         }
 
         function renderIntelligence() {
-            const intelList = document.querySelector('.hot-intelligence');
+            const feedEl = document.getElementById('intelligence-feed');
             const intelligence = IntelligenceService.getIntelligence();
 
-            const cardsHtml = intelligence.slice(0, 4).map(item => `
-                <div class="intelligence-card ${item.isAutoGenerated ? 'auto-generated' : ''}" data-id="${item.id}" onclick="showIntelDetail('${item.id}')">
-                    <div class="card-header">
-                        <span class="tag ${item.tag}">${item.tagLabel}</span>
-                        ${item.isAutoGenerated ? '<span class="auto-badge"><i class="fas fa-robot"></i> AI采集</span>' : ''}
-                        <span class="time">${IntelligenceService.formatTimeAgo(item.time)}</span>
+            if (intelligence.length === 0) {
+                feedEl.innerHTML = `
+                    <div class="intel-card" style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-search" style="font-size: 3rem; color: var(--text-light); margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">暂无情报</h3>
+                        <p style="color: var(--text-secondary);">AI正在采集中，请稍后再来看看...</p>
                     </div>
-                    <h3>${item.title}</h3>
-                    <div class="card-footer">
-                        <span class="source"><i class="fas fa-university"></i> ${item.source}</span>
-                        <span class="views"><i class="fas fa-eye"></i> ${item.views.toLocaleString()}</span>
+                `;
+                return;
+            }
+
+            const cardsHtml = intelligence.slice(0, 6).map((item, index) => `
+                <div class="intelligence-item ${index === 0 ? 'featured' : ''}" onclick="showIntelDetail('${item.id}')">
+                    <div class="intelligence-header">
+                        <span class="intelligence-tag ${item.tag}">${item.tagLabel}</span>
+                        <span class="intelligence-time">
+                            ${item.isAutoGenerated ? '<span class="ai-badge"><i class="fas fa-robot"></i> AI采集</span>' : ''}
+                            <i class="far fa-clock"></i>
+                            ${IntelligenceService.formatTimeAgo(item.time)}
+                        </span>
+                    </div>
+                    <h3 class="intelligence-title">${item.title}</h3>
+                    <p class="intelligence-excerpt">${item.content || '点击查看完整内容...'}</p>
+                    <div class="intelligence-footer">
+                        <span class="intelligence-source">
+                            <i class="fas fa-university"></i>
+                            ${item.source || '未知来源'}
+                        </span>
+                        <div class="intelligence-stats">
+                            <span class="intelligence-stat">
+                                <i class="far fa-eye"></i>
+                                ${item.views.toLocaleString()}
+                            </span>
+                            <span class="intelligence-stat">
+                                <i class="far fa-heart"></i>
+                                ${item.likes || 0}
+                            </span>
+                        </div>
                     </div>
                 </div>
             `).join('');
 
-            intelList.innerHTML = `
-                <div class="section-header">
-                    <h2><i class="fas fa-flame"></i> 热点情报 (Rising Intelligence)</h2>
-                    <div class="section-actions">
-                        <button class="sync-btn" onclick="manualSync()" title="手动同步">
-                            <i class="fas fa-sync-alt"></i>
+            feedEl.innerHTML = `
+                <div class="intel-card">
+                    <div class="intel-card-header">
+                        <h2 class="intel-card-title">
+                            <i class="fas fa-fire"></i>
+                            热点情报
+                        </h2>
+                        <button class="milestone-btn" onclick="manualSync()" style="margin: 0;">
+                            <i class="fas fa-sync-alt"></i> 刷新
                         </button>
-                        <a href="#" class="view-all">查看全部 <span class="total-count">(${intelligence.length})</span> →</a>
                     </div>
                 </div>
-                ${intelligence.length === 0 ? '<p class="empty-intel">暂无情报，AI正在采集中...</p>' : cardsHtml}
+                ${cardsHtml}
             `;
         }
 
-        async function manualSync() {
-            if (!syncService) {
-                showSyncNotification('请先配置 Supabase', 'error');
+        function manualSync() {
+            performInitialSync();
+        }
+
+        function renderMilestones() {
+            const sectionEl = document.getElementById('milestones-section');
+            const milestones = IntelligenceService.getUpcomingEvents(90);
+
+            if (milestones.length === 0) {
+                sectionEl.innerHTML = `
+                    <p style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                        暂无重要时点
+                    </p>
+                `;
                 return;
             }
 
-            const btn = event.target.closest('.sync-btn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btn.disabled = true;
+            const itemsHtml = milestones.slice(0, 4).map(mile => {
+                const countdown = IntelligenceService.getCountdown(mile.date);
+                return `
+                    <div class="milestone-item">
+                        <div class="milestone-icon ${mile.color}">
+                            <i class="fas fa-${mile.icon}"></i>
+                        </div>
+                        <div class="milestone-content">
+                            <h4>${mile.title}</h4>
+                            <p>${mile.description}</p>
+                            <span class="milestone-countdown">
+                                ${countdown.expired ? '已结束' : countdown.text}
+                            </span>
+                        </div>
+                        <button class="milestone-btn ${countdown.expired ? 'secondary' : ''}" onclick="addToCalendar('${mile.id}')">
+                            ${countdown.expired ? '已结束' : '加入日历'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
 
-            const result = await syncService.manualSync();
+            sectionEl.innerHTML = itemsHtml;
+        }
 
-            if (result.status === 'success') {
-                showSyncNotification(`同步成功！新增 ${result.added} 条情报`, 'success');
-                renderIntelligence();
-            } else {
-                showSyncNotification('同步失败: ' + result.error, 'error');
+        function renderTimeline() {
+            const sectionEl = document.getElementById('timeline-section');
+            const timeline = IntelligenceService.getTimelineItems();
+            const today = new Date().toISOString().split('T')[0];
+
+            if (timeline.length === 0) {
+                sectionEl.innerHTML = `
+                    <p style="text-align: center; color: var(--text-secondary); padding: 20px 0;">
+                        暂无日程安排<br>
+                        <small>点击下方按钮添加</small>
+                    </p>
+                `;
+                return;
             }
 
-            btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-            btn.disabled = false;
-            updateSyncStatus();
+            const itemsHtml = timeline.map(item => {
+                const isToday = item.date === today;
+                const countdown = IntelligenceService.getCountdown(item.date);
+                
+                return `
+                    <div class="timeline-item ${isToday ? 'today' : ''} ${item.completed ? 'completed' : ''}">
+                        <div class="timeline-marker">
+                            <span class="timeline-dot"></span>
+                        </div>
+                        <div class="timeline-content">
+                            ${isToday ? `
+                                <span class="timeline-countdown">剩余时间: ${countdown.text}</span>
+                            ` : `
+                                <span class="timeline-date">${item.date.slice(5)}</span>
+                            `}
+                            <h4>${item.title}</h4>
+                            <p>${item.description}</p>
+                        </div>
+                        ${!item.completed ? `
+                            <button class="timeline-check" onclick="completeTask('${item.id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            sectionEl.innerHTML = itemsHtml;
+        }
+
+        function renderCalendar() {
+            const calendarTitle = document.getElementById('calendar-title');
+            const calendarDays = document.getElementById('calendar-days');
+            
+            calendarTitle.textContent = `${currentYear}年${currentMonth + 1}月`;
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
+            const events = IntelligenceService.getCalendarEvents(currentYear, currentMonth);
+            
+            let html = '';
+            
+            // 填充空白
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="calendar-day empty"></div>';
+            }
+            
+            // 填充日期
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayEvents = events.filter(e => e.date === dateStr);
+                const hasEvent = dayEvents.length > 0;
+                const eventColor = hasEvent ? dayEvents[0].color : '';
+                const isToday = dateStr === todayStr;
+                
+                html += `
+                    <div class="calendar-day ${hasEvent ? 'has-event ' + eventColor : ''} ${isToday ? 'today' : ''}">
+                        ${day}
+                    </div>
+                `;
+            }
+            
+            calendarDays.innerHTML = html;
+        }
+
+        function changeMonth(delta) {
+            currentMonth += delta;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        }
+
+        function completeTask(taskId) {
+            IntelligenceService.completeTimelineItem(taskId);
+            renderTimeline();
+        }
+
+        function addToCalendar(milestoneId) {
+            const milestones = IntelligenceService.getMilestones();
+            const mile = milestones.find(m => m.id === milestoneId);
+            if (!mile) return;
+            
+            alert(`已将 "${mile.title}" 添加到日历！\n日期: ${mile.date}`);
         }
 
         function showIntelDetail(id) {
@@ -347,25 +1119,28 @@
             const content = `
                 <div style="padding: 20px;">
                     <div style="margin-bottom: 15px;">
-                        <span class="tag ${intel.tag}" style="margin-right: 10px;">${intel.tagLabel}</span>
-                        ${intel.isAutoGenerated ? '<span style="background: #e3f2fd; color: #1976d2; padding: 3px 8px; border-radius: 4px; font-size: 12px;">🤖 AI采集</span>' : ''}
+                        <span class="intelligence-tag ${intel.tag}" style="margin-right: 10px;">${intel.tagLabel}</span>
+                        ${intel.isAutoGenerated ? '<span class="ai-badge"><i class="fas fa-robot"></i> AI采集</span>' : ''}
                     </div>
-                    <h2 style="color: #333; margin-bottom: 15px; font-size: 20px;">${intel.title}</h2>
+                    <h2 style="color: #333; margin-bottom: 15px; font-size: 1.5rem;">${intel.title}</h2>
                     <div style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                        <p style="margin: 5px 0;">🏫 来源: ${intel.source || '未知'}</p>
-                        <p style="margin: 5px 0;">⏰ 发布时间: ${new Date(intel.time).toLocaleString('zh-CN')}</p>
+                        <p style="margin: 5px 0;"><i class="fas fa-university"></i> 来源: ${intel.source || '未知'}</p>
+                        <p style="margin: 5px 0;"><i class="far fa-clock"></i> 发布时间: ${new Date(intel.time).toLocaleString('zh-CN')}</p>
+                        <p style="margin: 5px 0;"><i class="far fa-eye"></i> 阅读: ${intel.views.toLocaleString()}</p>
                     </div>
                     <div style="border-top: 1px solid #eee; padding-top: 20px;">
-                        <h3 style="color: #555; margin-bottom: 10px;">📄 内容详情</h3>
+                        <h3 style="color: #555; margin-bottom: 10px;"><i class="fas fa-file-alt"></i> 内容详情</h3>
                         <div style="color: #444; line-height: 1.8; font-size: 15px;">
                             ${intel.content || '暂无详细内容'}
                         </div>
                     </div>
-                    ${intel.sourceUrl ? `<div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-                        <a href="${intel.sourceUrl}" target="_blank" style="color: #667eea; text-decoration: none; font-size: 14px;">
-                            🔗 查看原文 →
-                        </a>
-                    </div>` : ''}
+                    ${intel.sourceUrl ? `
+                        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                            <a href="${intel.sourceUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 14px; font-weight: 600;">
+                                <i class="fas fa-external-link-alt"></i> 查看原文 →
+                            </a>
+                        </div>
+                    ` : ''}
                 </div>
             `;
 
@@ -382,147 +1157,6 @@
             if (event.target === modal) {
                 modal.style.display = 'none';
             }
-        }
-
-        function renderMilestones() {
-            const milestoneList = document.querySelector('.milestone-list');
-            const milestones = IntelligenceService.getUpcomingEvents(90);
-            
-            const itemsHtml = milestones.slice(0, 4).map(mile => {
-                const countdown = IntelligenceService.getCountdown(mile.date);
-                return `
-                    <div class="milestone-item">
-                        <div class="milestone-icon ${mile.color}">
-                            <i class="fas fa-${mile.icon}"></i>
-                        </div>
-                        <div class="milestone-content">
-                            <h3>${mile.title}</h3>
-                            <p>${mile.description}：${mile.date} ${countdown.expired ? '(已过期)' : `(${countdown.text})`}</p>
-                        </div>
-                        <button class="milestone-btn" onclick="addToCalendar('${mile.id}')">${countdown.expired ? '已结束' : '加入日历'}</button>
-                    </div>
-                `;
-            }).join('');
-            
-            milestoneList.innerHTML = itemsHtml;
-        }
-
-        function renderTimeline() {
-            const timelineList = document.querySelector('.timeline-list');
-            const timeline = IntelligenceService.getTimelineItems();
-            const today = new Date().toISOString().split('T')[0];
-            
-            const itemsHtml = timeline.map(item => {
-                const isToday = item.date === today;
-                const countdown = IntelligenceService.getCountdown(item.date);
-                return `
-                    <div class="timeline-item ${isToday ? 'today' : ''} ${item.completed ? 'completed' : ''}">
-                        <span class="timeline-dot ${item.priority}"></span>
-                        <div class="timeline-content">
-                            ${isToday ? `<span class="countdown">剩余时间: ${countdown.text}</span>` : `<span class="timeline-date">${item.date.slice(5)}</span>`}
-                            <h4>${item.title}</h4>
-                            <p>${item.description}</p>
-                        </div>
-                        ${!item.completed ? `<button class="timeline-check" onclick="completeTask('${item.id}')"><i class="fas fa-check"></i></button>` : ''}
-                    </div>
-                `;
-            }).join('');
-            
-            timelineList.innerHTML = itemsHtml;
-        }
-
-        function completeTask(taskId) {
-            IntelligenceService.completeTimelineItem(taskId);
-            renderTimeline();
-        }
-
-        function addToCalendar(milestoneId) {
-            const milestones = IntelligenceService.getMilestones();
-            const mile = milestones.find(m => m.id === milestoneId);
-            if (!mile) return;
-            
-            const event = {
-                title: mile.title,
-                start: mile.date,
-                description: mile.description
-            };
-            
-            alert(`已将 "${mile.title}" 添加到日历！\n日期: ${mile.date}`);
-        }
-
-        let currentYear = new Date().getFullYear();
-        let currentMonth = new Date().getMonth();
-
-        function initCalendar() {
-            const calendarContainer = document.createElement('div');
-            calendarContainer.className = 'calendar-section';
-            calendarContainer.innerHTML = `
-                <h2><i class="fas fa-calendar"></i> 申请日历 (Application Calendar)</h2>
-                <div class="calendar-header">
-                    <button class="calendar-nav" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
-                    <span class="calendar-title" id="calendar-title">${currentYear}年 ${currentMonth + 1}月</span>
-                    <button class="calendar-nav" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="calendar-grid" id="calendar-grid"></div>
-                <div class="calendar-legend">
-                    <span class="legend-item"><span class="legend-dot purple"></span>竞赛</span>
-                    <span class="legend-item"><span class="legend-dot orange"></span>截止日期</span>
-                    <span class="legend-item"><span class="legend-dot green"></span>签证</span>
-                    <span class="legend-item"><span class="legend-dot blue"></span>申请</span>
-                </div>
-            `;
-            
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.appendChild(calendarContainer);
-            renderCalendar();
-        }
-
-        function changeMonth(delta) {
-            currentMonth += delta;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            }
-            if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
-            renderCalendar();
-        }
-
-        function renderCalendar() {
-            const calendarGrid = document.getElementById('calendar-grid');
-            const calendarTitle = document.getElementById('calendar-title');
-            
-            calendarTitle.textContent = `${currentYear}年 ${currentMonth + 1}月`;
-            
-            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            const events = IntelligenceService.getCalendarEvents(currentYear, currentMonth);
-            
-            let html = '<div class="calendar-weekdays"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>';
-            html += '<div class="calendar-days">';
-            
-            for (let i = 0; i < firstDay; i++) {
-                html += '<div class="calendar-day empty"></div>';
-            }
-            
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayEvents = events.filter(e => e.date === dateStr);
-                const hasEvent = dayEvents.length > 0;
-                const eventColor = hasEvent ? dayEvents[0].color : '';
-                
-                html += `
-                    <div class="calendar-day ${hasEvent ? 'has-event' : ''} ${eventColor}">
-                        ${day}
-                        ${hasEvent ? '<div class="event-dot"></div>' : ''}
-                    </div>
-                `;
-            }
-            
-            html += '</div>';
-            calendarGrid.innerHTML = html;
         }
     </script>
 </body>
